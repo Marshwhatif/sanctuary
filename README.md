@@ -5,7 +5,7 @@ Live at **https://marshtown.com**: GitHub Pages, with the domain registered at C
 A one-page 3D site where followers find their dog. It uses the same 3D kit as the videos (`lib/lowpoly-*.js`, copied from `template/assets/js/`). All of the content comes from one file, `data/sanctuary.json`.
 
 - `index.html`, `site/style.css`, `site/app.js`: the page.
-- `data/sanctuary.json`: the day, dogs, builds, log, shop and ads settings.
+- `data/sanctuary.json`: the day, dogs, builds, log and shop settings.
 - `tools/add-day.py`: the daily update script. It only ever edits `data/sanctuary.json`.
 - Add `?demo` to the address to see the grounds full of sample dogs. Add `?dog=name` to jump to a dog (the share button makes these links).
 
@@ -21,7 +21,7 @@ A one-page 3D site where followers find their dog. It uses the same 3D kit as th
    Leave out `--build` on days with no new build. Use `--dry-run` first if you want a preview.
 3. Upload the new `data/sanctuary.json` to GitHub (see below). The site updates within a minute or two.
 
-Other jobs: `--remove @name` (opt-outs), `--collar @name=rainbow` and `--hat @name=party|crown|tophat|shades` (paid upgrades), `--shop on`, `--link rainbow=<payment link>` and `--adsense ca-pub-…`.
+Other jobs: `--remove @name` (opt-outs), `--collar @name=rainbow` and `--hat @name=party|crown|tophat|shades` (paid upgrades), `--shop on` and `--link rainbow=<payment link>`.
 
 How it works:
 - The first 100 followers get gold collars and followers 101–1,000 get silver, by join order (`goldCollars` and `silverCollars` in the data). Paid upgrades never change these.

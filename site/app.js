@@ -75,7 +75,6 @@
       builds: [{ type: "supermarket", day: 2, slot: 0 }, { type: "library", day: 2, slot: 1 }, { type: "gym", day: 2, slot: 2 }, { type: "cinema", day: 2, slot: 3 }],
       log: [6, 5, 4, 3, 2, 1].map((d) => ({ day: d, title: `Sample day ${d}`, text: "Demo text. Real days come from data/sanctuary.json.", reel: "" })),
       shop: { enabled: true, note: "Demo shop: the buy links are empty.", items: SHOP_DEFAULT },
-      ads: {},
     };
   }
 
@@ -103,10 +102,27 @@
   };
   const HAT_NAMES = { party: "Party hat", crown: "Crown", tophat: "Top hat", shades: "Sunglasses", wizard: "Wizard hat", chef: "Chef's hat", bobble: "Bobble hat", cowboy: "Cowboy hat" };
   // The shop's line-up. Live items need a Ko-fi link in data/sanctuary.json; "soon" ones show as coming soon.
+  // Shop-only models (outfits aren't worn by dogs yet; they're coming soon). Same format as HATS: x, bottom y, z, w, h, d, colour.
+  const PREVIEW = {
+    jumper: [[0, 0.06, 0, 0.5, 0.36, 0.18, "#c8283a"], [0, 0, 0, 0.51, 0.06, 0.19, "#2a8a4a"], [-0.33, 0.1, 0, 0.16, 0.32, 0.16, "#c8283a"], [0.33, 0.1, 0, 0.16, 0.32, 0.16, "#c8283a"],
+      [-0.33, 0.06, 0, 0.17, 0.05, 0.17, "#2a8a4a"], [0.33, 0.06, 0, 0.17, 0.05, 0.17, "#2a8a4a"], [0, 0.42, 0, 0.22, 0.05, 0.19, "#2a8a4a"], [0, 0.29, 0, 0.51, 0.05, 0.19, "#ffffff"],
+      [-0.15, 0.3, 0.096, 0.03, 0.03, 0.01, "#c8283a"], [0, 0.3, 0.096, 0.03, 0.03, 0.01, "#c8283a"], [0.15, 0.3, 0.096, 0.03, 0.03, 0.01, "#c8283a"],
+      [0, 0.09, 0.095, 0.14, 0.05, 0.01, "#2a8a4a"], [0, 0.14, 0.095, 0.1, 0.05, 0.01, "#2a8a4a"], [0, 0.19, 0.095, 0.05, 0.05, 0.01, "#2a8a4a"], [0, 0.24, 0.096, 0.04, 0.04, 0.01, "#ffd23a"]],
+    suit: [[0, 0, 0, 0.5, 0.44, 0.18, "#22283a"], [-0.33, 0.08, 0, 0.16, 0.36, 0.16, "#22283a"], [0.33, 0.08, 0, 0.16, 0.36, 0.16, "#22283a"],
+      [-0.33, 0.04, 0, 0.15, 0.04, 0.15, "#ffffff"], [0.33, 0.04, 0, 0.15, 0.04, 0.15, "#ffffff"], [0, 0.2, 0.091, 0.13, 0.24, 0.01, "#ffffff"],
+      [-0.09, 0.2, 0.095, 0.05, 0.24, 0.012, "#151a28"], [0.09, 0.2, 0.095, 0.05, 0.24, 0.012, "#151a28"], [0, 0.2, 0.097, 0.05, 0.18, 0.012, "#c8283a"], [0, 0.37, 0.098, 0.06, 0.05, 0.012, "#a01e2e"],
+      [0, 0.44, 0, 0.24, 0.04, 0.19, "#ffffff"], [0, 0.06, 0.096, 0.03, 0.03, 0.01, "#d8b04a"], [0, 0.13, 0.096, 0.03, 0.03, 0.01, "#d8b04a"], [0.16, 0.32, 0.096, 0.07, 0.04, 0.01, "#ffffff"]],
+    request: [[0, 0, 0, 0.36, 0.3, 0.36, "#3aa8ff"], [0, 0.3, 0, 0.4, 0.08, 0.4, "#2a88dd"], [0, 0, 0, 0.365, 0.385, 0.07, "#ffd23a"], [0, 0.38, 0, 0.07, 0.006, 0.405, "#ffd23a"],
+      [-0.07, 0.38, 0, 0.11, 0.08, 0.06, "#ffd23a"], [0.07, 0.38, 0, 0.11, 0.08, 0.06, "#ffd23a"],
+      [0, 0.23, 0.186, 0.1, 0.035, 0.012, "#ffffff"], [-0.05, 0.2, 0.186, 0.035, 0.05, 0.012, "#ffffff"], [0.05, 0.16, 0.186, 0.035, 0.09, 0.012, "#ffffff"],
+      [0.015, 0.13, 0.186, 0.065, 0.035, 0.012, "#ffffff"], [0, 0.09, 0.186, 0.035, 0.05, 0.012, "#ffffff"], [0, 0.03, 0.186, 0.035, 0.035, 0.012, "#ffffff"]],
+  };
+  // The shop's line-up. Live items need a Ko-fi link in data/sanctuary.json; "soon" ones show as coming soon; "request" opens an Instagram DM.
   const SHOP_DEFAULT = [
-    { id: "rainbow", kind: "collar", name: "Rainbow collar", price: "£3" }, { id: "party", kind: "hat", name: "Party hat", price: "£3" },
+    { id: "rainbow", kind: "collar", name: "Rainbow collar", price: "£5" }, { id: "party", kind: "hat", name: "Party hat", price: "£3" },
+    { id: "request", kind: "request", name: "Something else?" },
     { id: "crown", kind: "hat", name: "Crown", soon: true }, { id: "tophat", kind: "hat", name: "Top hat", soon: true }, { id: "shades", kind: "hat", name: "Sunglasses", soon: true },
-    { id: "wizard", kind: "hat", name: "Wizard hat", soon: true }, { id: "chef", kind: "hat", name: "Chef's hat", soon: true }, { id: "bobble", kind: "hat", name: "Bobble hat", soon: true }, { id: "cowboy", kind: "hat", name: "Cowboy hat", soon: true },
+    { id: "jumper", kind: "outfit", name: "Christmas jumper", soon: true }, { id: "suit", kind: "outfit", name: "Suit", soon: true },
   ];
 
   let dogMesh = null, accMesh = null, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
@@ -452,7 +468,7 @@
     if (it.id === "rainbow") { // a blocky ring of rainbow links with a gold tag
       const N = 14; for (let k = 0; k < N; k++) { const a = (k / N) * Math.PI * 2; box(Math.sin(a) * 0.2, 0, Math.cos(a) * 0.2, 0.1, 0.075, 0.05, `hsl(${(k / N) * 360}, 90%, 55%)`, a); }
       box(0, -0.075, 0.215, 0.07, 0.07, 0.02, "#ffd23a"); box(0, -0.03, 0.212, 0.02, 0.04, 0.015, "#c89a1a"); g.rotation.x = 1.0; // tipped towards you so it reads as a ring
-    } else (HATS[it.id] || []).forEach((p) => box(p[0], p[1] + p[4] / 2, p[2], p[3], p[4], p[5], p[6]));
+    } else (HATS[it.id] || PREVIEW[it.id] || []).forEach((p) => box(p[0], p[1] + p[4] / 2, p[2], p[3], p[4], p[5], p[6]));
     const bb = new T.Box3().setFromObject(g), c = bb.getCenter(new T.Vector3()), sz = bb.getSize(new T.Vector3());
     const inner = new T.Group(); g.children.slice().forEach((m) => inner.add(m)); inner.position.sub(c); inner.rotation.copy(g.rotation); g.rotation.set(0, 0, 0); g.add(inner);
     g.userData.size = Math.max(sz.x, sz.y, sz.z); g.visible = false; return g;
@@ -506,43 +522,20 @@
     const shop = DATA.shop || {};
     $("shopBtn").hidden = !shop.enabled;
     $("shopNote").textContent = shop.note || "";
-    SHOP = (shop.items && shop.items.length ? shop.items : SHOP_DEFAULT).filter((it) => it && (it.id === "rainbow" || HATS[it.id]));
+    SHOP = (shop.items && shop.items.length ? shop.items : SHOP_DEFAULT).filter((it) => it && (it.id === "rainbow" || HATS[it.id] || PREVIEW[it.id]));
+    $("coffee").href = /^https:\/\//.test(shop.coffee || "") ? shop.coffee : "https://ko-fi.com/marshtown";
     const card = (it, i) => {
+      if (it.kind === "request") return `<li class="req"><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas></div><div class="nm">${esc(it.name)}</div><a class="buy dm" href="https://ig.me/m/${esc(ig)}" target="_blank" rel="noopener">DM your idea</a></li>`;
       const live = !it.soon && it.link && /^https:\/\//.test(it.link);
       if (it.soon) return `<li class="soon"><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas><span class="ribbon">Coming soon</span></div><div class="nm">${esc(it.name)}</div><span class="buy off">🔒 Not on sale yet</span></li>`;
-      const btn = live ? `<a class="buy" href="${esc(it.link)}" target="_blank" rel="noopener">Buy on Ko-fi · ${esc(it.price || "")}</a>` : `<span class="buy off">Opens soon</span>`;
-      return `<li><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas></div><div class="nm">${esc(it.name)}${it.price ? ` <em>${esc(it.price)}</em>` : ""}</div>${btn}</li>`;
+      const btn = live ? `<a class="buy" href="${esc(it.link)}" target="_blank" rel="noopener">Buy on Ko-fi</a>` : `<span class="buy off">Opens soon</span>`;
+      return `<li><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas></div><div class="nm">${esc(it.name)}</div>${it.price ? `<div class="pr">${esc(it.price)}</div>` : ""}${btn}</li>`;
     };
     $("shopList").innerHTML = SHOP.map((it, i) => (it.soon ? "" : card(it, i))).join("");
     $("soonList").innerHTML = SHOP.map((it, i) => (it.soon ? card(it, i) : "")).join("");
     $("soonH").hidden = !SHOP.some((it) => it.soon);
     $("demo").hidden = !DEMO;
-    // The AdSense script loads from index.html. An extra ad unit in the Daily log only appears if a slot id is set.
-    const ads = DATA.ads || {};
-    if (ads.adsenseClient && ads.slot && !DEMO) {
-      const box = $("adLog"); box.hidden = false;
-      box.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-client="${esc(ads.adsenseClient)}" data-ad-slot="${esc(ads.slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
-      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* ads blocked */ }
-    }
   }
-
-  // Google's anchor ad (the slim banner pinned to the top or bottom of the screen) sits over the page, so when one is
-  // showing, the top bar, buttons and panels move out of its way. Checked once a second; cheap, and no layout reads per frame.
-  let adTop = 0, adBottom = 0;
-  setInterval(() => {
-    let top = 0, bottom = 0;
-    document.querySelectorAll("ins.adsbygoogle, .adsbygoogle-noablate, [data-anchor-status]").forEach((el) => {
-      if (el.closest("#adLog")) return;
-      const cs = getComputedStyle(el); if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") return;
-      const r = el.getBoundingClientRect(); if (r.height < 20 || r.width < 200) return;
-      if (r.top < 8) top = Math.max(top, r.bottom); else if (r.bottom > innerHeight - 8) bottom = Math.max(bottom, innerHeight - r.top);
-    });
-    if (top !== adTop || bottom !== adBottom) {
-      adTop = top; adBottom = bottom; const st = document.documentElement.style;
-      st.setProperty("--ad-top", Math.round(top) + "px"); st.setProperty("--ad-bottom", Math.round(bottom) + "px");
-      requestAnimationFrame(measureGap);
-    }
-  }, 1000);
 
   /* ================= Loop ================= */
   function resize() { requestAnimationFrame(measureGap); W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H; camera.fov = W < H ? 58 : 46; camera.updateProjectionMatrix(); }

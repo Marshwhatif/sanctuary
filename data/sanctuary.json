@@ -23,7 +23,7 @@
         "id": "rainbow",
         "kind": "collar",
         "name": "Rainbow collar",
-        "price": "£3",
+        "price": "£5",
         "link": "https://ko-fi.com/s/fa59cd5a2a"
       },
       {
@@ -32,6 +32,11 @@
         "name": "Party hat",
         "price": "£3",
         "link": "https://ko-fi.com/s/ea8b731e3a"
+      },
+      {
+        "id": "request",
+        "kind": "request",
+        "name": "Something else?"
       },
       {
         "id": "crown",
@@ -52,33 +57,18 @@
         "soon": true
       },
       {
-        "id": "wizard",
-        "kind": "hat",
-        "name": "Wizard hat",
+        "id": "jumper",
+        "kind": "outfit",
+        "name": "Christmas jumper",
         "soon": true
       },
       {
-        "id": "chef",
-        "kind": "hat",
-        "name": "Chef's hat",
-        "soon": true
-      },
-      {
-        "id": "bobble",
-        "kind": "hat",
-        "name": "Bobble hat",
-        "soon": true
-      },
-      {
-        "id": "cowboy",
-        "kind": "hat",
-        "name": "Cowboy hat",
+        "id": "suit",
+        "kind": "outfit",
+        "name": "Suit",
         "soon": true
       }
-    ]
-  },
-  "ads": {
-    "adsenseClient": "ca-pub-5359778683285593",
-    "slot": ""
+    ],
+    "coffee": "https://ko-fi.com/marshtown"
   }
 }

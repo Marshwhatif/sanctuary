@@ -18,7 +18,6 @@ Other jobs:
   --hat @name=party        paid upgrade (party, crown, tophat, shades, wizard, chef, bobble, cowboy, or none)
   --shop on|off            show or hide the shop
   --link rainbow=https://buy.stripe.com/...   set a shop item's payment link
-  --adsense ca-pub-123...  turn ads on (needs your own domain and AdSense approval)
   --dry-run                show what would change without saving
 """
 import argparse, csv, datetime, json, pathlib, re, sys
@@ -86,7 +85,6 @@ def main():
     ap.add_argument("--hat", action="append", default=[])
     ap.add_argument("--shop", choices=["on", "off"])
     ap.add_argument("--link", action="append", default=[])
-    ap.add_argument("--adsense")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -168,8 +166,6 @@ def main():
         if not item: sys.exit(f"No shop item {k!r}")
         if not url.startswith("https://"): sys.exit(f"Payment links must start with https:// ({url!r})")
         item["link"] = url; item.pop("soon", None); notes.append(f"shop link set for {k} (now on sale)")
-    if a.adsense:
-        data["ads"]["adsenseClient"] = a.adsense; notes.append("ads on")
 
     data["dogs"] = sorted(dogs.values(), key=lambda d: d["n"])
     live = [d for d in data["dogs"] if not d.get("removed")]
