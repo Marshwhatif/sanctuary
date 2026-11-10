@@ -1,0 +1,63 @@
+{
+  "day": 1,
+  "updated": "2026-11-09",
+  "instagram": "marshwhatif",
+  "goldCollars": 100,
+  "silverCollars": 1000,
+  "dogs": [],
+  "builds": [],
+  "log": [
+    {
+      "day": 1,
+      "date": "2026-11-09",
+      "title": "Marsh bought a dog sanctuary",
+      "text": "200 empty kennels. Every follow is a new dog. Comment your breed on the reel to get yours.",
+      "reel": ""
+    }
+  ],
+  "shop": {
+    "enabled": false,
+    "note": "Upgrades are cosmetic only. Following is the only way to get a dog. Ask a parent first if you're under 18. Questions or refunds: DM @marshwhatif.",
+    "items": [
+      {
+        "id": "rainbow",
+        "kind": "collar",
+        "name": "Rainbow collar",
+        "price": "£2",
+        "link": ""
+      },
+      {
+        "id": "party",
+        "kind": "hat",
+        "name": "Party hat",
+        "price": "£1",
+        "link": ""
+      },
+      {
+        "id": "crown",
+        "kind": "hat",
+        "name": "Crown",
+        "price": "£3",
+        "link": ""
+      },
+      {
+        "id": "tophat",
+        "kind": "hat",
+        "name": "Top hat",
+        "price": "£2",
+        "link": ""
+      },
+      {
+        "id": "shades",
+        "kind": "hat",
+        "name": "Sunglasses",
+        "price": "£1",
+        "link": ""
+      }
+    ]
+  },
+  "ads": {
+    "adsenseClient": "",
+    "slot": ""
+  }
+}

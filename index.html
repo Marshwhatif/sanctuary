@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Marsh's Dog Sanctuary</title>
+  <meta name="description" content="1 follow = 1 dog. Find your dog in Marsh's sanctuary and see what it's up to today.">
+  <meta property="og:title" content="Marsh's Dog Sanctuary">
+  <meta property="og:description" content="1 follow = 1 dog. Find yours and see what it's up to today.">
+  <meta property="og:image" content="img/marsh.png">
+  <meta name="theme-color" content="#5bb8ea">
+  <link rel="icon" href="img/favicon.png">
+  <link rel="stylesheet" href="site/style.css?v=4">
+</head>
+<body>
+  <canvas id="view" aria-label="3D view of Marsh's Dog Sanctuary"></canvas>
+  <div id="tags" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <img src="img/marsh.png" alt="" width="40" height="40">
+      <div>
+        <h1>Marsh's Dog Sanctuary</h1>
+        <p id="stats">Loading…</p>
+      </div>
+    </div>
+    <form id="find" class="find" autocomplete="off">
+      <input id="q" type="search" placeholder="Find your dog: @name" aria-label="Find your dog by Instagram name" list="names">
+      <datalist id="names"></datalist>
+      <button type="submit" aria-label="Find">Find</button>
+    </form>
+  </header>
+
+  <div id="demo" class="pill demo" hidden>Demo: sample dogs, not real followers</div>
+  <div id="hint" class="pill hint">Drag to look around</div>
+
+  <nav class="tools" aria-label="View">
+    <button id="zin" aria-label="Zoom in">+</button>
+    <button id="zout" aria-label="Zoom out">−</button>
+    <button id="home" aria-label="Back to the gate">⌂</button>
+    <button id="tour" aria-label="Follow Marsh">🐾</button>
+  </nav>
+
+  <nav class="dock" aria-label="Sections">
+    <button data-open="info">How it works</button>
+    <button data-open="log">Daily log</button>
+    <button data-open="shop" id="shopBtn" hidden>Shop</button>
+    <a id="follow" class="cta" target="_blank" rel="noopener">Follow<span class="wide"> = get a dog</span></a>
+  </nav>
+
+  <section id="card" class="card" hidden aria-live="polite">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="card-head">
+      <span id="cBadge" class="badge"></span>
+      <h2 id="cName"></h2>
+      <p id="cBreed"></p>
+    </div>
+    <dl class="facts">
+      <div><dt>Today</dt><dd id="cDoing"></dd></div>
+      <div><dt>Joined</dt><dd id="cJoined"></dd></div>
+      <div><dt>Kennel</dt><dd id="cKennel"></dd></div>
+      <div><dt>Collar</dt><dd id="cCollar"></dd></div>
+    </dl>
+    <div class="row">
+      <button id="share" class="primary">Share my dog</button>
+      <button id="upgrade" hidden>Upgrade</button>
+    </div>
+  </section>
+
+  <section id="info" class="sheet" hidden>
+    <button class="x" data-close aria-label="Close">×</button>
+    <h2>1 follow = 1 dog</h2>
+    <ul class="rules">
+      <li><b>Follow</b> <span class="ig"></span> on Instagram and a dog moves into the sanctuary for you.</li>
+      <li><b>Comment your breed</b> on the newest sanctuary reel. Changed your mind? Comment again any time.</li>
+      <li><b>The first <span id="goldN">100</span> followers</b> get a gold collar 🥇, and followers <span id="silverA">101</span> to <span id="silverB">1,000</span> get silver 🥈. They're yours for keeps.</li>
+      <li><b>The top comment</b> on each reel decides what Marsh builds next.</li>
+      <li>The sanctuary updates with every new video, so new dogs show up then, not straight away.</li>
+      <li>Don't want to be here? DM <span class="ig"></span> and your dog goes home.</li>
+    </ul>
+    <p class="small">Drag to look around, pinch or scroll to zoom, two fingers or right-drag to move. Tap a dog to see who it belongs to.</p>
+  </section>
+
+  <section id="log" class="sheet" hidden>
+    <button class="x" data-close aria-label="Close">×</button>
+    <h2>Daily log</h2>
+    <ol id="logList" class="log"></ol>
+    <div id="adLog" class="ad" hidden></div>
+  </section>
+
+  <section id="shop" class="sheet" hidden>
+    <button class="x" data-close aria-label="Close">×</button>
+    <h2>Dress up your dog</h2>
+    <p class="small" id="shopNote"></p>
+    <ul id="shopList" class="shop"></ul>
+    <p class="small">Put your Instagram @name in the checkout. Upgrades appear with the next video.</p>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+  <div id="loading" class="loading">Opening the gates…</div>
+
+  <script src="lib/three.min.js?v=4"></script>
+  <script src="lib/lowpoly.js?v=4"></script>
+  <script src="lib/lowpoly-blocky.js?v=4"></script>
+  <script src="lib/lowpoly-marsh.js?v=4"></script>
+  <script src="lib/lowpoly-sanctuary.js?v=4"></script>
+  <script src="lib/lowpoly-town.js?v=4"></script>
+  <script src="site/app.js?v=4"></script>
+</body>
+</html>
