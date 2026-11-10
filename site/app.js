@@ -382,7 +382,7 @@
       if (!s) { el.hidden = true; return; }
       if (el.dog !== d) {
         el.dog = d; el.className = "tag" + (d.isMarsh ? " marsh" : d.tier ? " " + d.tier : d.collarCol === "rainbow" ? " rainbow" : "");
-        el.textContent = d.isMarsh ? "Marsh 🐾" : (d.tier === "gold" ? "🥇 " : d.tier === "silver" ? "🥈 " : "") + "@" + d.handle + (d.act && d.act.zz ? " 💤" : "");
+        el.textContent = d.isMarsh ? "👑 Marsh" : (d.tier === "gold" ? "🥇 " : d.tier === "silver" ? "🥈 " : "") + "@" + d.handle + (d.act && d.act.zz ? " 💤" : "");
       }
       el.classList.toggle("me", d === selected && !d.isMarsh);
       el.hidden = false; el.style.transform = `translate(${s.x}px, ${s.y}px) translate(-50%, -100%)`;
@@ -393,32 +393,34 @@
     let best = null, bd = 34;
     DOGS.concat([MARSH]).forEach((d) => { const s = toScreen(d.wx, d.wy * 0.6, d.wz); if (!s) return; const dd = Math.hypot(s.x - x, s.y - y); if (dd < bd) { bd = dd; best = d; } });
     if (best) select(best, true);
+    else if (selected && !followMarsh) select(null); // tap on empty ground closes the card
   }
 
   /* ================= Selection and the dog card ================= */
-  function collarName(d) {
-    const tier = d.tier === "gold" ? `Gold (#${d.n} of ${DATA.goldCollars})` : d.tier === "silver" ? `Silver (#${d.n} of ${DATA.silverCollars.toLocaleString()})` : "";
-    return d.collarCol === "rainbow" ? "Rainbow" + (tier ? `, ${tier.split(" ")[0].toLowerCase()} medal` : "") : tier || "Red";
+  function collarName(d) { // short: the badge already says gold or silver and the number
+    const tier = d.tier ? TIER[d.tier].name : "";
+    return d.collarCol === "rainbow" ? "Rainbow" + (tier ? ` + ${tier.toLowerCase()} medal` : "") : tier || "Red";
   }
   function select(d, fly2) {
     selected = d; trackSel = true; const card = $("card");
+    document.body.classList.toggle("picked", !!d); requestAnimationFrame(measureGap);
     K.beamG.visible = !!d && !d.isMarsh;
     if (!d) { card.hidden = true; if (location.search.includes("dog=")) history.replaceState(null, "", DEMO ? "?demo" : location.pathname); return; }
     closeAll(); card.hidden = false; hideHint();
     if (d.isMarsh) {
       $("cBadge").className = "badge marsh"; $("cBadge").textContent = "Owner";
       $("cName").textContent = "Marsh"; $("cBreed").textContent = "Terrier. Puddle the duckling rides on his head.";
-      $("cDoing").textContent = "Doing his rounds of the sanctuary"; $("cJoined").textContent = "Day 1 (bought it)"; $("cKennel").textContent = "All of them"; $("cCollar").textContent = "Red";
+      $("cDoing").textContent = "Doing his rounds of the sanctuary"; $("cJoined").textContent = "1"; $("cKennel").textContent = "All of them"; $("cCollar").textContent = "Red";
       $("upgrade").hidden = true; $("share").textContent = "Share the sanctuary";
     } else {
       $("cBadge").className = "badge" + (d.tier ? " " + d.tier : d.collarCol === "rainbow" ? " rainbow" : "");
       $("cBadge").textContent = d.tier ? `${TIER[d.tier].name} collar · #${d.n}` : d.collarCol === "rainbow" ? "Rainbow collar" : `Dog #${d.n}`;
       $("cName").textContent = "@" + d.handle; $("cBreed").textContent = d.breed + (d.hat ? ` · ${HAT_NAMES[d.hat] || d.hat}` : "");
-      $("cDoing").textContent = d.act.text; $("cJoined").textContent = `Day ${d.day}`; $("cKennel").textContent = `#${d.kennel}`; $("cCollar").textContent = collarName(d);
+      $("cDoing").textContent = d.act.text; $("cJoined").textContent = d.day; $("cKennel").textContent = `#${d.kennel}`; $("cCollar").textContent = collarName(d);
       $("upgrade").hidden = !(DATA.shop && DATA.shop.enabled); $("share").textContent = "Share my dog";
       history.replaceState(null, "", `?dog=${encodeURIComponent(d.handle)}${DEMO ? "&demo" : ""}`);
     }
-    if (fly2 && !followMarsh) { const want = d.isMarsh ? cam.yaw : (d.wx > 0 ? -0.35 : 0.35), yaw = want + Math.PI * 2 * Math.round((cam.yaw - want) / (Math.PI * 2)); const inside = d.act && d.act.pose === "build" && d.spot; flyTo({ tx: d.wx, tz: d.wz, yaw: inside ? yaw * 0.3 : yaw, dist: inside ? 15 : Math.min(cam.dist, 10), pitch: inside ? 1.18 : 0.5 }, 1300); }
+    if (fly2 && !followMarsh) { const want = d.isMarsh ? cam.yaw : (d.wx > 0 ? -0.35 : 0.35), yaw = want + Math.PI * 2 * Math.round((cam.yaw - want) / (Math.PI * 2)); const inside = d.act && d.act.pose === "build" && d.spot; flyTo({ tx: d.wx, tz: d.wz, yaw: inside ? yaw * 0.3 : yaw, dist: inside ? 15 : Math.min(Math.max(cam.dist, 11), 12), pitch: inside ? 1.18 : 1.05 }, 1300); } // steep enough to see over buildings and the gate, and into the kennels
   }
   $("card").querySelector("[data-close]").onclick = () => { select(null); if (followMarsh) setFollow(false); };
   $("upgrade").onclick = () => open("shop");
@@ -473,10 +475,12 @@
   }
 
   /* ================= Loop ================= */
-  function resize() { W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H; camera.fov = W < H ? 58 : 46; camera.updateProjectionMatrix(); }
+  function resize() { requestAnimationFrame(measureGap); W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H; camera.fov = W < H ? 58 : 46; camera.updateProjectionMatrix(); }
   addEventListener("resize", resize);
   let viewOff = 0, shadowDirty = true, lightKey = "";
-  const CARD = $("card");
+  const CARD = $("card"), TOPBAR = document.querySelector(".top"), GAP = { mid: 0 };
+  // measured only when the card opens or the screen turns, never per frame (reading layout every frame is slow)
+  function measureGap() { if (CARD.hidden) return; GAP.mid = (TOPBAR.getBoundingClientRect().bottom + CARD.getBoundingClientRect().top) / 2; }
   const PERF = { js: 0, gap: 16, last: 0 };
   const LAST = { dogs: 0, render: 0, tags: 0 };
   let lastInput = 0, skip = 0, slow = 0;
@@ -501,7 +505,8 @@
     else if (selected && trackSel && !fly && !selected.isMarsh && selected.act.pose !== "lie" && selected.act.pose !== "sit") { cam.tx += (selected.wx - cam.tx) * 0.05; cam.tz += (selected.wz - cam.tz) * 0.05; }
     if (selected && !selected.isMarsh) K.beam.position.set(selected.wx, 7, selected.wz);
     animBuilds.forEach((f) => f(t)); updateBuilds(t);
-    const off = !CARD.hidden && W < 700 && H > W ? H * 0.2 : 0; viewOff += (off - viewOff) * 0.1;
+    // on phones, keep the picked dog in the middle of the clear gap between the top bar and the card
+    const off = !CARD.hidden && W < 700 && H > W ? H / 2 - GAP.mid : 0; viewOff += (off - viewOff) * 0.12;
     if (Math.abs(viewOff) > 0.5) camera.setViewOffset(W, H, 0, viewOff, W, H); else camera.clearViewOffset();
     // roofs lift off when you zoom in on a building, so you can see who's inside
     ROOFS.forEach((b) => (b.roof.visible = !(cam.dist < 36 && Math.hypot(cam.tx - b.centre[0], cam.tz - b.centre[1]) < 15)));

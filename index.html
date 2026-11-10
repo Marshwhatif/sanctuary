@@ -10,7 +10,7 @@
   <meta property="og:image" content="img/marsh.png">
   <meta name="theme-color" content="#5bb8ea">
   <link rel="icon" href="img/favicon.png">
-  <link rel="stylesheet" href="site/style.css?v=4">
+  <link rel="stylesheet" href="site/style.css?v=7">
 </head>
 <body>
   <canvas id="view" aria-label="3D view of Marsh's Dog Sanctuary"></canvas>
@@ -49,18 +49,13 @@
   </nav>
 
   <section id="card" class="card" hidden aria-live="polite">
-    <button class="x" data-close aria-label="Close">×</button>
+    <button class="x" data-close aria-label="Close"><span>×</span></button>
     <div class="card-head">
-      <span id="cBadge" class="badge"></span>
       <h2 id="cName"></h2>
-      <p id="cBreed"></p>
+      <p><span id="cBadge" class="badge"></span> <span id="cBreed"></span></p>
     </div>
-    <dl class="facts">
-      <div><dt>Today</dt><dd id="cDoing"></dd></div>
-      <div><dt>Joined</dt><dd id="cJoined"></dd></div>
-      <div><dt>Kennel</dt><dd id="cKennel"></dd></div>
-      <div><dt>Collar</dt><dd id="cCollar"></dd></div>
-    </dl>
+    <p class="doing" id="cDoing"></p>
+    <p class="chips"><span>Joined day <b id="cJoined"></b></span><span>Kennel <b id="cKennel"></b></span><span>Collar <b id="cCollar"></b></span></p>
     <div class="row">
       <button id="share" class="primary">Share my dog</button>
       <button id="upgrade" hidden>Upgrade</button>
@@ -99,12 +94,12 @@
   <div id="toast" class="toast" hidden></div>
   <div id="loading" class="loading">Opening the gates…</div>
 
-  <script src="lib/three.min.js?v=4"></script>
-  <script src="lib/lowpoly.js?v=4"></script>
-  <script src="lib/lowpoly-blocky.js?v=4"></script>
-  <script src="lib/lowpoly-marsh.js?v=4"></script>
-  <script src="lib/lowpoly-sanctuary.js?v=4"></script>
-  <script src="lib/lowpoly-town.js?v=4"></script>
-  <script src="site/app.js?v=4"></script>
+  <script src="lib/three.min.js?v=7"></script>
+  <script src="lib/lowpoly.js?v=7"></script>
+  <script src="lib/lowpoly-blocky.js?v=7"></script>
+  <script src="lib/lowpoly-marsh.js?v=7"></script>
+  <script src="lib/lowpoly-sanctuary.js?v=7"></script>
+  <script src="lib/lowpoly-town.js?v=7"></script>
+  <script src="site/app.js?v=7"></script>
 </body>
 </html>

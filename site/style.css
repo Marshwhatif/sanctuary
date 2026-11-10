@@ -70,21 +70,25 @@ button { cursor: pointer; border: 0; }
 }
 .sheet { max-height: min(70vh, 560px); overflow: auto; width: min(420px, calc(100% - 24px)); }
 @keyframes up { from { transform: translateY(16px); opacity: 0; } }
-.x { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0, 0, 0, 0.06); font-size: 20px; line-height: 1; }
+/* close button: a 44 px tap area around a small visible circle */
+.x { position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; display: grid; place-items: center; background: transparent; z-index: 2; touch-action: manipulation; }
+.x span { width: 30px; height: 30px; border-radius: 50%; background: rgba(0, 0, 0, 0.07); display: grid; place-items: center; font-size: 20px; line-height: 1; pointer-events: none; }
 .card h2, .sheet h2 { margin: 0 0 2px; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; padding-right: 36px; word-break: break-word; }
-.card-head p { margin: 0; color: var(--ink2); font-size: 15px; }
-.badge { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #eee; margin-bottom: 6px; }
+.card { padding: 12px 14px; }
+.card h2 { font-size: 19px; margin: 0; }
+.card-head p { margin: 2px 0 0; color: var(--ink2); font-size: 13px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.badge { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: #eee; color: var(--ink); }
 .badge.gold { background: linear-gradient(135deg, #ffe17a, #e8a800); color: #4a3200; }
 .badge.silver { background: linear-gradient(135deg, #ffffff, #b8c4d4); color: #2a3442; }
 .badge.rainbow { background: linear-gradient(90deg, #ff5a5a, #ffb23a, #ffe94a, #5ad86a, #3aa8ff, #a05aff); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
 .badge.marsh { background: var(--green); color: #fff; }
-.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
-.facts div { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
-.facts div:first-child { grid-column: 1 / -1; }
-.facts dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink2); font-weight: 700; }
-.facts dd { margin: 2px 0 0; font-weight: 700; font-size: 15px; }
+.doing { margin: 8px 0 6px; font-size: 14px; font-weight: 700; }
+.doing::before { content: "Today: "; color: var(--ink2); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 10px; font-size: 12px; color: var(--ink2); }
+.chips span { background: rgba(255, 255, 255, 0.75); border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; }
+.chips b { color: var(--ink); }
 .row { display: flex; gap: 8px; }
-.row button { flex: 1; padding: 11px; border-radius: 12px; font-weight: 800; background: #fff; border: 1px solid var(--line); }
+.row button { flex: 1; padding: 9px; border-radius: 11px; font-weight: 800; font-size: 14px; background: #fff; border: 1px solid var(--line); }
 .row .primary { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 .rules { padding-left: 18px; margin: 12px 0; line-height: 1.45; }
@@ -127,6 +131,8 @@ button { cursor: pointer; border: 0; }
   .dock button, .dock a { padding: 9px 10px; font-size: 13px; }
   .card, .sheet { left: 12px; right: 12px; width: auto; }
   .wide { display: none; }
+  body.picked .find, body.picked .demo, body.picked .tools, body.picked .hint { display: none; } /* the side buttons sat right over the card's × */
+  body.picked .top { padding: 8px 12px; }
   .hint { bottom: calc(130px + env(safe-area-inset-bottom)); }
   .demo { top: calc(max(12px, env(safe-area-inset-top)) + 112px); }
 }
