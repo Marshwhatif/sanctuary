@@ -15,18 +15,19 @@
 
   /* ================= Stage ================= */
   const canvas = $("view");
-  const K = LPM.setup(canvas, { pixelRatio: 1 });
+  const K = LPM.setup(canvas, { pixelRatio: 1, stage: { preserve: false } }); // no preserved drawing buffer: much cheaper on phones
   LPS.install(K); LPT.install(K);
   const { T, scene, camera, renderer } = K;
   // Phones get a smaller shadow map and a lower resolution; shadows are only redrawn when something needs them.
   const SHADOW = phone ? 1024 : 2048;
   K.sun.shadow.mapSize.set(SHADOW, SHADOW); K.sun.shadow.normalBias = 0.03;
   renderer.shadowMap.autoUpdate = false;
+  if (phone) renderer.shadowMap.type = T.PCFShadowMap; // plain (not soft) shadow edges: far fewer texture reads per pixel
   // The kit's camera is set up for close video shots; a free camera needs a sane depth range (no road flicker)
   // and a sky that travels with it (the 3000 m sky sphere otherwise gets clipped to black at the edges).
   camera.near = 0.3; camera.far = 1500; camera.updateProjectionMatrix();
   K.sky.scale.setScalar(0.3); K.sky.frustumCulled = false;
-  let pixelRatio = Math.min(devicePixelRatio || 1, phone ? 1.5 : 2);
+  let pixelRatio = Math.min(devicePixelRatio || 1, phone ? 1.3 : 2);
   renderer.setPixelRatio(pixelRatio);
 
   // Marsh Town: blocks of kennels around streets, with a district for each building (lowpoly-town.js buildCity).
@@ -258,6 +259,7 @@
     const rb = (t * 0.25) % 1, cp0 = camera.position; FRAME++;
     let rainbow = false;
     mVP.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); FRU.setFromProjectionMatrix(mVP);
+    const farStride = cam.dist > 60 ? 4 : 3; // from the overview the dogs are tiny, so a quarter of them move each frame
     let cur = 0, colDirty = false;
     for (let i = 0; i < DOGS.length; i++) {
       const d = DOGS[i];
@@ -265,7 +267,7 @@
       const seen = !known || d === focus || FRU.intersectsSphere(SPH.set(vC.set(d.wx, d.wy * 0.5, d.wz), 1.6 * d.scale));
       const far = dist2 > FAR2; d.far = far || !seen;
       const wantDet = seen && (d === focus || dist2 < NEAR2) && cur + d.rig.det.length <= DETCAP;
-      if (d !== focus && known && (!seen ? (i + FRAME) % 8 : far && (i + FRAME) % 3)) { d.upd = false; d.detAt = -1; continue; }
+      if (d !== focus && known && (!seen ? (i + FRAME) % 8 : far && (i + FRAME) % farStride)) { d.upd = false; d.detAt = -1; continue; }
       d.upd = true;
       const o = place(d, t), rg = d.rig, s = d.scale * (d === focus ? 1 + Math.max(0, Math.sin(t * 6)) * 0.08 : 1);
       d.wx = o.x; d.wz = o.z; d.wy = o.y + (rg.anchor.tag * (1 - o.drop * 0.25) + o.hop) * s;
@@ -326,7 +328,7 @@
   const MARSH = { handle: "marsh", isMarsh: true };
   function updateMarsh(t) {
     const [z0, z1] = CITY.avenue, L = z0 - z1, u = (t * 1.5) / L, back = Math.floor(u) % 2 === 1, z = z0 - pingpong(u) * L;
-    const mx = CITY.gate[0] - 0.5, cp = camera.position, far = (mx - cp.x) ** 2 + (z - cp.z) ** 2 > 80 * 80 && !followMarsh && selected !== MARSH;
+    const mx = CITY.gate[0] - 0.5, cp = camera.position, far = (mx - cp.x) ** 2 + (z - cp.z) ** 2 > 48 * 48 && !followMarsh && selected !== MARSH;
     if (far) K.marsh.visible = false; else K.putMarsh(mx, 0, z, back ? 0 : Math.PI, { run: 1, phase: t * 11, wag: K.wag(t) }); // ~40 draw calls, so only when close
     MARSH.wx = mx; MARSH.wz = z; MARSH.wy = 1.15; marshBlob.position.set(mx, 0.025, z); marshBlob.visible = !far;
   }
@@ -334,11 +336,11 @@
   /* ================= Builds and the "next build" sign ================= */
   const animBuilds = [], BUILT = {}, ROOFS = [], LOD = [];
   // Staff dogs are detailed models (~30 draw calls each), and the cinema screen redraws a canvas, so each building only
-  // shows its staff and runs its animations when the camera is within 55 m.
+  // shows its staff and runs its animations when the camera is within 34 m.
   function updateBuilds(t) {
     const cp = camera.position;
     LOD.forEach((b) => {
-      const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < 55 * 55;
+      const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < 34 * 34;
       if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); shadowDirty = true; }
       if (near || b.always) b.anim(t);
     });
@@ -555,7 +557,7 @@
   /* ================= Loop ================= */
   function resize() { requestAnimationFrame(measureGap); W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H; camera.fov = W < H ? 58 : 46; camera.updateProjectionMatrix(); }
   addEventListener("resize", resize);
-  let viewOff = 0, shadowDirty = true, lightKey = "";
+  let viewOff = 0, shadowDirty = true, lightKey = "", lightWant = "", lightSince = 0;
   const SHOPEL = $("shop"), CARD = $("card"), TOPBAR = document.querySelector(".top"), GAP = { mid: 0 };
   // measured only when the card opens or the screen turns, never per frame (reading layout every frame is slow)
   function measureGap() { if (CARD.hidden) return; GAP.mid = (TOPBAR.getBoundingClientRect().bottom + CARD.getBoundingClientRect().top) / 2; }
@@ -593,9 +595,12 @@
     // the sun's shadow box follows the camera, snapped to its texels so shadows don't shimmer
     // the shadow box follows the camera in steps; shadows are redrawn when it moves, and otherwise only as often as the
     // dogs nearby need (every 2nd frame up close, every 8th from afar)
-    { const size = Math.round(clamp(cam.dist * 0.8, 16, 90) / 4) * 4, step = (8 * size) / SHADOW, sx = Math.round(cam.tx / step) * step, sz = Math.round(cam.tz / step) * step, key = sx + "," + sz + "," + size;
-      if (key !== lightKey) { lightKey = key; K.light("day", sx, sz, size, 420); shadowDirty = true; } }
-    if (shadowDirty || FRAME % 90 === 0) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; } // only still things cast shadows now, so this is rare
+    // The sun's shadow box comes in three sizes and moves in big steps, and only once the camera has settled for a moment,
+    // so zooming and panning don't redraw the shadow map every few frames (that was the main stutter, on first load too).
+    { const lvl = cam.dist < 26 ? 24 : cam.dist < 58 ? 52 : 100, step = lvl / 4, sx = Math.round(cam.tx / step) * step, sz = Math.round(cam.tz / step) * step, key = sx + "," + sz + "," + lvl;
+      if (key !== lightWant) { lightWant = key; lightSince = now; }
+      if (lightWant !== lightKey && (!lightKey || now - lightSince > 220)) { lightKey = lightWant; K.light("day", sx, sz, lvl, 420); shadowDirty = true; } }
+    if (shadowDirty || (cam.dist < 58 && FRAME % 90 === 0)) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; } // only still things cast shadows now, so this is rare
     K.sky.position.copy(camera.position);
     if (cam.dist < 45) K.life(t, cam.tx, cam.tz, clamp(cam.dist * 0.25, 4, 14), true); else K.lifeG.visible = false; // butterflies are invisible from far away
     const tR = performance.now(); K.stage.render(); LAST.render = performance.now() - tR;
@@ -632,7 +637,9 @@
     noCast(K.marsh); noCast(K.lifeG); LOD.forEach((b) => (b.staff || []).forEach(noCast)); shadowDirty = true;
     updateMarsh(0); updateDogs(0); applyCam();
     requestAnimationFrame(frame);
-    setTimeout(() => $("loading").classList.add("gone"), 150);
+    // compile every shader and draw the shadow map once behind the loading screen, so the first seconds don't stutter
+    try { renderer.compile(scene, camera); } catch (e) { /* older browsers */ }
+    setTimeout(() => $("loading").classList.add("gone"), 250);
     const want = norm(params.get("dog"));
     const target = want && (want === "marsh" ? MARSH : BYNAME.get(want));
     if (target) { setTimeout(() => select(target, true), 300); hideHint(); }
