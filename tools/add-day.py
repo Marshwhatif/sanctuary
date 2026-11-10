@@ -15,7 +15,7 @@ Followers already in the sanctuary keep their number; a new breed just replaces 
 Other jobs:
   --remove @name           opt-out: their dog goes home (repeatable)
   --collar @name=rainbow   paid upgrade (rainbow or red). Gold (first 100) and silver (up to 1,000) are earned by join order, not set here.
-  --hat @name=party        paid upgrade (party, crown, tophat, shades, or none)
+  --hat @name=party        paid upgrade (party, crown, tophat, shades, wizard, chef, bobble, cowboy, or none)
   --shop on|off            show or hide the shop
   --link rainbow=https://buy.stripe.com/...   set a shop item's payment link
   --adsense ca-pub-123...  turn ads on (needs your own domain and AdSense approval)
@@ -27,7 +27,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "sanctuary.json"
 MODELS = ["golden", "lab", "chocolate", "dalmatian", "dachshund", "corgi", "husky", "pug", "poodle", "shepherd", "beagle", "chihuahua"]
 BUILDS = ["supermarket", "library", "gym", "cinema"]  # what the 3D kit can draw today; new builds go in lowpoly-town.js
-HATS = ["party", "crown", "tophat", "shades"]
+HATS = ["party", "crown", "tophat", "shades", "wizard", "chef", "bobble", "cowboy"]
 # Words in a comment -> the closest 3D model. First match wins, so specific names come first.
 ALIASES = [
     ("chocolate lab", "chocolate"), ("choc lab", "chocolate"), ("golden", "golden"), ("retriever", "golden"), ("goldendoodle", "poodle"),
@@ -167,7 +167,7 @@ def main():
         item = next((i for i in data["shop"]["items"] if i["id"] == k), None)
         if not item: sys.exit(f"No shop item {k!r}")
         if not url.startswith("https://"): sys.exit(f"Payment links must start with https:// ({url!r})")
-        item["link"] = url; notes.append(f"shop link set for {k}")
+        item["link"] = url; item.pop("soon", None); notes.append(f"shop link set for {k} (now on sale)")
     if a.adsense:
         data["ads"]["adsenseClient"] = a.adsense; notes.append("ads on")
 

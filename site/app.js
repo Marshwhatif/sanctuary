@@ -43,7 +43,7 @@
   const KENNELS = CITY.kennels.map((k, i) => ({ ...k, i })).sort((a, b) => a.d - b.d);
 
   /* ================= Data ================= */
-  let DATA, DOGS = [], BYNAME = new Map(), BUILDS = [];
+  let DATA, DOGS = [], BYNAME = new Map(), BUILDS = [], SHOP = [];
   const ACTS = {
     nap: { text: "Napping outside the kennel", pose: "lie", zz: true },
     sun: { text: "Sunbathing on the grass", pose: "lie", zz: true },
@@ -74,7 +74,7 @@
       day: 6, updated: "demo", instagram: "marshwhatif", goldCollars: 100, silverCollars: 1000, dogs,
       builds: [{ type: "supermarket", day: 2, slot: 0 }, { type: "library", day: 2, slot: 1 }, { type: "gym", day: 2, slot: 2 }, { type: "cinema", day: 2, slot: 3 }],
       log: [6, 5, 4, 3, 2, 1].map((d) => ({ day: d, title: `Sample day ${d}`, text: "Demo text. Real days come from data/sanctuary.json.", reel: "" })),
-      shop: { enabled: true, note: "Demo shop: links are empty.", items: [{ id: "rainbow", name: "Rainbow collar", price: "£2", link: "" }, { id: "party", name: "Party hat", price: "£1", link: "" }] },
+      shop: { enabled: true, note: "Demo shop: the buy links are empty.", items: SHOP_DEFAULT },
       ads: {},
     };
   }
@@ -96,8 +96,18 @@
     crown: [[0, 0.05, 0, 0.3, 0.1, 0.3, "#ffc21a"], [-0.11, 0.14, -0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0.11, 0.14, -0.11, 0.07, 0.1, 0.07, "#ffc21a"], [-0.11, 0.14, 0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0.11, 0.14, 0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0, 0.05, 0.155, 0.06, 0.06, 0.02, "#e0243a"]],
     tophat: [[0, 0.015, 0, 0.38, 0.03, 0.38, "#1a1a22"], [0, 0.17, 0, 0.24, 0.28, 0.24, "#1a1a22"], [0, 0.06, 0, 0.25, 0.05, 0.25, "#c5242b"]],
     shades: [[0, -0.1, 0.175, 0.36, 0.035, 0.02, "#111111"], [-0.09, -0.11, 0.18, 0.12, 0.08, 0.025, "#111111"], [0.09, -0.11, 0.18, 0.12, 0.08, 0.025, "#111111"]],
+    wizard: [[0, 0.015, 0, 0.44, 0.03, 0.44, "#3a2a8a"], [0, 0.1, 0, 0.27, 0.16, 0.27, "#4a3aa8"], [0, 0.24, -0.01, 0.19, 0.14, 0.19, "#4a3aa8"], [0, 0.36, -0.03, 0.12, 0.12, 0.12, "#4a3aa8"], [0, 0.46, -0.06, 0.06, 0.1, 0.06, "#4a3aa8"], [0.07, 0.13, 0.136, 0.05, 0.05, 0.01, "#ffd23a"], [-0.05, 0.26, 0.096, 0.04, 0.04, 0.01, "#ffd23a"]],
+    chef: [[0, 0.05, 0, 0.3, 0.1, 0.3, "#ffffff"], [0, 0.17, 0, 0.36, 0.15, 0.36, "#f8f8f8"], [0, 0.27, 0, 0.3, 0.07, 0.3, "#ffffff"], [0, 0.04, 0.151, 0.3, 0.02, 0.005, "#d8d8d8"]],
+    bobble: [[0, 0.03, 0, 0.36, 0.08, 0.36, "#c8303a"], [0, 0.12, 0, 0.33, 0.12, 0.33, "#e2483a"], [0, 0.095, 0, 0.335, 0.03, 0.335, "#ffffff"], [0, 0.2, 0, 0.24, 0.05, 0.24, "#e2483a"], [0, 0.26, 0, 0.11, 0.11, 0.11, "#ffffff"]],
+    cowboy: [[0, 0.02, 0, 0.58, 0.03, 0.48, "#a0683a"], [-0.26, 0.04, 0, 0.06, 0.04, 0.48, "#a0683a"], [0.26, 0.04, 0, 0.06, 0.04, 0.48, "#a0683a"], [0, 0.12, 0, 0.28, 0.18, 0.26, "#a0683a"], [0, 0.05, 0, 0.285, 0.04, 0.265, "#5a3a20"], [0, 0.2, 0, 0.1, 0.03, 0.27, "#8a5830"]],
   };
-  const HAT_NAMES = { party: "Party hat", crown: "Crown", tophat: "Top hat", shades: "Sunglasses" };
+  const HAT_NAMES = { party: "Party hat", crown: "Crown", tophat: "Top hat", shades: "Sunglasses", wizard: "Wizard hat", chef: "Chef's hat", bobble: "Bobble hat", cowboy: "Cowboy hat" };
+  // The shop's line-up. Live items need a Ko-fi link in data/sanctuary.json; "soon" ones show as coming soon.
+  const SHOP_DEFAULT = [
+    { id: "rainbow", kind: "collar", name: "Rainbow collar", price: "£3" }, { id: "party", kind: "hat", name: "Party hat", price: "£3" },
+    { id: "crown", kind: "hat", name: "Crown", soon: true }, { id: "tophat", kind: "hat", name: "Top hat", soon: true }, { id: "shades", kind: "hat", name: "Sunglasses", soon: true },
+    { id: "wizard", kind: "hat", name: "Wizard hat", soon: true }, { id: "chef", kind: "hat", name: "Chef's hat", soon: true }, { id: "bobble", kind: "hat", name: "Bobble hat", soon: true }, { id: "cowboy", kind: "hat", name: "Cowboy hat", soon: true },
+  ];
 
   let dogMesh = null, accMesh = null, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
   const SPARKS = 5;
@@ -432,6 +442,38 @@
     try { await navigator.clipboard.writeText(url); toast("Link copied"); } catch (e) { toast(url, 6000); } // no clipboard: show the link to copy by hand
   };
 
+  /* ================= Shop previews ================= */
+  // One small offscreen renderer draws every cosmetic in turn, spinning and bobbing, and copies each frame into its
+  // card's canvas. It only exists once the shop has been opened, and only runs while the shop is open.
+  let PV = null;
+  function shopModel(it) {
+    const g = new T.Group(), mat = (c) => new T.MeshLambertMaterial({ color: c });
+    const box = (x, y, z, w, h, d, c, ry, rz) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat(c)); m.position.set(x, y, z); m.rotation.set(0, ry || 0, rz || 0); g.add(m); return m; };
+    if (it.id === "rainbow") { // a blocky ring of rainbow links with a gold tag
+      const N = 14; for (let k = 0; k < N; k++) { const a = (k / N) * Math.PI * 2; box(Math.sin(a) * 0.2, 0, Math.cos(a) * 0.2, 0.1, 0.075, 0.05, `hsl(${(k / N) * 360}, 90%, 55%)`, a); }
+      box(0, -0.075, 0.215, 0.07, 0.07, 0.02, "#ffd23a"); box(0, -0.03, 0.212, 0.02, 0.04, 0.015, "#c89a1a"); g.rotation.x = 1.0; // tipped towards you so it reads as a ring
+    } else (HATS[it.id] || []).forEach((p) => box(p[0], p[1] + p[4] / 2, p[2], p[3], p[4], p[5], p[6]));
+    const bb = new T.Box3().setFromObject(g), c = bb.getCenter(new T.Vector3()), sz = bb.getSize(new T.Vector3());
+    const inner = new T.Group(); g.children.slice().forEach((m) => inner.add(m)); inner.position.sub(c); inner.rotation.copy(g.rotation); g.rotation.set(0, 0, 0); g.add(inner);
+    g.userData.size = Math.max(sz.x, sz.y, sz.z); g.visible = false; return g;
+  }
+  function drawShop(t) {
+    const canvases = SHOPEL.querySelectorAll("canvas"); if (!canvases.length) return;
+    if (!PV) {
+      const r = new T.WebGLRenderer({ antialias: true, alpha: true }); r.setPixelRatio(1); r.setSize(200, 200, false); r.outputColorSpace = renderer.outputColorSpace;
+      const sc = new T.Scene(); sc.add(new T.HemisphereLight("#ffffff", "#8a7a6a", 2.2)); const sun = new T.DirectionalLight("#ffffff", 2.0); sun.position.set(2, 3, 4); sc.add(sun);
+      PV = { r, sc, cam: new T.PerspectiveCamera(32, 1, 0.01, 20), models: [] };
+    }
+    if (PV.models.length !== SHOP.length) { PV.models.forEach((m) => PV.sc.remove(m)); PV.models = SHOP.map((it) => { const m = shopModel(it); PV.sc.add(m); return m; }); }
+    canvases.forEach((cv) => {
+      const i = +cv.dataset.i, m = PV.models[i], it = SHOP[i]; if (!m) return;
+      PV.models.forEach((x) => (x.visible = x === m));
+      const spin = it.soon ? 0.6 : 1.2; m.rotation.y = t * spin + i; m.position.y = Math.sin(t * 2 + i) * m.userData.size * 0.06;
+      const D = m.userData.size * 2.6; PV.cam.position.set(0, D * 0.28, D); PV.cam.lookAt(0, 0, 0);
+      PV.r.render(PV.sc, PV.cam); const ctx = cv.getContext("2d"); ctx.clearRect(0, 0, 200, 200); ctx.drawImage(PV.r.domElement, 0, 0, 200, 200);
+    });
+  }
+
   /* ================= Search ================= */
   $("find").addEventListener("submit", (e) => {
     e.preventDefault(); const q = norm($("q").value); if (!q) return;
@@ -446,6 +488,8 @@
   function closeAll() { SHEETS.forEach((s) => ($(s).hidden = true)); }
   function open(id) { const was = !$(id).hidden; closeAll(); $("card").hidden = true; if (!was) $(id).hidden = false; }
   document.querySelectorAll("[data-open]").forEach((b) => (b.onclick = () => open(b.dataset.open)));
+  // "terms" links open How it works with the terms dropdown already open
+  document.querySelectorAll("[data-terms]").forEach((b) => (b.onclick = () => { open("info"); const t = $("terms"); t.open = true; requestAnimationFrame(() => t.scrollIntoView({ block: "start", behavior: "smooth" })); }));
   SHEETS.forEach((s) => ($(s).querySelector("[data-close]").onclick = () => ($(s).hidden = true)));
   let toastT = 0; function toast(msg, ms) { const el = $("toast"); el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), ms || 2200); }
   let hinted = false; function hideHint() { if (hinted) return; hinted = true; $("hint").style.opacity = 0; }
@@ -462,23 +506,49 @@
     const shop = DATA.shop || {};
     $("shopBtn").hidden = !shop.enabled;
     $("shopNote").textContent = shop.note || "";
-    $("shopList").innerHTML = (shop.items || []).map((it) => it.link ? `<li><a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.name)}<b>${esc(it.price)}</b></a></li>` : `<li><span>${esc(it.name)}<b>Coming soon</b></span></li>`).join("");
+    SHOP = (shop.items && shop.items.length ? shop.items : SHOP_DEFAULT).filter((it) => it && (it.id === "rainbow" || HATS[it.id]));
+    const card = (it, i) => {
+      const live = !it.soon && it.link && /^https:\/\//.test(it.link);
+      if (it.soon) return `<li class="soon"><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas><span class="ribbon">Coming soon</span></div><div class="nm">${esc(it.name)}</div><span class="buy off">🔒 Not on sale yet</span></li>`;
+      const btn = live ? `<a class="buy" href="${esc(it.link)}" target="_blank" rel="noopener">Buy on Ko-fi · ${esc(it.price || "")}</a>` : `<span class="buy off">Opens soon</span>`;
+      return `<li><div class="pv"><canvas data-i="${i}" width="200" height="200" aria-hidden="true"></canvas></div><div class="nm">${esc(it.name)}${it.price ? ` <em>${esc(it.price)}</em>` : ""}</div>${btn}</li>`;
+    };
+    $("shopList").innerHTML = SHOP.map((it, i) => (it.soon ? "" : card(it, i))).join("");
+    $("soonList").innerHTML = SHOP.map((it, i) => (it.soon ? card(it, i) : "")).join("");
+    $("soonH").hidden = !SHOP.some((it) => it.soon);
     $("demo").hidden = !DEMO;
+    // The AdSense script loads from index.html. An extra ad unit in the Daily log only appears if a slot id is set.
     const ads = DATA.ads || {};
-    if (ads.adsenseClient && !DEMO) {
-      const s = document.createElement("script"); s.async = true; s.crossOrigin = "anonymous";
-      s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ads.adsenseClient)}`; document.head.appendChild(s);
+    if (ads.adsenseClient && ads.slot && !DEMO) {
       const box = $("adLog"); box.hidden = false;
-      box.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-client="${esc(ads.adsenseClient)}" data-ad-slot="${esc(ads.slot || "")}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      box.innerHTML = `<ins class="adsbygoogle" style="display:block" data-ad-client="${esc(ads.adsenseClient)}" data-ad-slot="${esc(ads.slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins>`;
+      try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { /* ads blocked */ }
     }
   }
+
+  // Google's anchor ad (the slim banner pinned to the top or bottom of the screen) sits over the page, so when one is
+  // showing, the top bar, buttons and panels move out of its way. Checked once a second; cheap, and no layout reads per frame.
+  let adTop = 0, adBottom = 0;
+  setInterval(() => {
+    let top = 0, bottom = 0;
+    document.querySelectorAll("ins.adsbygoogle, .adsbygoogle-noablate, [data-anchor-status]").forEach((el) => {
+      if (el.closest("#adLog")) return;
+      const cs = getComputedStyle(el); if (cs.position !== "fixed" || cs.display === "none" || cs.visibility === "hidden") return;
+      const r = el.getBoundingClientRect(); if (r.height < 20 || r.width < 200) return;
+      if (r.top < 8) top = Math.max(top, r.bottom); else if (r.bottom > innerHeight - 8) bottom = Math.max(bottom, innerHeight - r.top);
+    });
+    if (top !== adTop || bottom !== adBottom) {
+      adTop = top; adBottom = bottom; const st = document.documentElement.style;
+      st.setProperty("--ad-top", Math.round(top) + "px"); st.setProperty("--ad-bottom", Math.round(bottom) + "px");
+      requestAnimationFrame(measureGap);
+    }
+  }, 1000);
 
   /* ================= Loop ================= */
   function resize() { requestAnimationFrame(measureGap); W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H; camera.fov = W < H ? 58 : 46; camera.updateProjectionMatrix(); }
   addEventListener("resize", resize);
   let viewOff = 0, shadowDirty = true, lightKey = "";
-  const CARD = $("card"), TOPBAR = document.querySelector(".top"), GAP = { mid: 0 };
+  const SHOPEL = $("shop"), CARD = $("card"), TOPBAR = document.querySelector(".top"), GAP = { mid: 0 };
   // measured only when the card opens or the screen turns, never per frame (reading layout every frame is slow)
   function measureGap() { if (CARD.hidden) return; GAP.mid = (TOPBAR.getBoundingClientRect().bottom + CARD.getBoundingClientRect().top) / 2; }
   const PERF = { js: 0, gap: 16, last: 0 };
@@ -505,6 +575,7 @@
     else if (selected && trackSel && !fly && !selected.isMarsh && selected.act.pose !== "lie" && selected.act.pose !== "sit") { cam.tx += (selected.wx - cam.tx) * 0.05; cam.tz += (selected.wz - cam.tz) * 0.05; }
     if (selected && !selected.isMarsh) K.beam.position.set(selected.wx, 7, selected.wz);
     animBuilds.forEach((f) => f(t)); updateBuilds(t);
+    if (!SHOPEL.hidden) drawShop(t);
     // on phones, keep the picked dog in the middle of the clear gap between the top bar and the card
     const off = !CARD.hidden && W < 700 && H > W ? H / 2 - GAP.mid : 0; viewOff += (off - viewOff) * 0.12;
     if (Math.abs(viewOff) > 0.5) camera.setViewOffset(W, H, 0, viewOff, W, H); else camera.clearViewOffset();

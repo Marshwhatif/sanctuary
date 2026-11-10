@@ -1,5 +1,7 @@
 # Marsh's Dog Sanctuary website
 
+Live at **https://marshtown.com**: GitHub Pages, with the domain registered at Cloudflare (DNS only, grey cloud).
+
 A one-page 3D site where followers find their dog. It uses the same 3D kit as the videos (`lib/lowpoly-*.js`, copied from `template/assets/js/`). All of the content comes from one file, `data/sanctuary.json`.
 
 - `index.html`, `site/style.css`, `site/app.js`: the page.

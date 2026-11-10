@@ -7,10 +7,16 @@
   <meta name="description" content="1 follow = 1 dog. Find your dog in Marsh's sanctuary and see what it's up to today.">
   <meta property="og:title" content="Marsh's Dog Sanctuary">
   <meta property="og:description" content="1 follow = 1 dog. Find yours and see what it's up to today.">
-  <meta property="og:image" content="img/marsh.png">
+  <meta property="og:image" content="https://marshtown.com/img/marsh.png">
+  <meta property="og:url" content="https://marshtown.com/">
+  <link rel="canonical" href="https://marshtown.com/">
   <meta name="theme-color" content="#5bb8ea">
   <link rel="icon" href="img/favicon.png">
-  <link rel="stylesheet" href="site/style.css?v=7">
+  <!-- Google AdSense. Ads are non-personalised (many visitors are children); Google's consent banner handles UK/EU consent. -->
+  <meta name="google-adsense-account" content="ca-pub-5359778683285593">
+  <script>(window.adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds = 1;</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5359778683285593" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="site/style.css?v=13">
 </head>
 <body>
   <canvas id="view" aria-label="3D view of Marsh's Dog Sanctuary"></canvas>
@@ -63,43 +69,91 @@
   </section>
 
   <section id="info" class="sheet" hidden>
-    <button class="x" data-close aria-label="Close">×</button>
+    <button class="x" data-close aria-label="Close"><span>×</span></button>
     <h2>1 follow = 1 dog</h2>
     <ul class="rules">
       <li><b>Follow</b> <span class="ig"></span> on Instagram and a dog moves into the sanctuary for you.</li>
       <li><b>Comment your breed</b> on the newest sanctuary reel. Changed your mind? Comment again any time.</li>
-      <li><b>The first <span id="goldN">100</span> followers</b> get a gold collar 🥇, and followers <span id="silverA">101</span> to <span id="silverB">1,000</span> get silver 🥈. They're yours for keeps.</li>
+      <li><b>The first <span id="goldN">100</span> followers</b> get a gold collar 🥇, and followers <span id="silverA">101</span> to <span id="silverB">1,000</span> get silver 🥈, and they stay with your dog.</li>
       <li><b>The top comment</b> on each reel decides what Marsh builds next.</li>
       <li>The sanctuary updates with every new video, so new dogs show up then, not straight away.</li>
       <li>Don't want to be here? DM <span class="ig"></span> and your dog goes home.</li>
     </ul>
     <p class="small">Drag to look around, pinch or scroll to zoom, two fingers or right-drag to move. Tap a dog to see who it belongs to.</p>
+    <details class="terms" id="terms">
+      <summary>Terms &amp; refunds</summary>
+      <div class="terms-body">
+        <p class="small">Last updated 10 November 2026. Plain-English terms for marshtown.com and the upgrades shop.</p>
+        <h4>Who we are</h4>
+        <p>Marsh's Dog Sanctuary (marshtown.com) is run by the creator of <span class="ig"></span> on Instagram, in the UK. Contact us by Instagram DM to <span class="ig"></span> or through our Ko-fi page.</p>
+        <h4>The sanctuary</h4>
+        <ul>
+          <li>It's free and just for fun. The dogs, buildings and town are <b>virtual</b>. No real animals are cared for here, and money spent here doesn't go to an animal charity.</li>
+          <li>New dogs and changes appear when we update the site, usually with each new video, not straight away.</li>
+          <li>We pick the closest look we have to the breed you comment. We can rename, change or remove anything that's rude, offensive or breaks Instagram's rules.</li>
+          <li>We may change, pause or stop the sanctuary, the website or the videos at any time.</li>
+        </ul>
+        <h4>Upgrades (collars, hats)</h4>
+        <ul>
+          <li>Upgrades are <b>cosmetic only</b>. They change how your dog looks on this website and nothing else: no extra features, no real-world item, and no say in the votes. Gold and silver collars can't be bought.</li>
+          <li>Payment is handled by Ko-fi, and their terms apply to the payment itself.</li>
+          <li><b>Put your Instagram @name in the Ko-fi message</b>, and make sure you already have a dog in the sanctuary (follow <span class="ig"></span> and comment your breed first).</li>
+          <li>We add upgrades with the next sanctuary update, normally within a few days and always within 14 days.</li>
+          <li>An upgrade stays on your dog for as long as the sanctuary is running.</li>
+        </ul>
+        <h4>Refunds</h4>
+        <ul>
+          <li>Upgrades are digital content. When you buy, you ask us to add yours straight away and agree that you <b>lose your 14-day right to cancel once it has been added</b>. After that we don't give refunds for changing your mind.</li>
+          <li>We <b>will</b> refund you in full if we can't add your upgrade within 14 days (for example, we can't find your dog, or your @name was missing and we can't reach you), if it doesn't appear or work as described and we can't fix it, or if we close the sanctuary within 30 days of your purchase.</li>
+          <li>To ask about a refund, DM <span class="ig"></span> with your Ko-fi receipt.</li>
+          <li>None of this affects your legal rights as a consumer.</li>
+        </ul>
+        <h4>Under 18?</h4>
+        <p>Please ask a parent or guardian before buying anything.</p>
+        <h4>Your name, cookies and ads</h4>
+        <p>When you join, we show your public Instagram username, your breed and what your dog is up to. This site doesn't ask for or store any other personal details, and payments are handled by Ko-fi under their privacy policy. Want your dog removed? DM <span class="ig"></span> and it goes home.</p>
+        <p>We count visits with Cloudflare Web Analytics, which uses no cookies and doesn't identify you.</p>
+        <p>The site shows ads from Google AdSense, which help pay for the sanctuary. We ask Google for <b>non-personalised ads only</b>, so they aren't based on your browsing history. Google and its partners may still use cookies to show ads, limit how often you see the same one, and stop fraud, so visitors in the UK and EU are asked for consent first. You can read <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">how Google uses information from sites that use its services</a>, and turn off personalised advertising at any time in <a href="https://adssettings.google.com" target="_blank" rel="noopener">Google's ad settings</a>.</p>
+        <h4>Changes to these terms</h4>
+        <p>We may update these terms. The version on this page when you buy is the one that applies to that purchase.</p>
+      </div>
+    </details>
   </section>
 
   <section id="log" class="sheet" hidden>
-    <button class="x" data-close aria-label="Close">×</button>
+    <button class="x" data-close aria-label="Close"><span>×</span></button>
     <h2>Daily log</h2>
     <ol id="logList" class="log"></ol>
     <div id="adLog" class="ad" hidden></div>
   </section>
 
   <section id="shop" class="sheet" hidden>
-    <button class="x" data-close aria-label="Close">×</button>
+    <button class="x" data-close aria-label="Close"><span>×</span></button>
     <h2>Dress up your dog</h2>
-    <p class="small" id="shopNote"></p>
+    <div class="callout">
+      <b>Write your Instagram @name in the Ko-fi message box</b>
+      <span>Checkout is on Ko-fi. Your @name is how we know whose dog to dress up. Upgrades appear with the next video.</span>
+    </div>
+    <p class="small terms-line">Cosmetic only. No refunds once your upgrade has been added (your legal rights aren't affected). By buying you agree to our <button type="button" class="linkish" data-terms>terms</button>.</p>
+    <h3 class="shop-h">Available now</h3>
     <ul id="shopList" class="shop"></ul>
-    <p class="small">Put your Instagram @name in the checkout. Upgrades appear with the next video.</p>
+    <h3 class="shop-h soon-h" id="soonH">Coming soon <small>· not on sale yet</small></h3>
+    <ul id="soonList" class="shop"></ul>
+    <p class="small" id="shopNote"></p>
   </section>
 
   <div id="toast" class="toast" hidden></div>
   <div id="loading" class="loading">Opening the gates…</div>
 
-  <script src="lib/three.min.js?v=7"></script>
-  <script src="lib/lowpoly.js?v=7"></script>
-  <script src="lib/lowpoly-blocky.js?v=7"></script>
-  <script src="lib/lowpoly-marsh.js?v=7"></script>
-  <script src="lib/lowpoly-sanctuary.js?v=7"></script>
-  <script src="lib/lowpoly-town.js?v=7"></script>
-  <script src="site/app.js?v=7"></script>
+  <script src="lib/three.min.js?v=13"></script>
+  <script src="lib/lowpoly.js?v=13"></script>
+  <script src="lib/lowpoly-blocky.js?v=13"></script>
+  <script src="lib/lowpoly-marsh.js?v=13"></script>
+  <script src="lib/lowpoly-sanctuary.js?v=13"></script>
+  <script src="lib/lowpoly-town.js?v=13"></script>
+  <script src="site/app.js?v=13"></script>
+  <!-- Cloudflare Web Analytics: anonymous visit counts, no cookies -->
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "b8894d998475450e940ced54ff0926d3"}'></script>
+  <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
