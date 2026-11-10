@@ -450,6 +450,7 @@
     if (down) down.moved += Math.abs(dx) + Math.abs(dy);
     if (down && down.moved < 4) return;
     stopAuto();
+    if (e.pointerType === "touch" && ptrs.size >= 2) return; // two-finger touch is handled by the touch events below
     if (ptrs.size === 2 && pinch0) {
       const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
       cam.dist = pinch0.dist * (pinch0.d / Math.max(20, d)); pan(mx - pinch0.mx, my - pinch0.my); pinch0.mx = mx; pinch0.my = my;
@@ -461,6 +462,17 @@
     if (down && ptrs.size === 0) { if (down.moved < 8 && performance.now() - down.t < 450) pick(e.clientX, e.clientY); down = null; }
   };
   canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", up);
+  // Two-finger pinch (zoom) and drag (pan) on phones, read straight from the touch events: this is what moves you between
+  // the flat map and 3D, so it mustn't depend on pointer-event quirks.
+  let tp = null;
+  const tpOf = (e) => { const a = e.touches[0], b = e.touches[1]; return { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), mx: (a.clientX + b.clientX) / 2, my: (a.clientY + b.clientY) / 2 }; };
+  canvas.addEventListener("touchstart", (e) => { if (e.touches.length === 2) { tp = { ...tpOf(e), dist: cam.dist }; if (down) down.moved = 99; } }, { passive: true });
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 2 || !tp) return; e.preventDefault(); stopAuto(); hideHint();
+    const n = tpOf(e); cam.dist = tp.dist * (tp.d / Math.max(20, n.d)); pan(n.mx - tp.mx, n.my - tp.my); tp.mx = n.mx; tp.my = n.my;
+  }, { passive: false });
+  canvas.addEventListener("touchend", (e) => { if (e.touches.length < 2) tp = null; }, { passive: true });
+  canvas.addEventListener("touchcancel", () => (tp = null), { passive: true });
   canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   canvas.addEventListener("wheel", (e) => { e.preventDefault(); stopAuto(); cam.dist *= Math.exp(e.deltaY * 0.0012); hideHint(); }, { passive: false });
   function pan(dx, dy) { trackSel = false; const k = cam.dist * 0.0016, c = Math.cos(cam.yaw), s = Math.sin(cam.yaw); cam.tx -= (dx * c + dy * s) * k; cam.tz -= (-dx * s + dy * c) * k; }
@@ -481,7 +493,7 @@
     if (cam.dist < 50) DOGS.forEach((d) => { const dd = Math.hypot(d.wx - cp.x, d.wy - cp.y, d.wz - cp.z); if (dd < range || d === selected) list.push([dd, d]); });
     else if (selected && !selected.isMarsh) list.push([0, selected]);
     list.sort((a, b) => a[0] - b[0]);
-    const show = list.slice(0, 40); if (selected && selected !== MARSH && !show.some((x) => x[1] === selected)) show.push([0, selected]);
+    const show = list.slice(0, phone ? 14 : 40); // phones: fewer name tags (each one is moved on every frame) if (selected && selected !== MARSH && !show.some((x) => x[1] === selected)) show.push([0, selected]);
     const md = Math.hypot(MARSH.wx - cp.x, MARSH.wy - cp.y, MARSH.wz - cp.z); if (md < 60 || selected === MARSH) show.push([md, MARSH]);
     POOL.forEach((el, i) => {
       const it = show[i]; if (!it) { el.hidden = true; el.dog = null; return; }
@@ -677,7 +689,7 @@
   }
 
   // iPhone Safari ignores user-scalable=no, so stop its pinch gesture zooming the page (pinches on the 3D view still zoom the camera)
-  ["gesturestart", "gesturechange"].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+  ["gesturestart", "gesturechange"].forEach((ev) => document.addEventListener(ev, (e) => { if (!e.target.closest || !e.target.closest("#view")) e.preventDefault(); }, { passive: false }));
   document.addEventListener("touchmove", (e) => { if (e.touches.length > 1 && !e.target.closest("#view")) e.preventDefault(); }, { passive: false });
 
   /* ================= The flat map ================= */
@@ -739,9 +751,19 @@
     c.position.set(cam.tx, 400, cam.tz); c.up.set(-Math.sin(cam.yaw), 0, -Math.cos(cam.yaw)); c.lookAt(cam.tx, 0, cam.tz);
     const op = MAP.fade; [MAP.plane, MAP.dots, MAP.rings, MAP.marsh, MAP.marshRing, MAP.sel, ...MAP.signs].forEach((m) => (m.material.opacity = op));
     MAP.scene.background = MAP.full ? MAP.bg : null;
+    // building names never shrink below about 20 px tall on screen (they grow past their roof when zoomed right out)
+    const pxPerM = H / (2 * halfH); MAP.signs.forEach((m) => { const k = Math.max(1, 20 / (m.geometry.parameters.height * pxPerM)); m.scale.set(k, 1, k); });
     MAP.marsh.position.set(MARSH.wx || 0, 0.7, MARSH.wz || 0); MAP.marshRing.position.set(MARSH.wx || 0, 0.65, MARSH.wz || 0);
     const sd = selected; MAP.sel.visible = !!sd;
     if (sd) { const p = 1 + Math.sin(now / 160) * 0.12, s = (sd.isMarsh ? 3.4 : (sd.scale || 1) * 2.4) * p; MAP.sel.scale.set(s, 1, s); MAP.sel.position.set(sd.wx, 0.8, sd.wz); }
+  }
+
+  // ?debug shows a live speed readout (for checking on a real phone)
+  if (params.has("debug")) {
+    const el = document.createElement("div"); el.id = "debug"; document.body.appendChild(el); let f0 = FRAME, t0 = performance.now();
+    (function tick() { const now = performance.now(); if (now - t0 > 500) { const fps = ((FRAME - f0) * 1000) / (now - t0); f0 = FRAME; t0 = now; // frames actually drawn
+      el.textContent = `${fps.toFixed(0)} fps  ${PERF.js.toFixed(1)} ms js\n${MAP.full ? "2D map" : MAP.fade > 0 ? "fading" : OVER ? "3D far" : "3D"}  zoom ${cam.dist.toFixed(0)}\n${renderer.info.render.calls} calls  ${(renderer.info.render.triangles / 1000).toFixed(0)}k tris\npx ${renderer.getPixelRatio()}  ${W}x${H}  shadows ${K.sun.castShadow ? "on" : "off"}`; }
+      requestAnimationFrame(tick); })();
   }
 
   /* ================= Boot ================= */

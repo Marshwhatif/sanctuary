@@ -174,3 +174,13 @@ button { cursor: pointer; border: 0; }
 .terms-line { margin: 8px 0 0; }
 .linkish { background: none; padding: 0; color: #2f6fb8; text-decoration: underline; font-weight: 700; font-size: inherit; }
 .terms-body a { color: #2f6fb8; font-weight: 700; }
+
+/* Phones: the frosted-glass blur behind the panels makes the browser re-blur the 3D view under every panel on every
+   frame, which is very costly on phone graphics chips. Use solid panels instead, and plain name tags without glows. */
+@media (pointer: coarse) {
+  .top, .card, .sheet, .tools button, .dock, .pill, .toast { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, 0.96); }
+  .tag { box-shadow: none; will-change: transform; }
+  .tag.gold { box-shadow: 0 0 0 2px #e8a000; }
+  .tag.silver { box-shadow: 0 0 0 2px #a8b4c4; }
+}
+#debug { position: fixed; left: 8px; bottom: 90px; z-index: 50; padding: 6px 8px; border-radius: 8px; background: rgba(0, 0, 0, 0.75); color: #fff; font: 600 11px/1.35 ui-monospace, Menlo, monospace; white-space: pre; pointer-events: none; }
