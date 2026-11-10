@@ -489,12 +489,18 @@
   let W = innerWidth, H = innerHeight;
   function toScreen(x, y, z) { V.set(x, y, z).project(MAP.full ? MAP.cam : camera); return V.z > 1 ? null : { x: (V.x * 0.5 + 0.5) * W, y: (-V.y * 0.5 + 0.5) * H }; }
   function updateTags() {
-    const cp = camera.position, range = 30, list = [];
-    if (cam.dist < 50) DOGS.forEach((d) => { const dd = Math.hypot(d.wx - cp.x, d.wy - cp.y, d.wz - cp.z); if (dd < range || d === selected) list.push([dd, d]); });
+    // Tags go on the nearest dogs that are actually on screen. (Picking the nearest to the camera alone chose dogs below
+    // or behind it, off the bottom of the screen, so the dogs you could see got none.)
+    const cp = camera.position, range = clamp(cam.dist * 1.3, 14, 45), list = [];
+    if (cam.dist < 50 && !MAP.full) DOGS.forEach((d) => {
+      if (d === selected) { list.push([0, d]); return; }
+      const dd = Math.hypot(d.wx - cp.x, d.wy - cp.y, d.wz - cp.z); if (dd > range) return;
+      const sp = toScreen(d.wx, d.wy + 0.35, d.wz); if (sp && sp.x > -20 && sp.x < W + 20 && sp.y > 40 && sp.y < H - 20) list.push([dd, d]);
+    });
     else if (selected && !selected.isMarsh) list.push([0, selected]);
     list.sort((a, b) => a[0] - b[0]);
     const show = list.slice(0, phone ? 14 : 40); // phones: fewer name tags (each one is moved on every frame) if (selected && selected !== MARSH && !show.some((x) => x[1] === selected)) show.push([0, selected]);
-    const md = Math.hypot(MARSH.wx - cp.x, MARSH.wy - cp.y, MARSH.wz - cp.z); if (md < 60 || selected === MARSH) show.push([md, MARSH]);
+    const md = Math.hypot(MARSH.wx - cp.x, MARSH.wy - cp.y, MARSH.wz - cp.z); if ((md < range * 1.5 && !MAP.full) || selected === MARSH) show.push([md, MARSH]);
     POOL.forEach((el, i) => {
       const it = show[i]; if (!it) { el.hidden = true; el.dog = null; return; }
       const [dd, d] = it, s = toScreen(d.wx, d.wy + 0.35, d.wz);
