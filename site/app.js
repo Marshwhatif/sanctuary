@@ -277,23 +277,29 @@
     const farStride = cam.dist > 60 ? 4 : 3; // from the overview the dogs are tiny, so a quarter of them move each frame
     // Zoomed right out, every dog is a few pixels, and phones choke on thousands of tiny boxes: each dog becomes 4 boxes,
     // with no blob shadows, medals or details, and phones draw at 1x. Close in, the full dogs come back.
-    const over = OVER ? cam.dist > 62 : cam.dist > 72;
+    // (No change of resolution and no shadow redraw here: both caused a visible hitch. The shadow map keeps the detailed
+    // kennels' shadows, which still line up.)
+    const over = OVER ? cam.dist > MAP_3D + 1 : cam.dist > MAP_3D + 5;
+    let force = false;
     if (over !== OVER) {
-      OVER = over; coreMesh.visible = detMesh.visible = blobMesh.visible = !over; farMesh.visible = over; CITY.kennelHi.visible = !over; CITY.kennelLo.visible = over; shadowDirty = true; if (medalMesh) medalMesh.visible = sparkMesh.visible = !over; if (accMesh) accMesh.visible = !over;
-      if (phone) { renderer.setPixelRatio(over ? 1 : pixelRatio); resize(); }
-      DOGS.forEach((d) => (d.wx = undefined)); // move everyone into place on the next frame
+      OVER = over; coreMesh.visible = detMesh.visible = blobMesh.visible = !over; farMesh.visible = over; CITY.kennelHi.visible = !over; CITY.kennelLo.visible = over; if (medalMesh) medalMesh.visible = sparkMesh.visible = !over; if (accMesh) accMesh.visible = !over;
+      force = true; // move every dog into place this frame
     }
     let cur = 0, colDirty = false;
+    if (MAP.full) { // flat map only: just move the dots (a quarter of the dogs each frame)
+      for (let i = 0; i < DOGS.length; i++) { const d = DOGS[i]; if (d !== focus && d.wx !== undefined && (i + FRAME) % 4) continue; const o = place(d, t); d.wx = o.x; d.wz = o.z; d.wy = 1; mapDot(d, i); }
+      MAP.dots.instanceMatrix.needsUpdate = MAP.rings.instanceMatrix.needsUpdate = true; DOGS.forEach((d) => (d.upd = false)); return;
+    }
     for (let i = 0; i < DOGS.length; i++) {
       const d = DOGS[i];
       const known = d.wx !== undefined, dist2 = known ? (d.wx - cp0.x) ** 2 + (d.wz - cp0.z) ** 2 : 0;
       const seen = !known || d === focus || FRU.intersectsSphere(SPH.set(vC.set(d.wx, d.wy * 0.5, d.wz), 1.6 * d.scale));
       const far = dist2 > FAR2; d.far = far || !seen;
-      const wantDet = seen && (d === focus || dist2 < NEAR2) && cur + d.rig.det.length <= DETCAP;
-      if (d !== focus && known && (!seen ? (i + FRAME) % 8 : far && (i + FRAME) % farStride)) { d.upd = false; d.detAt = -1; continue; }
+      const wantDet = seen && !OVER && (d === focus || dist2 < NEAR2) && cur + d.rig.det.length <= DETCAP;
+      if (!force && d !== focus && known && (!seen ? (i + FRAME) % 8 : far && (i + FRAME) % farStride)) { d.upd = false; d.detAt = -1; continue; }
       d.upd = true;
       const o = place(d, t), rg = d.rig, s = d.scale * (d === focus ? 1 + Math.max(0, Math.sin(t * 6)) * 0.08 : 1);
-      d.wx = o.x; d.wz = o.z; d.wy = o.y + (rg.anchor.tag * (1 - o.drop * 0.25) + o.hop) * s;
+      d.wx = o.x; d.wz = o.z; d.wy = o.y + (rg.anchor.tag * (1 - o.drop * 0.25) + o.hop) * s; if (MAP.fade > 0) mapDot(d, i);
       mDog.makeTranslation(o.x, o.y + o.hop * s, o.z).multiply(mTmp.makeRotationY(o.yaw)).multiply(mTmp.makeScale(s, s, s));
       if (o.pitch) { const pv = rg.pivots[o.pitch < 0 ? 5 : 3]; mDog.multiply(mTmp.makeTranslation(0, pv.y, pv.z)).multiply(mTmp.makeRotationX(o.pitch)).multiply(mTmp.makeTranslation(0, -pv.y, -pv.z)); }
       POSE.drop = o.drop; POSE.sit = o.pitch < 0 ? 1 : 0; POSE.run = o.run; POSE.ph = o.ph;
@@ -344,6 +350,7 @@
       if (f.dog !== d) { f.dog = d; drawFace(f, d); }
       vP.set(a.medal[0], a.medal[1], a.medal[2] + 0.017); vS.set(0.145, 0.145, 1); mPart.compose(vP, qI, vS); f.matrix.multiplyMatrices(d.m, mPart); f.matrixWorldNeedsUpdate = true; f.visible = true;
     });
+    if (MAP.fade > 0) MAP.dots.instanceMatrix.needsUpdate = MAP.rings.instanceMatrix.needsUpdate = true;
     if (OVER) farMesh.instanceMatrix.needsUpdate = true; else { coreMesh.instanceMatrix.needsUpdate = true; blobMesh.instanceMatrix.needsUpdate = true; } detMesh.count = cur; if (cur) detMesh.instanceMatrix.needsUpdate = true; if (colDirty) detMesh.instanceColor.needsUpdate = true; if (rainbow) coreMesh.instanceColor.needsUpdate = true;
     if (accMesh) accMesh.instanceMatrix.needsUpdate = true;
   }
@@ -377,22 +384,56 @@
       let pi = PLOTS.findIndex((p) => p.for === b.type); if (pi < 0 || used.has(pi)) pi = PLOTS.findIndex((p, i) => !p.for && !used.has(i));
       if (pi < 0) return; used.add(pi); const p = PLOTS[pi];
       const set = f(p.x, p.z, p.yaw); set.group.visible = true; LOD.push(set); BUILT[b.type] = set; if (set.roof) ROOFS.push(set);
+      roofSign(set, SIGN_NAMES[b.type] || b.type.toUpperCase());
     });
     // the next plot to fill gets the building site and its crane
     const next = PLOTS.findIndex((p, i) => !used.has(i));
-    if (next >= 0) { const p = PLOTS[next]; const site = K.buildSite(p.x, p.z, p.yaw); site.group.visible = true; site.always = true; LOD.push(site); } // the crane keeps swinging from afar
+    if (next >= 0) { const p = PLOTS[next]; const site = K.buildSite(p.x, p.z, p.yaw); site.group.visible = true; site.always = true; LOD.push(site); // the crane keeps swinging from afar
+      flatSign("COMING SOON", p.x, 0.04, p.z + 6.95, 8.5, 1.9, "#e8a320", "#3a2a10"); } // painted on the path in front of the site
     animBuilds.push(CITY.anim);
   }
 
+  // Flat signs on the roofs, facing the sky, so each building can be read from the top-down map (and from above in 3D)
+  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA" };
+  const SIGNS = [];
+  function flatSign(text, x, y, z, w, h, bg, fg) {
+    const c = document.createElement("canvas"); c.width = 1024; c.height = Math.max(64, Math.round((1024 * h) / w)); const g = c.getContext("2d");
+    g.fillStyle = bg; g.fillRect(0, 0, c.width, c.height); g.strokeStyle = "rgba(255,255,255,0.85)"; g.lineWidth = c.height * 0.07; g.strokeRect(g.lineWidth, g.lineWidth, c.width - g.lineWidth * 2, c.height - g.lineWidth * 2);
+    let fs = c.height * 0.62; g.font = `900 ${fs}px system-ui, -apple-system, "Segoe UI", sans-serif`; const tw = g.measureText(text).width; if (tw > c.width * 0.86) { fs *= (c.width * 0.86) / tw; g.font = `900 ${fs}px system-ui, -apple-system, "Segoe UI", sans-serif`; }
+    g.fillStyle = fg; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, c.width / 2, c.height * 0.54);
+    const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 4;
+    const m = new T.Mesh(new T.PlaneGeometry(w, h).rotateX(-Math.PI / 2), new T.MeshLambertMaterial({ map: tex, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+    m.position.set(x, y, z); m.receiveShadow = true; scene.add(m); SIGNS.push(m); return m;
+  }
+  function roofSign(set, text) {
+    set.group.updateWorldMatrix(true, true);
+    const bb = new T.Box3().setFromObject(set.roof || set.group), w = bb.max.x - bb.min.x, d = bb.max.z - bb.min.z, sw = w * 0.82, sh = Math.min(d * 0.4, sw * 0.28);
+    set.sign = flatSign(text, (bb.min.x + bb.max.x) / 2, bb.max.y + 0.05, (bb.min.z + bb.max.z) / 2, sw, sh, "#2f7a4a", "#fff8e6");
+  }
+
   /* ================= Camera: drag to orbit, pinch or wheel to zoom, two fingers or right-drag to pan ================= */
-  const HOME = { tx: 0, tz: -27, dist: 100, yaw: 0, pitch: 0.82 }; // from the gate side, so every building faces you
+  // Zoomed out past MAP_2D the sanctuary is a flat map (drawn once at load) with dogs as dots: smooth on any phone however
+  // many dogs there are. Zoomed in past MAP_3D it's the full 3D world. In between, the camera tilts and the map fades.
+  const MAP_3D = 58, MAP_2D = 72, mapK = () => { const u = clamp((cam.dist - MAP_3D) / (MAP_2D - MAP_3D), 0, 1); return u * u * (3 - 2 * u); };
+  const HOME = { tx: 0, tz: -27, dist: 105, yaw: 0, pitch: 0.82 }; // the whole sanctuary, as the flat map
+  const INTRO = { tx: 0, tz: -14, dist: 50, yaw: 0, pitch: 0.86 };  // first load: the map, then down into 3D by the gate
   const cam = { tx: 0, ty: 0, tz: -6, dist: 150, yaw: -0.5, pitch: 1.1 };
   let fly = null, followMarsh = false, selected = null, trackSel = false;
   function flyTo(to, dur) { fly = { from: { ...cam }, to: { ...cam, ...to }, t0: performance.now(), dur: dur || 1400 }; }
+  // the furthest you can zoom out: the view's corners (turned any way) still on the baked map
+  // (the view is a rectangle turned by the camera's yaw; ext() is how far it reaches along x and z per unit of distance)
+  const ext = () => { const th = Math.tan((camera.fov * Math.PI) / 360), a = camera.aspect, c = Math.abs(Math.cos(cam.yaw)), s = Math.abs(Math.sin(cam.yaw)); return [th * (c * a + s), th * (s * a + c)]; };
+  function mapMaxDist() { if (!MAP.box) return 190; const [ex, ez] = ext(); return Math.max(MAP_2D + 8, Math.min(MAP.box.w / 2 / ex, MAP.box.h / 2 / ez)); }
   function applyCam() {
-    cam.pitch = clamp(cam.pitch, 0.1, 1.45); cam.dist = clamp(cam.dist, 3, 190); cam.tx = clamp(cam.tx, -100, 100); cam.tz = clamp(cam.tz, -120, 60);
-    const cp = Math.cos(cam.pitch);
-    camera.position.set(cam.tx + Math.sin(cam.yaw) * cp * cam.dist, cam.ty + Math.sin(cam.pitch) * cam.dist, cam.tz + Math.cos(cam.yaw) * cp * cam.dist);
+    cam.pitch = clamp(cam.pitch, 0.1, 1.45); cam.tx = clamp(cam.tx, -100, 100); cam.tz = clamp(cam.tz, -120, 60);
+    // never zoom or pan out past the edge of the map (the view's corners stay on it whichever way it's turned)
+    if (MAP.box) {
+      const B = MAP.box; cam.dist = clamp(cam.dist, 3, mapMaxDist());
+      if (cam.dist > MAP_3D) { const [ex, ez] = ext(), rx = Math.max(0, B.w / 2 - ex * cam.dist), rz = Math.max(0, B.h / 2 - ez * cam.dist); cam.tx = clamp(cam.tx, B.cx - rx, B.cx + rx); cam.tz = clamp(cam.tz, B.cz - rz, B.cz + rz); }
+    } else cam.dist = clamp(cam.dist, 3, 190);
+    // between MAP_3D and MAP_2D the camera tilts towards straight down, so the switch to the flat map is seamless
+    const k = mapK(), pitch = cam.pitch + (1.53 - cam.pitch) * k, cp = Math.cos(pitch);
+    camera.position.set(cam.tx + Math.sin(cam.yaw) * cp * cam.dist, cam.ty + Math.sin(pitch) * cam.dist, cam.tz + Math.cos(cam.yaw) * cp * cam.dist);
     camera.lookAt(cam.tx, cam.ty, cam.tz);
   }
   const ptrs = new Map(); let down = null, pinch0 = null;
@@ -425,7 +466,7 @@
   function pan(dx, dy) { trackSel = false; const k = cam.dist * 0.0016, c = Math.cos(cam.yaw), s = Math.sin(cam.yaw); cam.tx -= (dx * c + dy * s) * k; cam.tz -= (-dx * s + dy * c) * k; }
   $("zin").onclick = () => { stopAuto(); flyTo({ dist: cam.dist * 0.6 }, 400); };
   $("zout").onclick = () => { stopAuto(); flyTo({ dist: cam.dist / 0.6 }, 400); };
-  $("home").onclick = () => { stopAuto(); select(null); flyTo(HOME, 1300); };
+  $("home").onclick = () => { stopAuto(); select(null); flyTo({ ...HOME, tx: MAP.box ? MAP.box.cx : HOME.tx, tz: MAP.box ? MAP.box.cz : HOME.tz, dist: mapMaxDist() }, 1300); }; // as far out as the map allows
   function setFollow(on) { followMarsh = on; $("tour").classList.toggle("on", on); if (on) { select(MARSH); } }
   $("tour").onclick = () => { if (followMarsh) return setFollow(false); fly = null; setFollow(true); flyTo({ dist: 13, pitch: 0.62 }, 1200); };
   window.addEventListener("keydown", (e) => { if (e.target.tagName === "INPUT") return; if (e.key === "Escape") { closeAll(); select(null); } });
@@ -434,7 +475,7 @@
   const tagsEl = $("tags"), POOL = [], V = new T.Vector3();
   for (let i = 0; i < 48; i++) { const el = document.createElement("div"); el.className = "tag"; el.hidden = true; el.addEventListener("click", () => el.dog && select(el.dog, true)); tagsEl.appendChild(el); POOL.push(el); }
   let W = innerWidth, H = innerHeight;
-  function toScreen(x, y, z) { V.set(x, y, z).project(camera); return V.z > 1 ? null : { x: (V.x * 0.5 + 0.5) * W, y: (-V.y * 0.5 + 0.5) * H }; }
+  function toScreen(x, y, z) { V.set(x, y, z).project(MAP.full ? MAP.cam : camera); return V.z > 1 ? null : { x: (V.x * 0.5 + 0.5) * W, y: (-V.y * 0.5 + 0.5) * H }; }
   function updateTags() {
     const cp = camera.position, range = 30, list = [];
     if (cam.dist < 50) DOGS.forEach((d) => { const dd = Math.hypot(d.wx - cp.x, d.wy - cp.y, d.wz - cp.z); if (dd < range || d === selected) list.push([dd, d]); });
@@ -596,7 +637,7 @@
     const t0 = performance.now(), gap = now - (PERF.last || now);
     PERF.gap = PERF.gap * 0.95 + gap * 0.05; PERF.last = now;
     // if frames keep taking longer than ~33 ms while in use, lower the resolution a step (down to 1x), then drop shadows
-    if (!idle && gap > 0 && gap < 500) { slow = gap > 34 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(OVER && phone ? 1 : pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
+    if (!idle && gap > 0 && gap < 500) { slow = gap > 34 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
     frameSteps(now);
     PERF.js = PERF.js * 0.95 + (performance.now() - t0) * 0.05;
     requestAnimationFrame(frame);
@@ -608,32 +649,100 @@
     if (followMarsh) { cam.tx += (MARSH.wx - cam.tx) * 0.08; cam.tz += (MARSH.wz - cam.tz) * 0.08; }
     else if (selected && trackSel && !fly && !selected.isMarsh && selected.act.pose !== "lie" && selected.act.pose !== "sit") { cam.tx += (selected.wx - cam.tx) * 0.05; cam.tz += (selected.wz - cam.tz) * 0.05; }
     if (selected && !selected.isMarsh) K.beam.position.set(selected.wx, 7, selected.wz);
-    animBuilds.forEach((f) => f(t)); updateBuilds(t);
+    if (!MAP.full) { animBuilds.forEach((f) => f(t)); updateBuilds(t); }
     if (!SHOPEL.hidden) drawShop(t);
     // on phones, keep the picked dog in the middle of the clear gap between the top bar and the card
     const off = !CARD.hidden && W < 700 && H > W ? H / 2 - GAP.mid : 0; viewOff += (off - viewOff) * 0.12;
     if (Math.abs(viewOff) > 0.5) camera.setViewOffset(W, H, 0, viewOff, W, H); else camera.clearViewOffset();
     // roofs lift off when you zoom in on a building, so you can see who's inside
-    ROOFS.forEach((b) => (b.roof.visible = !(cam.dist < 36 && Math.hypot(cam.tx - b.centre[0], cam.tz - b.centre[1]) < 15)));
+    ROOFS.forEach((b) => { b.roof.visible = !(cam.dist < 36 && Math.hypot(cam.tx - b.centre[0], cam.tz - b.centre[1]) < 15); if (b.sign) b.sign.visible = b.roof.visible; });
     applyCam();
     // the sun's shadow box follows the camera, snapped to its texels so shadows don't shimmer
     // the shadow box follows the camera in steps; shadows are redrawn when it moves, and otherwise only as often as the
     // dogs nearby need (every 2nd frame up close, every 8th from afar)
     // The sun's shadow box comes in three sizes and moves in big steps, and only once the camera has settled for a moment,
     // so zooming and panning don't redraw the shadow map every few frames (that was the main stutter, on first load too).
-    { const lvl = cam.dist < 26 ? 24 : cam.dist < 58 ? 52 : 100, step = lvl / 4, sx = Math.round(cam.tx / step) * step, sz = Math.round(cam.tz / step) * step, key = sx + "," + sz + "," + lvl;
+    updateMap(now);
+    if (!MAP.full) { const lvl = cam.dist < 26 ? 24 : 52, step = lvl / 4, sx = Math.round(cam.tx / step) * step, sz = Math.round(cam.tz / step) * step, key = sx + "," + sz + "," + lvl;
       if (key !== lightWant) { lightWant = key; lightSince = now; }
       if (lightWant !== lightKey && (!lightKey || now - lightSince > 220)) { lightKey = lightWant; K.light("day", sx, sz, lvl, 420); shadowDirty = true; } }
-    if (shadowDirty || (cam.dist < 58 && FRAME % 90 === 0)) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; } // only still things cast shadows now, so this is rare
+    if (!MAP.full && (shadowDirty || (cam.dist < 58 && FRAME % 90 === 0))) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; } // only still things cast shadows now, so this is rare
     K.sky.position.copy(camera.position);
-    if (cam.dist < 45) K.life(t, cam.tx, cam.tz, clamp(cam.dist * 0.25, 4, 14), true); else K.lifeG.visible = false; // butterflies are invisible from far away
-    const tR = performance.now(); K.stage.render(); LAST.render = performance.now() - tR;
+    if (MAP.full) K.lifeG.visible = false; else if (cam.dist < 45) K.life(t, cam.tx, cam.tz, clamp(cam.dist * 0.25, 4, 14), true); else K.lifeG.visible = false; // butterflies are invisible from far away
+    const tR = performance.now();
+    if (MAP.full) renderer.render(MAP.scene, MAP.cam); // the flat map alone: one picture and some dots
+    else { K.stage.render(); if (MAP.fade > 0) { renderer.autoClear = false; renderer.clearDepth(); renderer.render(MAP.scene, MAP.cam); renderer.autoClear = true; } }
+    LAST.render = performance.now() - tR;
     const tT = performance.now(); updateTags(); LAST.tags = performance.now() - tT;
   }
 
   // iPhone Safari ignores user-scalable=no, so stop its pinch gesture zooming the page (pinches on the 3D view still zoom the camera)
   ["gesturestart", "gesturechange"].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
   document.addEventListener("touchmove", (e) => { if (e.touches.length > 1 && !e.target.closest("#view")) e.preventDefault(); }, { passive: false });
+
+  /* ================= The flat map ================= */
+  const MAP = { scene: new T.Scene(), cam: new T.OrthographicCamera(-1, 1, 1, -1, 1, 700), fade: 0, full: false, dots: null, rings: null, sel: null, plane: null };
+  const DOTGEO = new T.CircleGeometry(0.5, 12).rotateX(-Math.PI / 2);
+  const mapMat = (c, o) => new T.MeshBasicMaterial(Object.assign({ color: c, transparent: true, depthTest: false, depthWrite: false }, o || {}));
+  function mapDot(d, i) {
+    const s = d.scale * 1.0; mTmp.compose(vP.set(d.wx, 0.6, d.wz), qI, vS.set(s, 1, s)); MAP.dots.setMatrixAt(i, mTmp); // dogs indoors show through the roof; the name sign is drawn over them
+    const r = d.tier ? s * 1.45 : 0; mTmp.compose(vP, qI, vS.set(r, 1, r)); MAP.rings.setMatrixAt(i, mTmp);
+  }
+  // Draw the whole sanctuary once, straight down, into a texture (behind the loading screen). Dogs, Marsh, clouds and other
+  // moving things are hidden for it; they're drawn live on top as dots.
+  function bakeMap() {
+    let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+    CITY.kennels.concat(PLOTS).forEach((k) => { x0 = Math.min(x0, k.x); x1 = Math.max(x1, k.x); z0 = Math.min(z0, k.z); z1 = Math.max(z1, k.z); });
+    x0 -= 55; x1 += 55; z0 -= 75; z1 += 80; // wide enough that a phone held upright can see the whole sanctuary
+    const w = x1 - x0, h = z1 - z0, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    const max = Math.min(phone ? 3072 : 4096, renderer.capabilities.maxTextureSize), pw = w >= h ? max : Math.round((max * w) / h), ph = h >= w ? max : Math.round((max * h) / w);
+    const rt = new T.WebGLRenderTarget(pw, ph, { samples: phone ? 0 : 4 }); // (phones: no multisampling, to keep memory down) rt.texture.generateMipmaps = true; rt.texture.minFilter = T.LinearMipmapLinearFilter; rt.texture.anisotropy = 4;
+    const oc = new T.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 1, 600); oc.position.set(cx, 300, cz); oc.up.set(0, 0, -1); oc.lookAt(cx, 0, cz);
+    const clouds = CITY.group.getObjectByName("clouds");
+    const hide = [coreMesh, detMesh, farMesh, blobMesh, blingMesh, medalMesh, sparkMesh, accMesh, K.marsh, marshBlob, K.lifeG, K.beamG, K.sky, clouds, ...FACES].filter(Boolean);
+    LOD.forEach((b) => (b.staff || []).forEach((st) => hide.push(st)));
+    const was = hide.map((o) => o.visible); hide.forEach((o) => (o.visible = false));
+    const roofsWas = ROOFS.map((b) => b.roof.visible); ROOFS.forEach((b) => { b.roof.visible = true; if (b.sign) b.sign.visible = true; });
+    const kh = CITY.kennelHi.visible, kl = CITY.kennelLo.visible; CITY.kennelHi.visible = true; CITY.kennelLo.visible = false;
+    K.light("day", cx, cz, Math.max(w, h) / 2 + 4, 420); K.sun.shadow.camera.far = 400; K.sun.shadow.camera.updateProjectionMatrix(); renderer.shadowMap.needsUpdate = true;
+    const fog = scene.fog; scene.fog = null; // (after K.light, which sets the fog)
+    // the grass colour beyond the map's edge comes from a tiny render of plain grass (no trees there: they're inside x0)
+    const px = new T.WebGLRenderTarget(4, 4), oc2 = new T.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 1, 600), buf = new Uint8Array(4);
+    oc2.position.set(cx + 20, 300, 200); oc2.up.set(0, 0, -1); oc2.lookAt(cx + 20, 0, 200); // plain grass: south of every tree
+    try { renderer.setRenderTarget(rt); renderer.render(scene, oc); renderer.setRenderTarget(px); renderer.render(scene, oc2); renderer.readRenderTargetPixels(px, 1, 1, 1, 1, buf); }
+    finally { scene.fog = fog; renderer.setRenderTarget(null); px.dispose(); }
+    scene.fog = fog; hide.forEach((o, i) => (o.visible = was[i])); ROOFS.forEach((b, i) => { b.roof.visible = roofsWas[i]; if (b.sign) b.sign.visible = roofsWas[i]; });
+    CITY.kennelHi.visible = kh; CITY.kennelLo.visible = kl; lightKey = lightWant = ""; shadowDirty = true;
+    MAP.box = { cx, cz, w, h }; MAP.bg = new T.Color().setRGB(buf[0] / 255, buf[1] / 255, buf[2] / 255);
+    MAP.plane = new T.Mesh(new T.PlaneGeometry(w, h).rotateX(-Math.PI / 2), mapMat("#ffffff", { map: rt.texture })); MAP.plane.position.set(cx, 0, cz); MAP.plane.renderOrder = 0; MAP.scene.add(MAP.plane);
+    const n = Math.max(1, DOGS.length);
+    MAP.rings = new T.InstancedMesh(DOTGEO, mapMat("#ffffff"), n); MAP.rings.renderOrder = 1; MAP.rings.frustumCulled = false;
+    MAP.dots = new T.InstancedMesh(DOTGEO, mapMat("#ffffff"), n); MAP.dots.renderOrder = 2; MAP.dots.frustumCulled = false;
+    DOGS.forEach((d, i) => { MAP.dots.setColorAt(i, COL.set(d.rig.farC)); MAP.rings.setColorAt(i, COL.set(d.tier ? TIER[d.tier].collar : "#ffffff")); MAP.dots.setMatrixAt(i, ZERO); MAP.rings.setMatrixAt(i, ZERO); });
+    if (!DOGS.length) { MAP.dots.setColorAt(0, COL.set("#ffffff")); MAP.rings.setColorAt(0, COL.set("#ffffff")); }
+    [MAP.rings, MAP.dots].forEach((m) => { m.instanceColor.needsUpdate = true; MAP.scene.add(m); });
+    MAP.marsh = new T.Mesh(DOTGEO, mapMat("#c98a46")); MAP.marsh.scale.set(2, 1, 2); MAP.marsh.renderOrder = 3; MAP.scene.add(MAP.marsh);
+    MAP.marshRing = new T.Mesh(DOTGEO, mapMat("#ffc61a")); MAP.marshRing.scale.set(3, 1, 3); MAP.marshRing.renderOrder = 2; MAP.scene.add(MAP.marshRing);
+    // the building names go on top of everything on the map, so dots never cover them
+    MAP.signs = SIGNS.map((m) => { const c = new T.Mesh(m.geometry, mapMat("#ffffff", { map: m.material.map })); c.position.copy(m.position); c.position.y = 1; c.renderOrder = 5; MAP.scene.add(c); return c; });
+    MAP.sel = new T.Mesh(new T.RingGeometry(0.62, 0.8, 24).rotateX(-Math.PI / 2), mapMat("#ffffff")); MAP.sel.renderOrder = 4; MAP.scene.add(MAP.sel);
+  }
+  function updateMap(now) {
+    if (!MAP.plane) return;
+    const want = cam.dist >= MAP_2D - 0.5, dt = clamp((now - (MAP.last || now)) / 1000, 0, 0.1); MAP.last = now;
+    MAP.fade = clamp(MAP.fade + (want ? dt : -dt) / 0.25, 0, 1);
+    const full = MAP.fade >= 1;
+    MAP.full = full; // (same resolution as 3D: changing it mid-zoom caused a hitch)
+    if (!MAP.fade) return;
+    const halfH = cam.dist * Math.tan((camera.fov * Math.PI) / 360), halfW = halfH * camera.aspect, c = MAP.cam;
+    c.left = -halfW; c.right = halfW; c.top = halfH; c.bottom = -halfH; c.updateProjectionMatrix();
+    c.position.set(cam.tx, 400, cam.tz); c.up.set(-Math.sin(cam.yaw), 0, -Math.cos(cam.yaw)); c.lookAt(cam.tx, 0, cam.tz);
+    const op = MAP.fade; [MAP.plane, MAP.dots, MAP.rings, MAP.marsh, MAP.marshRing, MAP.sel, ...MAP.signs].forEach((m) => (m.material.opacity = op));
+    MAP.scene.background = MAP.full ? MAP.bg : null;
+    MAP.marsh.position.set(MARSH.wx || 0, 0.7, MARSH.wz || 0); MAP.marshRing.position.set(MARSH.wx || 0, 0.65, MARSH.wz || 0);
+    const sd = selected; MAP.sel.visible = !!sd;
+    if (sd) { const p = 1 + Math.sin(now / 160) * 0.12, s = (sd.isMarsh ? 3.4 : (sd.scale || 1) * 2.4) * p; MAP.sel.scale.set(s, 1, s); MAP.sel.position.set(sd.wx, 0.8, sd.wz); }
+  }
 
   /* ================= Boot ================= */
   async function boot() {
@@ -654,6 +763,8 @@
       const T0 = performance.now(), r = { dogs: 0, render: 0, tags: 0, rest: 0 };
       for (let i = 0; i < n; i++) { const now = T0 + i * 16.7, a = performance.now(); frameSteps(now); r.rest += performance.now() - a - (LAST.dogs + LAST.render + LAST.tags); r.dogs += LAST.dogs; r.render += LAST.render; r.tags += LAST.tags; }
       for (const k in r) r[k] = +(r[k] / n).toFixed(2); r.calls = renderer.info.render.calls; r.tris = renderer.info.render.triangles; return r; },
+    shot: () => { frameSteps(performance.now()); return renderer.domElement.toDataURL("image/jpeg", 0.8); }, // debugging: the frame as an image
+    map: () => ({ fade: MAP.fade, full: MAP.full, dist: cam.dist, tx: cam.tx, tz: cam.tz, baked: !!MAP.plane }),
     perf: () => ({ cpuMs: +PERF.js.toFixed(2), frameMs: +PERF.gap.toFixed(1), calls: renderer.info.render.calls, tris: renderer.info.render.triangles, pr: renderer.getPixelRatio() }) };
     setupBuilds(); setupDogs(); fillPage(); resize();
     // anything that moves gets a blob shadow (or none) instead of a shadow-map shadow, which would lag behind it
@@ -662,12 +773,17 @@
     updateMarsh(0); updateDogs(0); applyCam();
     requestAnimationFrame(frame);
     // compile every shader and draw the shadow map once behind the loading screen, so the first seconds don't stutter
-    try { renderer.compile(scene, camera); } catch (e) { /* older browsers */ }
+    try { bakeMap(); } catch (e) { MAP.plane = null; console.warn("map bake failed", e); } // no map: the 3D view simply carries on zoomed out
+    try {
+      const lod = [farMesh, CITY.kennelLo]; lod.forEach((m) => (m.visible = true));
+      renderer.compile(scene, camera); if (MAP.plane) renderer.compile(MAP.scene, MAP.cam);
+      lod.forEach((m) => (m.visible = false));
+    } catch (e) { /* older browsers */ }
     setTimeout(() => $("loading").classList.add("gone"), 250);
     const want = norm(params.get("dog"));
     const target = want && (want === "marsh" ? MARSH : BYNAME.get(want));
     if (target) { setTimeout(() => select(target, true), 300); hideHint(); }
-    else { flyTo(HOME, 2600); if (want) toast(`No dog for @${want} yet. New dogs move in with each video.`, 3500); }
+    else { flyTo(INTRO, 3200); if (want) toast(`No dog for @${want} yet. New dogs move in with each video.`, 3500); }
   }
   boot();
 })();
