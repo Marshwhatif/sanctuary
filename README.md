@@ -21,13 +21,14 @@ A one-page 3D site where followers find their dog. It uses the same 3D kit as th
    Leave out `--build` on days with no new build. Use `--dry-run` first if you want a preview.
 3. Upload the new `data/sanctuary.json` to GitHub (see below). The site updates within a minute or two.
 
-Other jobs: `--remove @name` (opt-outs), `--collar @name=rainbow` and `--hat @name=party|crown|tophat|shades` (paid upgrades), `--shop on` and `--link rainbow=<payment link>`.
+Other jobs: `--followers 833` (the dog total shown at the top), `--reel-for 1=<link>` (add a reel to an earlier day), `--remove @name` (opt-outs), `--collar @name=rainbow` and `--hat @name=party|crown|tophat|shades` (paid upgrades), `--shop on` and `--link rainbow=<payment link>`.
 
 How it works:
-- The first 100 followers get gold collars and followers 101–1,000 get silver, by join order (`goldCollars` and `silverCollars` in the data). Paid upgrades never change these.
+- The first 100 followers get gold collars and followers 101–600 get silver, by join order (`goldCollars` and `silverCollars` in the data). Paid upgrades never change these.
 - Hats and rainbow collars only appear on dogs given them with `--hat` or `--collar`. The `?demo` dogs get random ones just for show.
 - What each dog is "doing today" changes every day by itself.
-- Breeds people comment are matched to the nearest of the 12 3D breeds, but the card still shows the breed they actually wrote.
+- Breeds come from `lib/lowpoly-breeds.js` (70 breeds). The tool matches the breed named first in a comment, then reads colour and size words (black, white, dapple, mini…) that only recolour or resize that breed. The card still shows what they actually wrote. `breeds.html` previews every breed locally; it and the `days/` folder don't need uploading.
+- When kennels run out, dogs share: each day one is inside and the others are out playing or visiting a building.
 - The sanctuary is a city of blocks (Marsh Town). Kennel numbers count out from the gate.
 - Each build goes to its own district: supermarket to the Market District, library to the Book Quarter, gym to the Sports District, cinema to the Entertainment District. Other builds fill New Town, then Uptown. The next empty plot always shows the building site with the crane. New kinds of build go in `template/assets/js/lowpoly-town.js`, then get copied into `lib/`.
 - Gold and silver dogs have a shiny collar with sparkles and a medal with their number.

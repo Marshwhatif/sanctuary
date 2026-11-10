@@ -46,6 +46,7 @@
   let DATA, DOGS = [], BYNAME = new Map(), BUILDS = [], SHOP = [];
   const ACTS = {
     nap: { text: "Napping outside the kennel", pose: "lie", zz: true },
+    snooze: { text: "Snoozing inside the kennel", pose: "lie", zz: true },
     sun: { text: "Sunbathing on the grass", pose: "lie", zz: true },
     guard: { text: "Guarding the kennel", pose: "sit" },
     treats: { text: "Waiting very politely for treats", pose: "sit" },
@@ -64,32 +65,24 @@
     const words = ["sample", "demo", "test"], bits = ["pup", "woof", "bark", "paws", "tail", "bone", "zoom", "fluff"];
     const dogs = []; const r = K.rng(5);
     for (let n = 1; n <= 360; n++) {
-      const model = K.BREED_NAMES[Math.floor(r() * K.BREED_NAMES.length)];
-      const d = { handle: `${words[n % 3]}_${bits[Math.floor(r() * bits.length)]}${n}`, breed: model[0].toUpperCase() + model.slice(1), model, n, day: 2 + Math.floor((n / 360) * 4) };
+      const model = LPB.NAMES[Math.floor(r() * LPB.NAMES.length)];
+      const d = { handle: `${words[n % 3]}_${bits[Math.floor(r() * bits.length)]}${n}`, breed: LPB.LABEL[model], model, look: "", n, day: 2 + Math.floor((n / 360) * 4) };
       if (r() < 0.06) d.collar = "rainbow";
       if (r() < 0.1) d.hat = ["party", "crown", "tophat", "shades"][Math.floor(r() * 4)];
       dogs.push(d);
     }
     return {
-      day: 6, updated: "demo", instagram: "marshwhatif", goldCollars: 100, silverCollars: 1000, dogs,
+      day: 6, updated: "demo", instagram: "marshwhatif", goldCollars: 100, silverCollars: 600, dogs,
       builds: [{ type: "supermarket", day: 2, slot: 0 }, { type: "library", day: 2, slot: 1 }, { type: "gym", day: 2, slot: 2 }, { type: "cinema", day: 2, slot: 3 }],
       log: [6, 5, 4, 3, 2, 1].map((d) => ({ day: d, title: `Sample day ${d}`, text: "Demo text. Real days come from data/sanctuary.json.", reel: "" })),
       shop: { enabled: true, note: "Demo shop: the buy links are empty.", items: SHOP_DEFAULT },
     };
   }
 
-  /* ================= Residents: one instanced mesh for every dog ================= */
-  // Parts in dog space (faces +z): [x, y centre, z, w, h, d, colour, kind]. Colour 0 coat, 1 dark, 2 belly, 3 black, 4 collar.
-  const PARTS = [
-    [0, 0.46, 0, 0.34, 0.32, 0.82, 0, "body"], [0, 0.33, 0.05, 0.28, 0.04, 0.6, 2, "body"],
-    [0, 0.74, 0.46, 0.34, 0.32, 0.32, 0, "head"], [0, 0.66, 0.67, 0.2, 0.13, 0.16, 2, "head"], [0, 0.71, 0.755, 0.07, 0.05, 0.03, 3, "head"],
-    [-0.09, 0.8, 0.625, 0.05, 0.05, 0.02, 3, "head"], [0.09, 0.8, 0.625, 0.05, 0.05, 0.02, 3, "head"],
-    [-0.2, 0.74, 0.44, 0.06, 0.26, 0.15, 1, "head"], [0.2, 0.74, 0.44, 0.06, 0.26, 0.15, 1, "head"],
-    [0, 0.6, 0.33, 0.37, 0.07, 0.12, 4, "collar"],
-    [-0.12, 0.2, 0.3, 0.1, 0.4, 0.11, 0, "fl"], [0.12, 0.2, 0.3, 0.1, 0.4, 0.11, 0, "fr"],
-    [-0.12, 0.2, -0.3, 0.1, 0.4, 0.11, 0, "rl"], [0.12, 0.2, -0.3, 0.1, 0.4, 0.11, 0, "rr"],
-    [0, 0.68, -0.46, 0.08, 0.26, 0.08, 1, "tail"],
-  ];
+  /* ================= Residents ================= */
+  // Every dog is built from boxes on 7 bones by lib/lowpoly-breeds.js (LPB). All dogs share two instanced meshes:
+  // "core" (body, head, snout, ears, legs, tail, collar: about 13 boxes a dog, always drawn) and "detail" (eyes, markings,
+  // fur: drawn only for dogs near the camera). From far away the core alone reads as the right breed and colour.
   const HATS = {
     party: [[0, 0.08, 0, 0.22, 0.16, 0.22, "#ff4a8a"], [0, 0.2, 0, 0.14, 0.12, 0.14, "#ffd23a"], [0, 0.3, 0, 0.07, 0.1, 0.07, "#3aa8ff"], [0, 0.38, 0, 0.08, 0.08, 0.08, "#ffffff"]],
     crown: [[0, 0.05, 0, 0.3, 0.1, 0.3, "#ffc21a"], [-0.11, 0.14, -0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0.11, 0.14, -0.11, 0.07, 0.1, 0.07, "#ffc21a"], [-0.11, 0.14, 0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0.11, 0.14, 0.11, 0.07, 0.1, 0.07, "#ffc21a"], [0, 0.05, 0.155, 0.06, 0.06, 0.02, "#e0243a"]],
@@ -125,7 +118,7 @@
     { id: "jumper", kind: "outfit", name: "Christmas jumper", soon: true }, { id: "suit", kind: "outfit", name: "Suit", soon: true },
   ];
 
-  let dogMesh = null, accMesh = null, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
+  let coreMesh = null, detMesh = null, accMesh = null, blobMesh = null, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
   const SPARKS = 5;
   // Earned collars: gold for the first goldCollars followers, silver up to silverCollars. Paid upgrades never change the tier.
   const TIER = {
@@ -147,42 +140,56 @@
     f.tex.needsUpdate = true;
   }
   const tierOf = (d) => (d.n <= DATA.goldCollars ? "gold" : d.n <= DATA.silverCollars ? "silver" : null);
-  const vR = new T.Vector3(), vU = new T.Vector3(), vF = new T.Vector3(), vC = new T.Vector3(), qR = new THREE.Quaternion(), AXZ = new THREE.Vector3(0, 0, 1), Q45 = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 4), mDog = new T.Matrix4(), mTmp = new T.Matrix4(), mPart = new T.Matrix4(), vP = new T.Vector3(), vS = new T.Vector3(), qI = new T.Quaternion(), qT = new T.Quaternion(), ZERO = new T.Matrix4().makeScale(0, 0, 0), AX = new T.Vector3(0, 1, 0), COL = new T.Color();
+  const vR = new T.Vector3(), vU = new T.Vector3(), vF = new T.Vector3(), vC = new T.Vector3(), qR = new THREE.Quaternion(), AXZ = new THREE.Vector3(0, 0, 1), Q45 = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 4), mDog = new T.Matrix4(), mTmp = new T.Matrix4(), mPart = new T.Matrix4(), vP = new T.Vector3(), vS = new T.Vector3(), qI = new T.Quaternion(), qT = new T.Quaternion(), ZERO = new T.Matrix4().makeScale(0, 0, 0), AX = new T.Vector3(0, 1, 0), AXX = new T.Vector3(1, 0, 0), COL = new T.Color();
 
   const VISITS = {}; let FRAME = 0;
+  // Soft round shadows under the dogs and Marsh. Moving things don't cast real (shadow-map) shadows any more: those could
+  // only be redrawn every few frames, so they trailed behind the dogs. Buildings, kennels and trees still do.
+  const BLOBGEO = new T.CircleGeometry(0.5, 14).rotateX(-Math.PI / 2), BLOBMAT = new T.MeshBasicMaterial({ color: "#1b2a12", transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  const marshBlob = new T.Mesh(BLOBGEO, BLOBMAT); marshBlob.scale.set(1.3, 1, 1.9); marshBlob.renderOrder = 1; scene.add(marshBlob);
+  const BONES = Array.from({ length: 7 }, () => new T.Matrix4()), BW = Array.from({ length: 7 }, () => new T.Matrix4()), POSE = {}, qColl = new T.Quaternion();
+  const IN_ACTS = ["snooze", "guard", "snooze", "treats"], OUT_ACTS = ["sun", "butterflies", "zoomies", "fetch", "dig", "butterflies", "fetch", "zoomies"];
   function setupDogs() {
-    if (dogMesh) { dogMesh.parent.remove(dogMesh); dogMesh.dispose(); }
-    if (accMesh) { accMesh.parent.remove(accMesh); accMesh.dispose(); accMesh = null; }
-    const P = PARTS.length, n = Math.max(1, DOGS.length);
-    dogMesh = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), new T.MeshLambertMaterial({ color: "#ffffff" }), n * P);
-    dogMesh.castShadow = true; dogMesh.receiveShadow = true; dogMesh.frustumCulled = false; scene.add(dogMesh);
-    let accCount = 0;
+    [coreMesh, detMesh, accMesh, blobMesh].forEach((m) => { if (m) { m.parent.remove(m); m.dispose(); } }); coreMesh = detMesh = accMesh = blobMesh = null;
+    // split each breed's boxes into core and detail once
+    const split = (rg) => { if (!rg.core) { const pv = rg.pivots; rg.blobL = pv[3].z - pv[5].z + 0.55; rg.blobW = Math.abs(pv[4].x) * 2 + 0.34; rg.core = []; rg.det = []; rg.parts.forEach((p, i) => (p.core ? rg.core : rg.det).push(i)); rg.collarCore = rg.core.indexOf(rg.collarIdx); } return rg; };
+    let nc = 0, accCount = 0;
+    DOGS.forEach((d) => { const rg = split(LPB.rig(d.model, d.look)); d.rig = rg; d.scale = LPB.scaleOf(rg); d.c0 = nc; d.detAt = -1; nc += rg.core.length; });
+    const mk = (n, shadow) => { const m = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), new T.MeshLambertMaterial({ color: "#ffffff" }), Math.max(1, n)); m.castShadow = shadow; m.receiveShadow = true; m.frustumCulled = false; m.instanceMatrix.setUsage(T.DynamicDrawUsage); scene.add(m); return m; };
+    coreMesh = mk(nc, false); detMesh = mk(DETCAP, false); detMesh.count = 0;
+    blobMesh = new T.InstancedMesh(BLOBGEO, BLOBMAT, Math.max(1, DOGS.length)); blobMesh.frustumCulled = false; blobMesh.renderOrder = 1; blobMesh.instanceMatrix.setUsage(T.DynamicDrawUsage); scene.add(blobMesh);
+    if (!DOGS.length) blobMesh.setMatrixAt(0, ZERO);
+    if (!nc) { coreMesh.setMatrixAt(0, ZERO); coreMesh.setColorAt(0, COL.set("#ffffff")); } detMesh.setColorAt(0, COL.set("#ffffff"));
+    // kennels: the first dogs get their own; later ones share. In a shared kennel one dog is inside today and the others are out
+    // and about (who's inside changes every day).
+    const byK = new Map();
+    DOGS.forEach((d) => { const k = KENNELS[(d.n - 1) % KENNELS.length]; if (!byK.has(k)) byK.set(k, []); byK.get(k).push(d); });
+    byK.forEach((list, k) => { const ins = list.length > 1 ? hash(k.i + ":" + DATA.day) % list.length : 0; let o = 0; list.forEach((d, j) => { d.k = k; d.shared = list.length > 1; d.inside = j === ins; d.slot = d.inside ? 0 : ++o; }); });
     DOGS.forEach((d, i) => {
-      const b = K.BREEDS[d.model] || K.BREEDS.golden;
-      d.b = b; d.scale = 0.9 * (0.55 + b.s * 0.8);
+      const rg = d.rig;
       d.tier = tierOf(d);
       d.collarCol = d.collar === "rainbow" ? "rainbow" : d.tier ? TIER[d.tier].collar : "#c5242b";
-      PARTS.forEach((p, j) => dogMesh.setColorAt(i * P + j, COL.set(p[6] === 4 ? (d.collarCol === "rainbow" ? "#ff4a4a" : d.collarCol) : [b.coat, b.dark, b.belly, "#14100e"][p[6]])));
-      const k = KENNELS[(d.n - 1) % KENNELS.length], slot = Math.floor((d.n - 1) / KENNELS.length);
+      rg.core.forEach((pi, j) => coreMesh.setColorAt(d.c0 + j, COL.set(pi === rg.collarIdx ? (d.collarCol === "rainbow" ? "#ff4a4a" : d.collarCol) : rg.parts[pi].c)));
+      const k = d.k, slot = d.slot;
       d.kennel = KENNELS.indexOf(k) + 1;
-      // the first dog of each kennel lives inside it; later ones in the front yard
       // kennel frame: f points out of the door, s along the street
-      const fx = k.fx, fz = k.fz, sx = fz, sz = -fx; d.k = k; d.kyaw = k.yaw;
+      const fx = k.fx, fz = k.fz, sx = fz, sz = -fx; d.kyaw = k.yaw;
       if (slot === 0) { d.hx = k.x - fx * 0.1; d.hz = k.z - fz * 0.1; } else { const a = (((slot - 1) % 3) - 1) * 0.78, b2 = 1.6 + Math.floor((slot - 1) / 3) * 0.55; d.hx = k.x + sx * a + fx * b2; d.hz = k.z + sz * a + fz * b2; }
       d.yx = k.x + fx * 1.6; d.yz = k.z + fz * 1.6;
-      // Most dogs spend the day at home; about 1 in 7 is out at one of the buildings, and only while it has room inside.
+      // Most dogs spend the day at home; some are out at the buildings, while those have room inside.
       const h = hash(d.handle + ":" + DATA.day), builtTypes = BUILDS.map((x) => x.type).filter((t) => ACTS[t] && BUILT[t]);
       d.ph = (h % 1000) / 159; d.dir = h & 1 ? 1 : -1; d.spot = null;
-      let act = d.actId || BASE_ACTS[h % BASE_ACTS.length];
-      if (!d.actId && builtTypes.length && (h >>> 8) % 100 < 14) {
+      let act = d.actId || (d.shared ? (d.inside ? IN_ACTS : OUT_ACTS)[h % (d.inside ? IN_ACTS : OUT_ACTS).length] : BASE_ACTS[h % BASE_ACTS.length]);
+      const visit = d.shared ? (d.inside ? 0 : 30) : 14;
+      if (!d.actId && builtTypes.length && (h >>> 8) % 100 < visit) {
         const bt = builtTypes[(h >>> 16) % builtTypes.length], bl = BUILT[bt], n = VISITS[bt] || 0;
         if (n < bl.spots.length) { VISITS[bt] = n + 1; act = bt; d.spot = bl.spots[n]; d.bc = bl.centre; d.bf = bl.front; }
       }
       d.act = ACTS[act];
+      d.far = true;
       if (d.hat && HATS[d.hat]) { d.acc0 = accCount; accCount += HATS[d.hat].length; }
     });
-    if (!DOGS.length) for (let j = 0; j < P; j++) { dogMesh.setMatrixAt(j, ZERO); dogMesh.setColorAt(j, COL.set("#ffffff")); }
-    dogMesh.instanceColor.needsUpdate = true;
+    coreMesh.instanceColor.needsUpdate = true; detMesh.instanceColor.needsUpdate = true;
     // Gold and silver dogs: a slim shiny band, a round medal with their number on the chest, and little sparkles circling the collar.
     [blingMesh, medalMesh, sparkMesh].forEach((m) => { if (m) { m.parent.remove(m); m.dispose(); } }); blingMesh = medalMesh = sparkMesh = null;
     TIERED = DOGS.filter((d) => d.tier);
@@ -194,12 +201,12 @@
       sparkMesh = new T.InstancedMesh(new T.ShapeGeometry(st), new T.MeshBasicMaterial({ color: "#ffffff", side: T.DoubleSide, fog: false }), N * SPARKS); sparkMesh.frustumCulled = false; sparkMesh.renderOrder = 3; scene.add(sparkMesh);
       TIERED.forEach((d, i) => { const c = TIER[d.tier];
         blingMesh.setColorAt(i, COL.set(d.collarCol === "rainbow" ? "#ff4a4a" : c.collar)); medalMesh.setColorAt(i, COL.set(c.medal));
-        for (let k = 0; k < SPARKS; k++) sparkMesh.setColorAt(i * SPARKS + k, COL.set(c.spark[k % 2])); });
+        for (let k = 0; k < SPARKS; k++) { sparkMesh.setColorAt(i * SPARKS + k, COL.set(c.spark[k % 2])); sparkMesh.setMatrixAt(i * SPARKS + k, ZERO); } });
       [blingMesh, medalMesh, sparkMesh].forEach((m) => (m.instanceColor.needsUpdate = true));
     }
     if (accCount) {
       accMesh = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), new T.MeshLambertMaterial({ color: "#ffffff" }), accCount);
-      accMesh.castShadow = true; accMesh.frustumCulled = false; scene.add(accMesh);
+      accMesh.castShadow = false; accMesh.frustumCulled = false; scene.add(accMesh);
       DOGS.forEach((d) => { if (d.acc0 !== undefined) HATS[d.hat].forEach((a, j) => accMesh.setColorAt(d.acc0 + j, COL.set(a[6]))); });
       accMesh.instanceColor.needsUpdate = true;
     }
@@ -243,54 +250,61 @@
     return o;
   }
 
+  // Details (eyes, markings, fur) are drawn only for on-screen dogs within NEAR of the camera, packed at the start of one small
+  // instanced mesh, so the GPU never draws hidden boxes. Dogs further than FAR, or off screen, move less often.
+  const NEAR2 = 20 * 20, FAR2 = 30 * 30, DETCAP = 2600, FRU = new T.Frustum(), mVP = new T.Matrix4(), SPH = new T.Sphere();
   function updateDogs(t, focus) {
     if (!DOGS.length) return;
-    const P = PARTS.length, rb = (t * 0.25) % 1, cp0 = camera.position; FRAME++;
+    const rb = (t * 0.25) % 1, cp0 = camera.position; FRAME++;
     let rainbow = false;
-    DOGS.forEach((d, i) => {
-      // dogs far from the camera move every third frame (staggered), which nobody can see at that distance
-      const far = (d.wx - cp0.x) ** 2 + (d.wz - cp0.z) ** 2 > 45 * 45;
-      d.far = far; if (far && d !== focus && (i + FRAME) % 3) { d.upd = false; return; }
+    mVP.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); FRU.setFromProjectionMatrix(mVP);
+    let cur = 0, colDirty = false;
+    for (let i = 0; i < DOGS.length; i++) {
+      const d = DOGS[i];
+      const known = d.wx !== undefined, dist2 = known ? (d.wx - cp0.x) ** 2 + (d.wz - cp0.z) ** 2 : 0;
+      const seen = !known || d === focus || FRU.intersectsSphere(SPH.set(vC.set(d.wx, d.wy * 0.5, d.wz), 1.6 * d.scale));
+      const far = dist2 > FAR2; d.far = far || !seen;
+      const wantDet = seen && (d === focus || dist2 < NEAR2) && cur + d.rig.det.length <= DETCAP;
+      if (d !== focus && known && (!seen ? (i + FRAME) % 8 : far && (i + FRAME) % 3)) { d.upd = false; d.detAt = -1; continue; }
       d.upd = true;
-      const o = place(d, t), b = d.b, s = d.scale * (d === focus ? 1 + Math.max(0, Math.sin(t * 6)) * 0.08 : 1);
-      d.wx = o.x; d.wz = o.z; d.wy = o.y + (0.95 * b.h + o.hop) * s;
-      // dog matrix: translate, yaw, pitch about the hips, scale
-      mDog.makeTranslation(o.x, o.y + o.hop * s, o.z).multiply(mTmp.makeRotationY(o.yaw));
-      if (o.pitch) { const py = 0.25 * b.h * s, pz = (o.pitch < 0 ? -0.35 : 0.3) * b.z * s; mDog.multiply(mTmp.makeTranslation(0, py, pz)).multiply(mTmp.makeRotationX(o.pitch)).multiply(mTmp.makeTranslation(0, -py, -pz)); }
-      mDog.multiply(mTmp.makeScale(s * b.w, s * b.h, s * b.z));
-      if (d.tier) { d.m = d.m || new T.Matrix4(); d.m.copy(mDog); d.dropv = o.drop; }
-      const sw = Math.sin(o.ph) * o.run, drop = o.drop * 0.24;
-      PARTS.forEach((p, j) => {
-        let x = p[0], y = p[1], z = p[2], h = p[4]; const kind = p[7];
-        if (kind.length === 2) { // legs
-          if (o.drop) { h = 0.12; y = 0.06; z += kind[0] === "f" ? 0.14 : -0.06; }
-          else if (o.pitch < 0 && kind[0] === "r") { h = 0.26; y = 0.13; }
-          else if (o.run) { const lg = (kind === "fl" || kind === "rr" ? sw : -sw); z += lg * 0.09; h *= 1 - Math.abs(lg) * 0.2; y = h / 2; }
-        } else y -= drop;
-        if (kind === "collar" && d.tier) { vP.set(x, y, z); vS.set(p[3] * 1.12, h * 2.1, p[5] * 1.5); } else { vP.set(x, y, z); vS.set(p[3], h, p[5]); }
-        let q = qI;
-        if (kind === "tail") { qT.setFromAxisAngle(AX, Math.sin(t * (o.drop ? 3 : 18) + d.ph) * 0.6); q = qT; }
-        mPart.compose(vP, q, vS); mTmp.multiplyMatrices(mDog, mPart); dogMesh.setMatrixAt(i * P + j, mTmp);
-      });
-      if (d.collarCol === "rainbow") { dogMesh.setColorAt(i * P + 9, COL.setHSL((rb + i * 0.13) % 1, 0.9, 0.55)); rainbow = true; }
-      if (d.acc0 !== undefined) {
-        HATS[d.hat].forEach((a, j) => { vP.set(a[0], 0.9 + a[1] - drop, 0.46 + a[2]); vS.set(a[3] / b.w, a[4] / b.h, a[5] / b.z); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(mDog, mPart); accMesh.setMatrixAt(d.acc0 + j, mTmp); });
+      const o = place(d, t), rg = d.rig, s = d.scale * (d === focus ? 1 + Math.max(0, Math.sin(t * 6)) * 0.08 : 1);
+      d.wx = o.x; d.wz = o.z; d.wy = o.y + (rg.anchor.tag * (1 - o.drop * 0.25) + o.hop) * s;
+      mDog.makeTranslation(o.x, o.y + o.hop * s, o.z).multiply(mTmp.makeRotationY(o.yaw)).multiply(mTmp.makeScale(s, s, s));
+      if (o.pitch) { const pv = rg.pivots[o.pitch < 0 ? 5 : 3]; mDog.multiply(mTmp.makeTranslation(0, pv.y, pv.z)).multiply(mTmp.makeRotationX(o.pitch)).multiply(mTmp.makeTranslation(0, -pv.y, -pv.z)); }
+      POSE.drop = o.drop; POSE.sit = o.pitch < 0 ? 1 : 0; POSE.run = o.run; POSE.ph = o.ph;
+      POSE.wag = Math.sin(t * (o.drop ? 3 : 16) + d.ph) * 0.6; POSE.look = o.run ? 0 : Math.sin(t * 0.6 + d.ph * 2) * 0.35;
+      LPB.pose(rg, POSE, BONES);
+      for (let b = 0; b < 7; b++) BW[b].multiplyMatrices(mDog, BONES[b]);
+      const P = rg.parts;
+      for (let j = 0; j < rg.core.length; j++) { const p = P[rg.core[j]]; mTmp.multiplyMatrices(BW[p.bone], p.m); coreMesh.setMatrixAt(d.c0 + j, mTmp); }
+      if (wantDet) {
+        if (d.detAt !== cur) { for (let j = 0; j < rg.det.length; j++) detMesh.setColorAt(cur + j, COL.set(P[rg.det[j]].c)); d.detAt = cur; colDirty = true; }
+        for (let j = 0; j < rg.det.length; j++) { const p = P[rg.det[j]]; mTmp.multiplyMatrices(BW[p.bone], p.m); detMesh.setMatrixAt(cur + j, mTmp); }
+        cur += rg.det.length;
+      } else d.detAt = -1;
+      { const lift = 1 / (1 + o.hop * 2), sh = o.drop ? 1.1 : 1; vP.set(o.x, o.y + 0.025, o.z); qT.setFromAxisAngle(AX, o.yaw); vS.set(rg.blobW * s * lift * sh, 1, rg.blobL * s * lift * sh); mTmp.compose(vP, qT, vS); blobMesh.setMatrixAt(i, mTmp); }
+      if (d.tier || d.acc0 !== undefined) { d.m = d.m || new T.Matrix4(); d.m.copy(BW[0]); d.hm = d.hm || new T.Matrix4(); d.hm.copy(BW[1]); }
+      if (d.collarCol === "rainbow") { coreMesh.setColorAt(d.c0 + rg.collarCore, COL.setHSL((rb + i * 0.13) % 1, 0.9, 0.55)); rainbow = true; }
+      if (d.acc0 !== undefined) { // hats sit on the head bone, sized to the head
+        const hat = rg.anchor.hat, kq = hat.w / 0.34;
+        HATS[d.hat].forEach((a, j) => { vP.set(a[0] * kq, hat.y + a[1] * kq, hat.z + a[2] * kq); vS.set(a[3] * kq, a[4] * kq, a[5] * kq); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(d.hm, mPart); accMesh.setMatrixAt(d.acc0 + j, mTmp); });
       }
-    });
+    }
     const cp = camera.position, near = [];
     TIERED.forEach((d, i) => {
       if (!d.upd) return;
-      const m = d.m, b = d.b, drop = d.dropv * 0.24;
-      vP.set(0, 0.6 - drop, 0.35); vS.set(0.43 / b.w, 0.085 / b.h, 0.17 / b.z); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(m, mPart); blingMesh.setMatrixAt(i, mTmp);
-      vP.set(0, 0.46 - drop, 0.425); vS.set(0.2 / b.w, 0.2 / b.h, 0.035 / b.z); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(m, mPart); medalMesh.setMatrixAt(i, mTmp);
+      const m = d.m, a = d.rig.anchor, c = a.collar;
+      qColl.setFromAxisAngle(AXX, c.rx);
+      vP.set(0, c.y, c.z); vS.set(c.w * 1.12, 0.075, 0.24); mPart.compose(vP, qColl, vS); mTmp.multiplyMatrices(m, mPart); blingMesh.setMatrixAt(i, mTmp);
+      vP.set(a.medal[0], a.medal[1], a.medal[2]); vS.set(0.17, 0.17, 0.03); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(m, mPart); medalMesh.setMatrixAt(i, mTmp);
       // sparkles: little four-point stars orbiting the collar, each twinkling on its own beat (off when too far away to see)
       if (d.far) { if (!d.sparkOff) { for (let k = 0; k < SPARKS; k++) sparkMesh.setMatrixAt(i * SPARKS + k, ZERO); d.sparkOff = true; } if (d === focus) near.push([0, d]); return; }
       d.sparkOff = false;
       const e = m.elements; vR.set(e[0], e[1], e[2]).normalize(); vU.set(e[4], e[5], e[6]).normalize(); vF.set(e[8], e[9], e[10]).normalize();
-      vC.set(0, 0.6 - drop, 0.36).applyMatrix4(m); const R = 0.3 * d.scale;
+      vC.set(0, c.y, c.z).applyMatrix4(m); const R = (c.w * 0.75 + 0.05) * d.scale;
       for (let k = 0; k < SPARKS; k++) {
-        const a = t * 1.7 + (k * Math.PI * 2) / SPARKS + d.ph, tw = Math.max(0, Math.sin(t * 3.4 + k * 2.3 + d.ph * 3));
-        vP.copy(vC).addScaledVector(vR, Math.cos(a) * R).addScaledVector(vU, Math.sin(a) * R * 0.8).addScaledVector(vF, 0.05 + Math.sin(a) * 0.04);
+        const an = t * 1.7 + (k * Math.PI * 2) / SPARKS + d.ph, tw = Math.max(0, Math.sin(t * 3.4 + k * 2.3 + d.ph * 3));
+        vP.copy(vC).addScaledVector(vR, Math.cos(an) * R).addScaledVector(vU, Math.sin(an) * R * 0.8).addScaledVector(vF, 0.05 + Math.sin(an) * 0.04);
         const sz = (d.tier === "gold" ? 0.17 : 0.13) * d.scale * (0.2 + 0.8 * tw * tw);
         qT.copy(camera.quaternion).multiply(qR.setFromAxisAngle(AXZ, t * 2 + k)); vS.set(sz, sz, sz); mTmp.compose(vP, qT, vS); sparkMesh.setMatrixAt(i * SPARKS + k, mTmp);
       }
@@ -300,11 +314,11 @@
     // the selected dog's medal shows its collar number
     FACES.forEach((f, i) => {
       const it = near[i]; if (!it) { f.visible = false; f.dog = null; return; }
-      const d = it[1], b = d.b, drop = d.dropv * 0.24;
+      const d = it[1], a = d.rig.anchor;
       if (f.dog !== d) { f.dog = d; drawFace(f, d); }
-      vP.set(0, 0.46 - drop, 0.4445); vS.set(0.17 / b.w, 0.17 / b.h, 1); mPart.compose(vP, qI, vS); f.matrix.multiplyMatrices(d.m, mPart); f.matrixWorldNeedsUpdate = true; f.visible = true;
+      vP.set(a.medal[0], a.medal[1], a.medal[2] + 0.017); vS.set(0.145, 0.145, 1); mPart.compose(vP, qI, vS); f.matrix.multiplyMatrices(d.m, mPart); f.matrixWorldNeedsUpdate = true; f.visible = true;
     });
-    dogMesh.instanceMatrix.needsUpdate = true; if (rainbow) dogMesh.instanceColor.needsUpdate = true;
+    coreMesh.instanceMatrix.needsUpdate = true; blobMesh.instanceMatrix.needsUpdate = true; detMesh.count = cur; if (cur) detMesh.instanceMatrix.needsUpdate = true; if (colDirty) detMesh.instanceColor.needsUpdate = true; if (rainbow) coreMesh.instanceColor.needsUpdate = true;
     if (accMesh) accMesh.instanceMatrix.needsUpdate = true;
   }
 
@@ -314,7 +328,7 @@
     const [z0, z1] = CITY.avenue, L = z0 - z1, u = (t * 1.5) / L, back = Math.floor(u) % 2 === 1, z = z0 - pingpong(u) * L;
     const mx = CITY.gate[0] - 0.5, cp = camera.position, far = (mx - cp.x) ** 2 + (z - cp.z) ** 2 > 80 * 80 && !followMarsh && selected !== MARSH;
     if (far) K.marsh.visible = false; else K.putMarsh(mx, 0, z, back ? 0 : Math.PI, { run: 1, phase: t * 11, wag: K.wag(t) }); // ~40 draw calls, so only when close
-    MARSH.wx = mx; MARSH.wz = z; MARSH.wy = 1.15;
+    MARSH.wx = mx; MARSH.wz = z; MARSH.wy = 1.15; marshBlob.position.set(mx, 0.025, z); marshBlob.visible = !far;
   }
 
   /* ================= Builds and the "next build" sign ================= */
@@ -515,7 +529,8 @@
     $("follow").href = igUrl; document.querySelectorAll(".ig").forEach((el) => (el.textContent = "@" + ig));
     $("goldN").textContent = DATA.goldCollars; $("silverA").textContent = (DATA.goldCollars + 1).toLocaleString(); $("silverB").textContent = DATA.silverCollars.toLocaleString();
     const gold = DOGS.filter((d) => d.tier === "gold").length, silver = DOGS.filter((d) => d.tier === "silver").length, silverN = DATA.silverCollars - DATA.goldCollars;
-    $("stats").innerHTML = `<b>Day ${DATA.day}</b> · <b>${DOGS.length.toLocaleString()}</b> ${DOGS.length === 1 ? "dog" : "dogs"} · 🥇 <b>${gold}/${DATA.goldCollars}</b> · 🥈 <b>${silver}/${silverN}</b>`;
+    const total = Math.max(DOGS.length, +DATA.followers || 0); // the follower count, even before every follower has a dog on the map
+    $("stats").innerHTML = `<b>Day ${DATA.day}</b> · <b>${total.toLocaleString()}</b> ${total === 1 ? "dog" : "dogs"} · 🥇 <b>${gold}/${DATA.goldCollars}</b> · 🥈 <b>${silver}/${silverN}</b>`;
     if (!DOGS.length) $("hint").textContent = "No dogs yet. Follow to be the first!";
     $("names").innerHTML = DOGS.length < 3000 ? DOGS.map((d) => `<option value="@${esc(d.handle)}">`).join("") : "";
     $("logList").innerHTML = DATA.log.slice().sort((a, b) => b.day - a.day).map((l) => `<li><div class="d">Day ${l.day}${l.date ? " · " + esc(l.date) : ""}</div><h3>${esc(l.title)}</h3>${l.text ? `<p>${esc(l.text)}</p>` : ""}${l.reel ? `<a href="${esc(l.reel)}" target="_blank" rel="noopener">Watch Day ${l.day} ↗</a>` : ""}</li>`).join("");
@@ -580,7 +595,7 @@
     // dogs nearby need (every 2nd frame up close, every 8th from afar)
     { const size = Math.round(clamp(cam.dist * 0.8, 16, 90) / 4) * 4, step = (8 * size) / SHADOW, sx = Math.round(cam.tx / step) * step, sz = Math.round(cam.tz / step) * step, key = sx + "," + sz + "," + size;
       if (key !== lightKey) { lightKey = key; K.light("day", sx, sz, size, 420); shadowDirty = true; } }
-    if (shadowDirty || FRAME % (cam.dist < 40 ? 2 : 8) === 0) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
+    if (shadowDirty || FRAME % 90 === 0) { renderer.shadowMap.needsUpdate = true; shadowDirty = false; } // only still things cast shadows now, so this is rare
     K.sky.position.copy(camera.position);
     if (cam.dist < 45) K.life(t, cam.tx, cam.tz, clamp(cam.dist * 0.25, 4, 14), true); else K.lifeG.visible = false; // butterflies are invisible from far away
     const tR = performance.now(); K.stage.render(); LAST.render = performance.now() - tR;
@@ -592,7 +607,7 @@
     try {
       DATA = DEMO ? demoData() : await fetch("data/sanctuary.json", { cache: "no-cache" }).then((r) => r.json());
     } catch (e) { DATA = { day: 1, dogs: [], builds: [], log: [], goldCollars: 100 }; toast("Couldn't load today's dogs. Try refreshing."); }
-    DATA.goldCollars = DATA.goldCollars || 100; DATA.silverCollars = DATA.silverCollars || 1000;
+    DATA.goldCollars = DATA.goldCollars || 100; DATA.silverCollars = DATA.silverCollars || 600;
     DATA.log = Array.isArray(DATA.log) ? DATA.log : []; DATA.day = DATA.day || 1;
     // tolerate hand-edited data: drop duplicates, give missing numbers the next free one, fill in breed and day
     const seen = new Set(); let maxN = 0;
@@ -600,7 +615,7 @@
     DOGS.forEach((d) => { d.n = Number.isFinite(+d.n) && +d.n > 0 ? +d.n : 0; maxN = Math.max(maxN, d.n); });
     DOGS.forEach((d) => { if (!d.n) d.n = ++maxN; });
     DOGS.sort((a, b) => a.n - b.n);
-    DOGS.forEach((d) => { d.handle = d.handle.trim().replace(/^@+/, ""); d.model = K.BREEDS[d.model] ? d.model : "golden"; d.breed = String(d.breed || d.model[0].toUpperCase() + d.model.slice(1)); d.day = d.day || DATA.day; BYNAME.set(norm(d.handle), d); });
+    DOGS.forEach((d) => { d.handle = d.handle.trim().replace(/^@+/, ""); if (d.model === "chocolate") { d.model = "lab"; d.look = d.look || "chocolate"; } d.model = LPB.LABEL[d.model] ? d.model : "mutt"; d.look = String(d.look || ""); d.breed = String(d.breed || LPB.LABEL[d.model]); d.day = d.day || DATA.day; BYNAME.set(norm(d.handle), d); });
     const bseen = new Set(); BUILDS = (Array.isArray(DATA.builds) ? DATA.builds : []).filter((b) => b && BUILDERS[b.type] && !bseen.has(b.type) && bseen.add(b.type)); // each kind once
     window.SANCTUARY = { DOGS, select: (h) => select(BYNAME.get(norm(h)), true), view: (o) => { fly = null; Object.assign(cam, o); }, bench: (n = 60) => { // runs n frames back to back and times each step (CPU only; the GPU work isn't counted)
       const T0 = performance.now(), r = { dogs: 0, render: 0, tags: 0, rest: 0 };
@@ -608,6 +623,9 @@
       for (const k in r) r[k] = +(r[k] / n).toFixed(2); r.calls = renderer.info.render.calls; r.tris = renderer.info.render.triangles; return r; },
     perf: () => ({ cpuMs: +PERF.js.toFixed(2), frameMs: +PERF.gap.toFixed(1), calls: renderer.info.render.calls, tris: renderer.info.render.triangles, pr: renderer.getPixelRatio() }) };
     setupBuilds(); setupDogs(); fillPage(); resize();
+    // anything that moves gets a blob shadow (or none) instead of a shadow-map shadow, which would lag behind it
+    const noCast = (o) => o && o.traverse((c) => (c.castShadow = false));
+    noCast(K.marsh); noCast(K.lifeG); LOD.forEach((b) => (b.staff || []).forEach(noCast)); shadowDirty = true;
     updateMarsh(0); updateDogs(0); applyCam();
     requestAnimationFrame(frame);
     setTimeout(() => $("loading").classList.add("gone"), 150);

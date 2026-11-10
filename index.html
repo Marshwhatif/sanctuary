@@ -12,7 +12,7 @@
   <link rel="canonical" href="https://marshtown.com/">
   <meta name="theme-color" content="#5bb8ea">
   <link rel="icon" href="img/favicon.png">
-  <link rel="stylesheet" href="site/style.css?v=15">
+  <link rel="stylesheet" href="site/style.css?v=18">
 </head>
 <body>
   <canvas id="view" aria-label="3D view of Marsh's Dog Sanctuary"></canvas>
@@ -60,7 +60,7 @@
     <p class="chips"><span>Joined day <b id="cJoined"></b></span><span>Kennel <b id="cKennel"></b></span><span>Collar <b id="cCollar"></b></span></p>
     <div class="row">
       <button id="share" class="primary">Share my dog</button>
-      <button id="upgrade" hidden>Upgrade</button>
+      <button id="upgrade" hidden>Customise</button>
     </div>
   </section>
 
@@ -70,7 +70,7 @@
     <ul class="rules">
       <li><b>Follow</b> <span class="ig"></span> on Instagram and a dog moves into the sanctuary for you.</li>
       <li><b>Comment your breed</b> on the newest sanctuary reel. Changed your mind? Comment again any time.</li>
-      <li><b>The first <span id="goldN">100</span> followers</b> get a gold collar 🥇, and followers <span id="silverA">101</span> to <span id="silverB">1,000</span> get silver 🥈, and they stay with your dog.</li>
+      <li><b>The first <span id="goldN">100</span> followers</b> get a gold collar 🥇, and followers <span id="silverA">101</span> to <span id="silverB">600</span> get silver 🥈, and they stay with your dog.</li>
       <li><b>The top comment</b> on each reel decides what Marsh builds next.</li>
       <li>The sanctuary updates with every new video, so new dogs show up then, not straight away.</li>
       <li>Don't want to be here? DM <span class="ig"></span> and your dog goes home.</li>
@@ -141,13 +141,14 @@
   <div id="toast" class="toast" hidden></div>
   <div id="loading" class="loading">Opening the gates…</div>
 
-  <script src="lib/three.min.js?v=15"></script>
-  <script src="lib/lowpoly.js?v=15"></script>
-  <script src="lib/lowpoly-blocky.js?v=15"></script>
-  <script src="lib/lowpoly-marsh.js?v=15"></script>
-  <script src="lib/lowpoly-sanctuary.js?v=15"></script>
-  <script src="lib/lowpoly-town.js?v=15"></script>
-  <script src="site/app.js?v=15"></script>
+  <script src="lib/three.min.js?v=18"></script>
+  <script src="lib/lowpoly.js?v=18"></script>
+  <script src="lib/lowpoly-blocky.js?v=18"></script>
+  <script src="lib/lowpoly-marsh.js?v=18"></script>
+  <script src="lib/lowpoly-sanctuary.js?v=18"></script>
+  <script src="lib/lowpoly-town.js?v=18"></script>
+  <script src="lib/lowpoly-breeds.js?v=18"></script>
+  <script src="site/app.js?v=18"></script>
   <!-- Cloudflare Web Analytics: anonymous visit counts, no cookies -->
   <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "b8894d998475450e940ced54ff0926d3"}'></script>
   <!-- End Cloudflare Web Analytics -->
