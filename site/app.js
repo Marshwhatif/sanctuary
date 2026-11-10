@@ -642,14 +642,18 @@
   const LAST = { dogs: 0, render: 0, tags: 0 };
   let lastInput = 0, skip = 0, slow = 0;
   ["pointerdown", "pointermove", "wheel", "keydown"].forEach((ev) => addEventListener(ev, () => (lastInput = performance.now()), { passive: true }));
+  let rafLast = 0, rafGap = 16.7; // how often the browser actually offers a frame (iPhones in Low Power Mode: only 30 a second)
   function frame(now) {
-    // on phones, draw every other frame (30 fps) when nobody has touched the screen for 2.5 s: half the battery
-    const idle = phone && !fly && !followMarsh && now - lastInput > 2500;
+    if (rafLast && now - rafLast < 200) rafGap = rafGap * 0.9 + (now - rafLast) * 0.1; rafLast = now;
+    // on phones that run at 60, draw every other frame (30 fps) when nobody has touched the screen for 2.5 s, to save battery.
+    // Never on a phone that's already at 30: that would drop it to 15.
+    const idle = phone && rafGap < 22 && !fly && !followMarsh && now - lastInput > 2500;
     if (idle && (skip++ & 1)) { requestAnimationFrame(frame); return; }
     const t0 = performance.now(), gap = now - (PERF.last || now);
     PERF.gap = PERF.gap * 0.95 + gap * 0.05; PERF.last = now;
-    // if frames keep taking longer than ~33 ms while in use, lower the resolution a step (down to 1x), then drop shadows
-    if (!idle && gap > 0 && gap < 500) { slow = gap > 34 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
+    // If frames keep arriving late (half again slower than the browser's own rate) while in use, lower the resolution a
+    // step, but not below 1.15x; only then drop shadows. (This used to count every 30 fps frame as slow and gave up quality for nothing.)
+    if (!idle && gap > 0 && gap < 500) { slow = gap > rafGap * 1.5 + 4 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1.15) { pixelRatio = Math.max(1.15, pixelRatio - 0.15); renderer.setPixelRatio(pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
     frameSteps(now);
     PERF.js = PERF.js * 0.95 + (performance.now() - t0) * 0.05;
     requestAnimationFrame(frame);
@@ -762,7 +766,7 @@
   if (params.has("debug")) {
     const el = document.createElement("div"); el.id = "debug"; document.body.appendChild(el); let f0 = FRAME, t0 = performance.now();
     (function tick() { const now = performance.now(); if (now - t0 > 500) { const fps = ((FRAME - f0) * 1000) / (now - t0); f0 = FRAME; t0 = now; // frames actually drawn
-      el.textContent = `${fps.toFixed(0)} fps  ${PERF.js.toFixed(1)} ms js\n${MAP.full ? "2D map" : MAP.fade > 0 ? "fading" : OVER ? "3D far" : "3D"}  zoom ${cam.dist.toFixed(0)}\n${renderer.info.render.calls} calls  ${(renderer.info.render.triangles / 1000).toFixed(0)}k tris\npx ${renderer.getPixelRatio()}  ${W}x${H}  shadows ${K.sun.castShadow ? "on" : "off"}`; }
+      el.textContent = `${fps.toFixed(0)} fps (screen ${(1000 / rafGap).toFixed(0)})  ${PERF.js.toFixed(1)} ms js\n${MAP.full ? "2D map" : MAP.fade > 0 ? "fading" : OVER ? "3D far" : "3D"}  zoom ${cam.dist.toFixed(0)}\n${renderer.info.render.calls} calls  ${(renderer.info.render.triangles / 1000).toFixed(0)}k tris\npx ${renderer.getPixelRatio()}  ${W}x${H}  shadows ${K.sun.castShadow ? "on" : "off"}`; }
       requestAnimationFrame(tick); })();
   }
 
