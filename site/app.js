@@ -119,7 +119,7 @@
     { id: "jumper", kind: "outfit", name: "Christmas jumper", soon: true }, { id: "suit", kind: "outfit", name: "Suit", soon: true },
   ];
 
-  let coreMesh = null, detMesh = null, accMesh = null, blobMesh = null, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
+  let coreMesh = null, detMesh = null, accMesh = null, blobMesh = null, farMesh = null, OVER = false, blingMesh = null, medalMesh = null, sparkMesh = null, TIERED = [];
   const SPARKS = 5;
   // Earned collars: gold for the first goldCollars followers, silver up to silverCollars. Paid upgrades never change the tier.
   const TIER = {
@@ -144,6 +144,14 @@
   const vR = new T.Vector3(), vU = new T.Vector3(), vF = new T.Vector3(), vC = new T.Vector3(), qR = new THREE.Quaternion(), AXZ = new THREE.Vector3(0, 0, 1), Q45 = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI / 4), mDog = new T.Matrix4(), mTmp = new T.Matrix4(), mPart = new T.Matrix4(), vP = new T.Vector3(), vS = new T.Vector3(), qI = new T.Quaternion(), qT = new T.Quaternion(), ZERO = new T.Matrix4().makeScale(0, 0, 0), AX = new T.Vector3(0, 1, 0), AXX = new T.Vector3(1, 0, 0), COL = new T.Color();
 
   const VISITS = {}; let FRAME = 0;
+  // The zoomed-out dog: legs, body and head merged into one shape (one instance a dog, 30 triangles, no undersides).
+  // In unit space: 1 wide, 1 tall to the top of the back, 1 long; each breed stretches it (rig.far).
+  const FARGEO = (() => {
+    const parts = [[0, 0.3, 0, 0.8, 0.6, 0.75], [0, 0.78, 0, 1, 0.44, 1], [0, 1.05, 0.55, 0.85, 0.5, 0.42]], pos = [], nor = [];
+    parts.forEach(([x, y, z, w, h, d]) => { const b = new T.BoxGeometry(w, h, d).toNonIndexed(); b.translate(x, y, z); const P = b.attributes.position.array, N = b.attributes.normal.array;
+      for (let i = 0; i < P.length; i += 9) { if (N[i + 1] < -0.5) continue; for (let k = 0; k < 9; k++) { pos.push(P[i + k]); nor.push(N[i + k]); } } }); // drop the bottom faces
+    const g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); g.setAttribute("normal", new T.Float32BufferAttribute(nor, 3)); return g;
+  })();
   // Soft round shadows under the dogs and Marsh. Moving things don't cast real (shadow-map) shadows any more: those could
   // only be redrawn every few frames, so they trailed behind the dogs. Buildings, kennels and trees still do.
   const BLOBGEO = new T.CircleGeometry(0.5, 14).rotateX(-Math.PI / 2), BLOBMAT = new T.MeshBasicMaterial({ color: "#1b2a12", transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
@@ -151,13 +159,20 @@
   const BONES = Array.from({ length: 7 }, () => new T.Matrix4()), BW = Array.from({ length: 7 }, () => new T.Matrix4()), POSE = {}, qColl = new T.Quaternion();
   const IN_ACTS = ["snooze", "guard", "snooze", "treats"], OUT_ACTS = ["sun", "butterflies", "zoomies", "fetch", "dig", "butterflies", "fetch", "zoomies"];
   function setupDogs() {
-    [coreMesh, detMesh, accMesh, blobMesh].forEach((m) => { if (m) { m.parent.remove(m); m.dispose(); } }); coreMesh = detMesh = accMesh = blobMesh = null;
+    [coreMesh, detMesh, accMesh, blobMesh, farMesh].forEach((m) => { if (m) { m.parent.remove(m); m.dispose(); } }); coreMesh = detMesh = accMesh = blobMesh = farMesh = null;
     // split each breed's boxes into core and detail once
-    const split = (rg) => { if (!rg.core) { const pv = rg.pivots; rg.blobL = pv[3].z - pv[5].z + 0.55; rg.blobW = Math.abs(pv[4].x) * 2 + 0.34; rg.core = []; rg.det = []; rg.parts.forEach((p, i) => (p.core ? rg.core : rg.det).push(i)); rg.collarCore = rg.core.indexOf(rg.collarIdx); } return rg; };
+    const split = (rg) => { if (!rg.far) { // the overview shape (see FARGEO) stretched to this breed: width, height to the back, length
+        const sc = new T.Vector3(), pv = rg.pivots; rg.parts[0].m.decompose(new T.Vector3(), new T.Quaternion(), sc);
+        rg.far = new T.Matrix4().makeScale(sc.x, pv[2].y + 0.05, pv[3].z - pv[5].z + 0.3); rg.farC = rg.parts[0].c;
+      }
+      if (!rg.core) { const pv = rg.pivots; rg.blobL = pv[3].z - pv[5].z + 0.55; rg.blobW = Math.abs(pv[4].x) * 2 + 0.34; rg.core = []; rg.det = []; rg.parts.forEach((p, i) => (p.core ? rg.core : rg.det).push(i)); rg.collarCore = rg.core.indexOf(rg.collarIdx); } return rg; };
     let nc = 0, accCount = 0;
     DOGS.forEach((d) => { const rg = split(LPB.rig(d.model, d.look)); d.rig = rg; d.scale = LPB.scaleOf(rg); d.c0 = nc; d.detAt = -1; nc += rg.core.length; });
     const mk = (n, shadow) => { const m = new T.InstancedMesh(new T.BoxGeometry(1, 1, 1), new T.MeshLambertMaterial({ color: "#ffffff" }), Math.max(1, n)); m.castShadow = shadow; m.receiveShadow = true; m.frustumCulled = false; m.instanceMatrix.setUsage(T.DynamicDrawUsage); scene.add(m); return m; };
     coreMesh = mk(nc, false); detMesh = mk(DETCAP, false); detMesh.count = 0;
+    farMesh = new T.InstancedMesh(FARGEO, new T.MeshLambertMaterial({ color: "#ffffff" }), Math.max(1, DOGS.length)); farMesh.frustumCulled = false; farMesh.instanceMatrix.setUsage(T.DynamicDrawUsage); farMesh.visible = false; scene.add(farMesh);
+    DOGS.forEach((d, i) => farMesh.setColorAt(i, COL.set(d.rig.farC)));
+    if (!DOGS.length) farMesh.setMatrixAt(0, ZERO);
     blobMesh = new T.InstancedMesh(BLOBGEO, BLOBMAT, Math.max(1, DOGS.length)); blobMesh.frustumCulled = false; blobMesh.renderOrder = 1; blobMesh.instanceMatrix.setUsage(T.DynamicDrawUsage); scene.add(blobMesh);
     if (!DOGS.length) blobMesh.setMatrixAt(0, ZERO);
     if (!nc) { coreMesh.setMatrixAt(0, ZERO); coreMesh.setColorAt(0, COL.set("#ffffff")); } detMesh.setColorAt(0, COL.set("#ffffff"));
@@ -190,7 +205,7 @@
       d.far = true;
       if (d.hat && HATS[d.hat]) { d.acc0 = accCount; accCount += HATS[d.hat].length; }
     });
-    coreMesh.instanceColor.needsUpdate = true; detMesh.instanceColor.needsUpdate = true;
+    coreMesh.instanceColor.needsUpdate = true; detMesh.instanceColor.needsUpdate = true; farMesh.instanceColor.needsUpdate = true;
     // Gold and silver dogs: a slim shiny band, a round medal with their number on the chest, and little sparkles circling the collar.
     [blingMesh, medalMesh, sparkMesh].forEach((m) => { if (m) { m.parent.remove(m); m.dispose(); } }); blingMesh = medalMesh = sparkMesh = null;
     TIERED = DOGS.filter((d) => d.tier);
@@ -260,6 +275,14 @@
     let rainbow = false;
     mVP.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); FRU.setFromProjectionMatrix(mVP);
     const farStride = cam.dist > 60 ? 4 : 3; // from the overview the dogs are tiny, so a quarter of them move each frame
+    // Zoomed right out, every dog is a few pixels, and phones choke on thousands of tiny boxes: each dog becomes 4 boxes,
+    // with no blob shadows, medals or details, and phones draw at 1x. Close in, the full dogs come back.
+    const over = OVER ? cam.dist > 62 : cam.dist > 72;
+    if (over !== OVER) {
+      OVER = over; coreMesh.visible = detMesh.visible = blobMesh.visible = !over; farMesh.visible = over; CITY.kennelHi.visible = !over; CITY.kennelLo.visible = over; shadowDirty = true; if (medalMesh) medalMesh.visible = sparkMesh.visible = !over; if (accMesh) accMesh.visible = !over;
+      if (phone) { renderer.setPixelRatio(over ? 1 : pixelRatio); resize(); }
+      DOGS.forEach((d) => (d.wx = undefined)); // move everyone into place on the next frame
+    }
     let cur = 0, colDirty = false;
     for (let i = 0; i < DOGS.length; i++) {
       const d = DOGS[i];
@@ -275,6 +298,7 @@
       if (o.pitch) { const pv = rg.pivots[o.pitch < 0 ? 5 : 3]; mDog.multiply(mTmp.makeTranslation(0, pv.y, pv.z)).multiply(mTmp.makeRotationX(o.pitch)).multiply(mTmp.makeTranslation(0, -pv.y, -pv.z)); }
       POSE.drop = o.drop; POSE.sit = o.pitch < 0 ? 1 : 0; POSE.run = o.run; POSE.ph = o.ph;
       POSE.wag = Math.sin(t * (o.drop ? 3 : 16) + d.ph) * 0.6; POSE.look = o.run ? 0 : Math.sin(t * 0.6 + d.ph * 2) * 0.35;
+      if (OVER) { mTmp.multiplyMatrices(mDog, rg.far); farMesh.setMatrixAt(i, mTmp); if (d.tier) { d.m = d.m || new T.Matrix4(); d.m.copy(mDog); } d.detAt = -1; continue; }
       LPB.pose(rg, POSE, BONES);
       for (let b = 0; b < 7; b++) BW[b].multiplyMatrices(mDog, BONES[b]);
       const P = rg.parts;
@@ -320,7 +344,7 @@
       if (f.dog !== d) { f.dog = d; drawFace(f, d); }
       vP.set(a.medal[0], a.medal[1], a.medal[2] + 0.017); vS.set(0.145, 0.145, 1); mPart.compose(vP, qI, vS); f.matrix.multiplyMatrices(d.m, mPart); f.matrixWorldNeedsUpdate = true; f.visible = true;
     });
-    coreMesh.instanceMatrix.needsUpdate = true; blobMesh.instanceMatrix.needsUpdate = true; detMesh.count = cur; if (cur) detMesh.instanceMatrix.needsUpdate = true; if (colDirty) detMesh.instanceColor.needsUpdate = true; if (rainbow) coreMesh.instanceColor.needsUpdate = true;
+    if (OVER) farMesh.instanceMatrix.needsUpdate = true; else { coreMesh.instanceMatrix.needsUpdate = true; blobMesh.instanceMatrix.needsUpdate = true; } detMesh.count = cur; if (cur) detMesh.instanceMatrix.needsUpdate = true; if (colDirty) detMesh.instanceColor.needsUpdate = true; if (rainbow) coreMesh.instanceColor.needsUpdate = true;
     if (accMesh) accMesh.instanceMatrix.needsUpdate = true;
   }
 
@@ -341,7 +365,7 @@
     const cp = camera.position;
     LOD.forEach((b) => {
       const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < 34 * 34;
-      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); shadowDirty = true; }
+      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); }
       if (near || b.always) b.anim(t);
     });
   }
@@ -572,7 +596,7 @@
     const t0 = performance.now(), gap = now - (PERF.last || now);
     PERF.gap = PERF.gap * 0.95 + gap * 0.05; PERF.last = now;
     // if frames keep taking longer than ~33 ms while in use, lower the resolution a step (down to 1x), then drop shadows
-    if (!idle && gap > 0 && gap < 500) { slow = gap > 34 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
+    if (!idle && gap > 0 && gap < 500) { slow = gap > 34 ? slow + 1 : Math.max(0, slow - 2); if (slow > 90) { slow = 0; if (pixelRatio > 1) { pixelRatio = Math.max(1, pixelRatio - 0.25); renderer.setPixelRatio(OVER && phone ? 1 : pixelRatio); resize(); } else if (K.sun.castShadow) K.sun.castShadow = false; } }
     frameSteps(now);
     PERF.js = PERF.js * 0.95 + (performance.now() - t0) * 0.05;
     requestAnimationFrame(frame);
