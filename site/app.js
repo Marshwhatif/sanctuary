@@ -602,6 +602,10 @@
     const tT = performance.now(); updateTags(); LAST.tags = performance.now() - tT;
   }
 
+  // iPhone Safari ignores user-scalable=no, so stop its pinch gesture zooming the page (pinches on the 3D view still zoom the camera)
+  ["gesturestart", "gesturechange"].forEach((ev) => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+  document.addEventListener("touchmove", (e) => { if (e.touches.length > 1 && !e.target.closest("#view")) e.preventDefault(); }, { passive: false });
+
   /* ================= Boot ================= */
   async function boot() {
     try {

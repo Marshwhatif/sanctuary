@@ -14,6 +14,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #8fd0f0; overscroll-behavior: none; }
 button, input { font: inherit; color: inherit; }
+html, body { touch-action: pan-x pan-y; } /* pinching zooms the 3D view, never the page itself (panels still scroll) */
 button, a, input, .tag { touch-action: manipulation; } /* no double-tap zoom on phones */
 .toast { word-break: break-all; }
 button { cursor: pointer; border: 0; }
