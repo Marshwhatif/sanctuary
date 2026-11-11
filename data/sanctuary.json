@@ -3711,6 +3711,13 @@
         "link": "https://ko-fi.com/s/ea8b731e3a"
       },
       {
+        "id": "propeller",
+        "kind": "hat",
+        "name": "Propeller hat",
+        "price": "£3",
+        "link": "https://ko-fi.com/s/1cb0cc5fd8"
+      },
+      {
         "id": "request",
         "kind": "request",
         "name": "Something else?"

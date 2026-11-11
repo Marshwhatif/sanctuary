@@ -59,6 +59,7 @@
     library: { text: "Reading at the library", pose: "build", build: "library" },
     gym: { text: "Working out at Muscle Mutts gym", pose: "build", build: "gym" },
     cinema: { text: "Watching The Good Boy at the cinema", pose: "build", build: "cinema" },
+    waterpark: { text: "Splashing about at the waterpark", pose: "build", build: "waterpark" },
   };
   const BASE_ACTS = ["nap", "sun", "guard", "treats", "butterflies", "zoomies", "fetch", "dig", "butterflies", "fetch"];
 
@@ -69,12 +70,12 @@
       const model = LPB.NAMES[Math.floor(r() * LPB.NAMES.length)];
       const d = { handle: `${words[n % 3]}_${bits[Math.floor(r() * bits.length)]}${n}`, breed: LPB.LABEL[model], model, look: "", n, day: 2 + Math.floor((n / 360) * 4) };
       if (r() < 0.06) d.collar = "rainbow";
-      if (r() < 0.1) d.hat = ["party", "crown", "tophat", "shades"][Math.floor(r() * 4)];
+      if (r() < 0.1) d.hat = ["party", "crown", "tophat", "shades", "propeller"][Math.floor(r() * 5)];
       dogs.push(d);
     }
     return {
       day: 6, updated: "demo", instagram: "marshwhatif", goldCollars: 100, silverCollars: 600, dogs,
-      builds: [{ type: "supermarket", day: 2, slot: 0 }, { type: "library", day: 2, slot: 1 }, { type: "gym", day: 2, slot: 2 }, { type: "cinema", day: 2, slot: 3 }],
+      builds: [{ type: "supermarket", day: 2, slot: 0 }, { type: "library", day: 2, slot: 1 }, { type: "gym", day: 2, slot: 2 }, { type: "cinema", day: 2, slot: 3 }, { type: "waterpark", day: 6, slot: 4 }],
       log: [6, 5, 4, 3, 2, 1].map((d) => ({ day: d, title: `Sample day ${d}`, text: "Demo text. Real days come from data/sanctuary.json.", reel: "" })),
       shop: { enabled: true, note: "Demo shop: the buy links are empty.", items: SHOP_DEFAULT },
     };
@@ -92,9 +93,11 @@
     wizard: [[0, 0.015, 0, 0.44, 0.03, 0.44, "#3a2a8a"], [0, 0.1, 0, 0.27, 0.16, 0.27, "#4a3aa8"], [0, 0.24, -0.01, 0.19, 0.14, 0.19, "#4a3aa8"], [0, 0.36, -0.03, 0.12, 0.12, 0.12, "#4a3aa8"], [0, 0.46, -0.06, 0.06, 0.1, 0.06, "#4a3aa8"], [0.07, 0.13, 0.136, 0.05, 0.05, 0.01, "#ffd23a"], [-0.05, 0.26, 0.096, 0.04, 0.04, 0.01, "#ffd23a"]],
     chef: [[0, 0.05, 0, 0.3, 0.1, 0.3, "#ffffff"], [0, 0.17, 0, 0.36, 0.15, 0.36, "#f8f8f8"], [0, 0.27, 0, 0.3, 0.07, 0.3, "#ffffff"], [0, 0.04, 0.151, 0.3, 0.02, 0.005, "#d8d8d8"]],
     bobble: [[0, 0.03, 0, 0.36, 0.08, 0.36, "#c8303a"], [0, 0.12, 0, 0.33, 0.12, 0.33, "#e2483a"], [0, 0.095, 0, 0.335, 0.03, 0.335, "#ffffff"], [0, 0.2, 0, 0.24, 0.05, 0.24, "#e2483a"], [0, 0.26, 0, 0.11, 0.11, 0.11, "#ffffff"]],
+    // propeller beanie: four colour panels, a visor, and two blades that spin (parts marked "spin" turn round the hat's centre)
+    propeller: [[-0.0875, 0.05, -0.0875, 0.175, 0.12, 0.175, "#e2483a"], [0.0875, 0.05, -0.0875, 0.175, 0.12, 0.175, "#f0b52e"], [-0.0875, 0.05, 0.0875, 0.175, 0.12, 0.175, "#2f8fe0"], [0.0875, 0.05, 0.0875, 0.175, 0.12, 0.175, "#27b39a"], [-0.0725, 0.135, -0.0725, 0.145, 0.05, 0.145, "#e2483a"], [0.0725, 0.135, -0.0725, 0.145, 0.05, 0.145, "#f0b52e"], [-0.0725, 0.135, 0.0725, 0.145, 0.05, 0.145, "#2f8fe0"], [0.0725, 0.135, 0.0725, 0.145, 0.05, 0.145, "#27b39a"], [-0.05, 0.18, -0.05, 0.1, 0.04, 0.1, "#e2483a"], [0.05, 0.18, -0.05, 0.1, 0.04, 0.1, "#f0b52e"], [-0.05, 0.18, 0.05, 0.1, 0.04, 0.1, "#2f8fe0"], [0.05, 0.18, 0.05, 0.1, 0.04, 0.1, "#27b39a"], [0, 0.0, 0.21, 0.28, 0.025, 0.12, "#2f8fe0"], [0, 0.23, 0, 0.035, 0.06, 0.035, "#f6f4ee"], [0, 0.27, 0, 0.065, 0.03, 0.065, "#f0b52e"], [-0.13, 0.285, 0, 0.22, 0.014, 0.07, "#e2483a", "spin"], [0.13, 0.285, 0, 0.22, 0.014, 0.07, "#2f8fe0", "spin"]],
     cowboy: [[0, 0.02, 0, 0.58, 0.03, 0.48, "#a0683a"], [-0.26, 0.04, 0, 0.06, 0.04, 0.48, "#a0683a"], [0.26, 0.04, 0, 0.06, 0.04, 0.48, "#a0683a"], [0, 0.12, 0, 0.28, 0.18, 0.26, "#a0683a"], [0, 0.05, 0, 0.285, 0.04, 0.265, "#5a3a20"], [0, 0.2, 0, 0.1, 0.03, 0.27, "#8a5830"]],
   };
-  const HAT_NAMES = { party: "Party hat", crown: "Crown", tophat: "Top hat", shades: "Sunglasses", wizard: "Wizard hat", chef: "Chef's hat", bobble: "Bobble hat", cowboy: "Cowboy hat" };
+  const HAT_NAMES = { party: "Party hat", crown: "Crown", tophat: "Top hat", shades: "Sunglasses", wizard: "Wizard hat", chef: "Chef's hat", bobble: "Bobble hat", cowboy: "Cowboy hat", propeller: "Propeller hat" };
   // The shop's line-up. Live items need a Ko-fi link in data/sanctuary.json; "soon" ones show as coming soon.
   // Shop-only models (outfits aren't worn by dogs yet; they're coming soon). Same format as HATS: x, bottom y, z, w, h, d, colour.
   const PREVIEW = {
@@ -114,7 +117,7 @@
   // The shop's line-up. Live items need a Ko-fi link in data/sanctuary.json; "soon" ones show as coming soon; "request" opens an Instagram DM.
   const SHOP_DEFAULT = [
     { id: "rainbow", kind: "collar", name: "Rainbow collar", price: "£5" }, { id: "party", kind: "hat", name: "Party hat", price: "£3" },
-    { id: "request", kind: "request", name: "Something else?" },
+    { id: "propeller", kind: "hat", name: "Propeller hat", price: "£3" }, { id: "request", kind: "request", name: "Something else?" },
     { id: "crown", kind: "hat", name: "Crown", soon: true }, { id: "tophat", kind: "hat", name: "Top hat", soon: true }, { id: "shades", kind: "hat", name: "Sunglasses", soon: true },
     { id: "jumper", kind: "outfit", name: "Christmas jumper", soon: true }, { id: "suit", kind: "outfit", name: "Suit", soon: true },
   ];
@@ -193,7 +196,7 @@
       if (slot === 0) { d.hx = k.x - fx * 0.1; d.hz = k.z - fz * 0.1; } else { const a = (((slot - 1) % 3) - 1) * 0.78, b2 = 1.6 + Math.floor((slot - 1) / 3) * 0.55; d.hx = k.x + sx * a + fx * b2; d.hz = k.z + sz * a + fz * b2; }
       d.yx = k.x + fx * 1.6; d.yz = k.z + fz * 1.6;
       // Most dogs spend the day at home; some are out at the buildings, while those have room inside.
-      const h = hash(d.handle + ":" + DATA.day), builtTypes = BUILDS.map((x) => x.type).filter((t) => ACTS[t] && BUILT[t]);
+      const h = hash(d.handle + ":" + DATA.day), builtTypes = BUILDS.map((x) => x.type).filter((t) => ACTS[t] && BUILT[t]).flatMap((t) => Array(BUILT[t].weight || 1).fill(t)); // (a build with lots of room, like the waterpark, counts several times)
       d.ph = (h % 1000) / 159; d.dir = h & 1 ? 1 : -1; d.spot = null;
       let act = d.actId || (d.shared ? (d.inside ? IN_ACTS : OUT_ACTS)[h % (d.inside ? IN_ACTS : OUT_ACTS).length] : BASE_ACTS[h % BASE_ACTS.length]);
       const visit = d.shared ? (d.inside ? 0 : 30) : 14;
@@ -201,7 +204,7 @@
         const bt = builtTypes[(h >>> 16) % builtTypes.length], bl = BUILT[bt], n = VISITS[bt] || 0;
         if (n < bl.spots.length) { VISITS[bt] = n + 1; act = bt; d.spot = bl.spots[n]; d.bc = bl.centre; d.bf = bl.front; }
       }
-      d.act = ACTS[act];
+      d.act = d.spot && d.spot.text ? { ...ACTS[act], text: d.spot.text } : ACTS[act];
       d.far = true;
       if (d.hat && HATS[d.hat]) { d.acc0 = accCount; accCount += HATS[d.hat].length; }
     });
@@ -255,7 +258,9 @@
         o.x = c[0] + F[1] * u + F[0] * v; o.z = c[1] - F[0] * u + F[1] * v; o.yaw = Math.atan2(F[1] * du + F[0] * dv, -F[0] * du + F[1] * dv); o.run = 1; o.hop = Math.abs(Math.sin(o.ph)) * 0.1;
       } else {
         o.x = sp.x; o.z = sp.z; o.y = sp.y; o.yaw = sp.yaw;
-        if (sp.pose === "sit") o.pitch = -0.45;
+        if (sp.path) { const sink = sp.path(t, o); if (sink) o.y -= sink * d.rig.anchor.tag * d.scale; if (!Number.isFinite(o.x + o.y + o.z + o.yaw)) { o.x = sp.x; o.z = sp.z; o.y = 0; o.yaw = sp.yaw; } } // (never hand the camera a broken position) // waterpark routes: slides, rings, swimming
+        else if (sp.pose === "shake") { const on = Math.max(0, Math.sin(t * 0.9 + d.ph)); o.yaw += Math.sin(t * 30 + d.ph) * 0.4 * on; o.hop = on * Math.abs(Math.sin(t * 30)) * 0.03; }
+        else if (sp.pose === "sit") o.pitch = -0.45;
         else if (sp.pose === "lie") o.drop = 1;
         else if (sp.pose === "run") { o.run = 1; o.hop = Math.abs(Math.sin(o.ph)) * 0.08; }
         else if (sp.pose === "hop") { o.hop = Math.max(0, Math.sin(t * 5 + d.ph)) * 0.35; }
@@ -319,7 +324,9 @@
       if (d.collarCol === "rainbow") { coreMesh.setColorAt(d.c0 + rg.collarCore, COL.setHSL((rb + i * 0.13) % 1, 0.9, 0.55)); rainbow = true; }
       if (d.acc0 !== undefined) { // hats sit on the head bone, sized to the head
         const hat = rg.anchor.hat, kq = hat.w / 0.34;
-        HATS[d.hat].forEach((a, j) => { vP.set(a[0] * kq, hat.y + a[1] * kq, hat.z + a[2] * kq); vS.set(a[3] * kq, a[4] * kq, a[5] * kq); mPart.compose(vP, qI, vS); mTmp.multiplyMatrices(d.hm, mPart); accMesh.setMatrixAt(d.acc0 + j, mTmp); });
+        HATS[d.hat].forEach((a, j) => { vS.set(a[3] * kq, a[4] * kq, a[5] * kq);
+          if (a[7] === "spin") { const an = t * 14 + d.ph, c = Math.cos(an), sn = Math.sin(an); vP.set((a[0] * c + a[2] * sn) * kq, hat.y + a[1] * kq, hat.z + (a[2] * c - a[0] * sn) * kq); qT.setFromAxisAngle(AX, an); mPart.compose(vP, qT, vS); }
+          else { vP.set(a[0] * kq, hat.y + a[1] * kq, hat.z + a[2] * kq); mPart.compose(vP, qI, vS); } mTmp.multiplyMatrices(d.hm, mPart); accMesh.setMatrixAt(d.acc0 + j, mTmp); });
       }
     }
     const cp = camera.position, near = [];
@@ -371,8 +378,9 @@
   function updateBuilds(t) {
     const cp = camera.position;
     LOD.forEach((b) => {
-      const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < 34 * 34;
-      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); }
+      const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < (b.near2 || 34 * 34);
+      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); if (b.fx) b.fx.visible = near; }
+      if (b.fx && near) b.fx.material.uniforms.uH.value = renderer.domElement.height * 0.5;
       if (near || b.always) b.anim(t);
     });
   }
@@ -384,7 +392,8 @@
       let pi = PLOTS.findIndex((p) => p.for === b.type); if (pi < 0 || used.has(pi)) pi = PLOTS.findIndex((p, i) => !p.for && !used.has(i));
       if (pi < 0) return; used.add(pi); const p = PLOTS[pi];
       const set = f(p.x, p.z, p.yaw); set.group.visible = true; LOD.push(set); BUILT[b.type] = set; if (set.roof) ROOFS.push(set);
-      roofSign(set, SIGN_NAMES[b.type] || b.type.toUpperCase());
+      if (set.pathSign) flatSign(SIGN_NAMES[b.type] || b.type.toUpperCase(), p.x, 0.04, p.z + 6.95, 8.5, 1.9, "#1f7fc0", "#ffffff"); // no roof: the name is painted on the path in front
+      else roofSign(set, SIGN_NAMES[b.type] || b.type.toUpperCase());
     });
     // the next plot to fill gets the building site and its crane
     const next = PLOTS.findIndex((p, i) => !used.has(i));
@@ -394,7 +403,7 @@
   }
 
   // Flat signs on the roofs, facing the sky, so each building can be read from the top-down map (and from above in 3D)
-  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA" };
+  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA", waterpark: "WATERPARK" };
   const SIGNS = [];
   function flatSign(text, x, y, z, w, h, bg, fg) {
     const c = document.createElement("canvas"); c.width = 1024; c.height = Math.max(64, Math.round((1024 * h) / w)); const g = c.getContext("2d");
@@ -534,19 +543,21 @@
     closeAll(); card.hidden = false; hideHint();
     if (d.isMarsh) {
       $("cBadge").className = "badge marsh"; $("cBadge").textContent = "Owner";
-      $("cName").textContent = "Marsh"; $("cBreed").textContent = "Terrier. Puddle the duckling rides on his head.";
+      $("cName").textContent = "Marsh"; fitName(); $("cBreed").textContent = "Terrier. Puddle the duckling rides on his head.";
       $("cDoing").textContent = "Doing his rounds of the sanctuary"; $("cJoined").textContent = "1"; $("cKennel").textContent = "All of them"; $("cCollar").textContent = "Red";
       $("upgrade").hidden = true; $("share").textContent = "Share the sanctuary";
     } else {
       $("cBadge").className = "badge" + (d.tier ? " " + d.tier : d.collarCol === "rainbow" ? " rainbow" : "");
       $("cBadge").textContent = d.tier ? `${TIER[d.tier].name} collar · #${d.n}` : d.collarCol === "rainbow" ? "Rainbow collar" : `Dog #${d.n}`;
-      $("cName").textContent = "@" + d.handle; $("cBreed").textContent = d.breed + (d.hat ? ` · ${HAT_NAMES[d.hat] || d.hat}` : "");
+      $("cName").textContent = "@" + d.handle; fitName(); $("cBreed").textContent = d.breed + (d.hat ? ` · ${HAT_NAMES[d.hat] || d.hat}` : "");
       $("cDoing").textContent = d.act.text; $("cJoined").textContent = d.day; $("cKennel").textContent = `#${d.kennel}`; $("cCollar").textContent = collarName(d);
       $("upgrade").hidden = !(DATA.shop && DATA.shop.enabled); $("share").textContent = "Share my dog";
       history.replaceState(null, "", `?dog=${encodeURIComponent(d.handle)}${DEMO ? "&demo" : ""}`);
     }
     if (fly2 && !followMarsh) { const want = d.isMarsh ? cam.yaw : (d.wx > 0 ? -0.35 : 0.35), yaw = want + Math.PI * 2 * Math.round((cam.yaw - want) / (Math.PI * 2)); const inside = d.act && d.act.pose === "build" && d.spot; flyTo({ tx: d.wx, tz: d.wz, yaw: inside ? yaw * 0.3 : yaw, dist: inside ? 15 : Math.min(Math.max(cam.dist, 11), 12), pitch: inside ? 1.18 : 1.05 }, 1300); } // steep enough to see over buildings and the gate, and into the kennels
   }
+  // long usernames shrink to fit on one line instead of breaking mid-word (down to 13px; past that they wrap)
+  function fitName() { const el = $("cName"); el.style.fontSize = ""; el.style.whiteSpace = "nowrap"; let fs = 19; while (el.scrollWidth > el.clientWidth + 1 && fs > 13) el.style.fontSize = --fs + "px"; if (el.scrollWidth > el.clientWidth + 1) el.style.whiteSpace = ""; }
   $("card").querySelector("[data-close]").onclick = () => { select(null); if (followMarsh) setFollow(false); };
   $("upgrade").onclick = () => open("shop");
   $("share").onclick = async () => {
@@ -562,15 +573,15 @@
   // card's canvas. It only exists once the shop has been opened, and only runs while the shop is open.
   let PV = null;
   function shopModel(it) {
-    const g = new T.Group(), mat = (c) => new T.MeshLambertMaterial({ color: c });
+    const g = new T.Group(), mat = (c) => new T.MeshLambertMaterial({ color: c }); let spinG = null;
     const box = (x, y, z, w, h, d, c, ry, rz) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat(c)); m.position.set(x, y, z); m.rotation.set(0, ry || 0, rz || 0); g.add(m); return m; };
     if (it.id === "rainbow") { // a blocky ring of rainbow links with a gold tag
       const N = 14; for (let k = 0; k < N; k++) { const a = (k / N) * Math.PI * 2; box(Math.sin(a) * 0.2, 0, Math.cos(a) * 0.2, 0.1, 0.075, 0.05, `hsl(${(k / N) * 360}, 90%, 55%)`, a); }
       box(0, -0.075, 0.215, 0.07, 0.07, 0.02, "#ffd23a"); box(0, -0.03, 0.212, 0.02, 0.04, 0.015, "#c89a1a"); g.rotation.x = 1.0; // tipped towards you so it reads as a ring
-    } else (HATS[it.id] || PREVIEW[it.id] || []).forEach((p) => box(p[0], p[1] + p[4] / 2, p[2], p[3], p[4], p[5], p[6]));
+    } else (HATS[it.id] || PREVIEW[it.id] || []).forEach((p) => { const m = box(p[0], p[1] + p[4] / 2, p[2], p[3], p[4], p[5], p[6]); if (p[7] === "spin") { if (!spinG) { spinG = new T.Group(); g.add(spinG); } spinG.add(m); } });
     const bb = new T.Box3().setFromObject(g), c = bb.getCenter(new T.Vector3()), sz = bb.getSize(new T.Vector3());
     const inner = new T.Group(); g.children.slice().forEach((m) => inner.add(m)); inner.position.sub(c); inner.rotation.copy(g.rotation); g.rotation.set(0, 0, 0); g.add(inner);
-    g.userData.size = Math.max(sz.x, sz.y, sz.z); g.visible = false; return g;
+    g.userData.size = Math.max(sz.x, sz.y, sz.z); g.userData.spin = spinG; g.visible = false; return g;
   }
   function drawShop(t) {
     const canvases = SHOPEL.querySelectorAll("canvas"); if (!canvases.length) return;
@@ -583,7 +594,7 @@
     canvases.forEach((cv) => {
       const i = +cv.dataset.i, m = PV.models[i], it = SHOP[i]; if (!m) return;
       PV.models.forEach((x) => (x.visible = x === m));
-      const spin = it.soon ? 0.6 : 1.2; m.rotation.y = t * spin + i; m.position.y = Math.sin(t * 2 + i) * m.userData.size * 0.06;
+      const spin = it.soon ? 0.6 : 1.2; if (m.userData.spin) m.userData.spin.rotation.y = t * 12; m.rotation.y = t * spin + i; m.position.y = Math.sin(t * 2 + i) * m.userData.size * 0.06;
       const D = m.userData.size * 2.6; PV.cam.position.set(0, D * 0.28, D); PV.cam.lookAt(0, 0, 0);
       PV.r.render(PV.sc, PV.cam); const ctx = cv.getContext("2d"); ctx.clearRect(0, 0, 200, 200); ctx.drawImage(PV.r.domElement, 0, 0, 200, 200);
     });
@@ -595,7 +606,7 @@
     if (q === "marsh") { select(MARSH, true); return; }
     let d = BYNAME.get(q); if (!d) d = DOGS.find((x) => x.handle.startsWith(q)) || DOGS.find((x) => x.handle.includes(q));
     if (d) { stopAuto(); select(d, true); $("q").blur(); if (norm(d.handle) !== q) toast(`Closest match: @${d.handle}`); }
-    else toast(`No dog for @${q} yet. New dogs move in with each video. Follow and comment your breed on the newest reel!`, 4200);
+    else { select(null); toast(`No dog for @${q} yet. New dogs move in with each video. Follow and comment your breed on the newest reel!`, 4200); }
   });
 
   /* ================= Sheets, toast, hint ================= */
@@ -669,7 +680,7 @@
     if (fly) { const u = clamp((now - fly.t0) / fly.dur, 0, 1), e = ease(u); for (const k in fly.to) cam[k] = fly.from[k] + (fly.to[k] - fly.from[k]) * e; if (u >= 1) fly = null; }
     updateMarsh(t); const tA = performance.now(); updateDogs(t, selected); LAST.dogs = performance.now() - tA;
     if (followMarsh) { cam.tx += (MARSH.wx - cam.tx) * 0.08; cam.tz += (MARSH.wz - cam.tz) * 0.08; }
-    else if (selected && trackSel && !fly && !selected.isMarsh && selected.act.pose !== "lie" && selected.act.pose !== "sit") { cam.tx += (selected.wx - cam.tx) * 0.05; cam.tz += (selected.wz - cam.tz) * 0.05; }
+    else if (selected && trackSel && !fly && !selected.isMarsh && Number.isFinite(selected.wx + selected.wz) && selected.act.pose !== "lie" && selected.act.pose !== "sit") { cam.tx += (selected.wx - cam.tx) * 0.05; cam.tz += (selected.wz - cam.tz) * 0.05; }
     if (selected && !selected.isMarsh) K.beam.position.set(selected.wx, 7, selected.wz);
     if (!MAP.full) { animBuilds.forEach((f) => f(t)); updateBuilds(t); }
     if (!SHOPEL.hidden) drawShop(t);
@@ -722,7 +733,7 @@
     const oc = new T.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 1, 600); oc.position.set(cx, 300, cz); oc.up.set(0, 0, -1); oc.lookAt(cx, 0, cz);
     const clouds = CITY.group.getObjectByName("clouds");
     const hide = [coreMesh, detMesh, farMesh, blobMesh, blingMesh, medalMesh, sparkMesh, accMesh, K.marsh, marshBlob, K.lifeG, K.beamG, K.sky, clouds, ...FACES].filter(Boolean);
-    LOD.forEach((b) => (b.staff || []).forEach((st) => hide.push(st)));
+    LOD.forEach((b) => { (b.staff || []).forEach((st) => hide.push(st)); if (b.fx) hide.push(b.fx); });
     const was = hide.map((o) => o.visible); hide.forEach((o) => (o.visible = false));
     const roofsWas = ROOFS.map((b) => b.roof.visible); ROOFS.forEach((b) => { b.roof.visible = true; if (b.sign) b.sign.visible = true; });
     const kh = CITY.kennelHi.visible, kl = CITY.kennelLo.visible; CITY.kennelHi.visible = true; CITY.kennelLo.visible = false;
@@ -791,7 +802,7 @@
     DOGS.sort((a, b) => a.n - b.n);
     DOGS.forEach((d) => { d.handle = d.handle.trim().replace(/^@+/, ""); if (d.model === "chocolate") { d.model = "lab"; d.look = d.look || "chocolate"; } d.model = LPB.LABEL[d.model] ? d.model : "mutt"; d.look = String(d.look || ""); d.breed = String(d.breed || LPB.LABEL[d.model]); d.day = d.day || DATA.day; BYNAME.set(norm(d.handle), d); });
     const bseen = new Set(); BUILDS = (Array.isArray(DATA.builds) ? DATA.builds : []).filter((b) => b && BUILDERS[b.type] && !bseen.has(b.type) && bseen.add(b.type)); // each kind once
-    window.SANCTUARY = { DOGS, select: (h) => select(BYNAME.get(norm(h)), true), view: (o) => { fly = null; Object.assign(cam, o); }, bench: (n = 60) => { // runs n frames back to back and times each step (CPU only; the GPU work isn't counted)
+    window.SANCTUARY = { DOGS, BUILT, select: (h) => select(BYNAME.get(norm(h)), true), view: (o) => { fly = null; Object.assign(cam, o); }, bench: (n = 60) => { // runs n frames back to back and times each step (CPU only; the GPU work isn't counted)
       const T0 = performance.now(), r = { dogs: 0, render: 0, tags: 0, rest: 0 };
       for (let i = 0; i < n; i++) { const now = T0 + i * 16.7, a = performance.now(); frameSteps(now); r.rest += performance.now() - a - (LAST.dogs + LAST.render + LAST.tags); r.dogs += LAST.dogs; r.render += LAST.render; r.tags += LAST.tags; }
       for (const k in r) r[k] = +(r[k] / n).toFixed(2); r.calls = renderer.info.render.calls; r.tris = renderer.info.render.triangles; return r; },

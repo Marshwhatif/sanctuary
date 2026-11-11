@@ -14,32 +14,131 @@ Followers already in the sanctuary keep their number; a new breed just replaces 
 
 Other jobs:
   --remove @name           opt-out: their dog goes home (repeatable)
-  --collar @name=rainbow   paid upgrade (rainbow or red). Gold (first 100) and silver (up to 1,000) are earned by join order, not set here.
-  --hat @name=party        paid upgrade (party, crown, tophat, shades, wizard, chef, bobble, cowboy, or none)
+  --collar @name=rainbow   paid upgrade (rainbow or red). Gold (first 100) and silver (the next 500) are earned by join order, not set here.
+  --hat @name=party        paid upgrade (party, crown, tophat, shades, wizard, chef, bobble, cowboy, propeller, or none)
   --shop on|off            show or hide the shop
   --link rainbow=https://buy.stripe.com/...   set a shop item's payment link
+  --followers 833          the follower count shown as the dog total
+  --reel-for 1=https://... set the reel link on an earlier day
   --dry-run                show what would change without saving
 """
 import argparse, csv, datetime, json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "sanctuary.json"
-MODELS = ["golden", "lab", "chocolate", "dalmatian", "dachshund", "corgi", "husky", "pug", "poodle", "shepherd", "beagle", "chihuahua"]
+# The 3D breeds in lib/lowpoly-breeds.js (LPB). Keep this list in step with that file.
+MODELS = ["golden", "lab", "shepherd", "malinois", "husky", "malamute", "pitbull", "staffy", "bully", "dachshund", "corgi", "chihuahua",
+          "pomeranian", "doberman", "rottweiler", "canecorso", "greatdane", "dalmatian", "pug", "shihtzu", "poodle", "doodle", "beagle",
+          "stbernard", "bernese", "newfoundland", "pyrenees", "tibetanmastiff", "mastiff", "dogo", "kangal", "borzoi", "whippet",
+          "wolfhound", "shiba", "akita", "samoyed", "wolfdog", "bordercollie", "sheltie", "aussie", "cavalier", "cocker", "springer",
+          "jackrussell", "yorkie", "boston", "frenchie", "bulldog", "boxer", "maltese", "bichon", "pekingese", "papillon", "spitz",
+          "chow", "leonberger", "airedale", "scottie", "westie", "norwich", "otterhound", "bloodhound", "coonhound", "pointer",
+          "vizsla", "setter", "heeler", "griffon", "mutt"]
 BUILDS = ["supermarket", "library", "gym", "cinema"]  # what the 3D kit can draw today; new builds go in lowpoly-town.js
-HATS = ["party", "crown", "tophat", "shades", "wizard", "chef", "bobble", "cowboy"]
-# Words in a comment -> the closest 3D model. First match wins, so specific names come first.
+HATS = ["party", "crown", "tophat", "shades", "wizard", "chef", "bobble", "cowboy", "propeller"]
+# Words in a comment -> (3D breed, extra look words). The breed named FIRST in the comment wins (so "pomeranian chihuahua
+# mix" is a Pomeranian); colour words never choose the breed, they only recolour it (see look_of).
 ALIASES = [
-    ("chocolate lab", "chocolate"), ("choc lab", "chocolate"), ("golden", "golden"), ("retriever", "golden"), ("goldendoodle", "poodle"),
-    ("doodle", "poodle"), ("cockapoo", "poodle"), ("cavapoo", "poodle"), ("bichon", "poodle"), ("maltese", "poodle"), ("poodle", "poodle"), ("samoyed", "poodle"),
-    ("lab", "lab"), ("black", "lab"), ("rottweiler", "lab"), ("doberman", "lab"), ("cane corso", "lab"), ("great dane", "lab"), ("greyhound", "lab"), ("whippet", "lab"),
-    ("dalmatian", "dalmatian"), ("sausage", "dachshund"), ("dachshund", "dachshund"), ("weiner", "dachshund"), ("wiener", "dachshund"), ("doxie", "dachshund"),
-    ("corgi", "corgi"), ("shiba", "corgi"), ("husky", "husky"), ("malamute", "husky"), ("wolf", "husky"),
-    ("pug", "pug"), ("frenchie", "pug"), ("french bulldog", "pug"), ("bulldog", "pug"), ("boxer", "pug"), ("shih tzu", "pug"), ("staff", "pug"), ("pit", "pug"),
-    ("shepherd", "shepherd"), ("alsatian", "shepherd"), ("malinois", "shepherd"), ("collie", "shepherd"), ("aussie", "shepherd"),
-    ("beagle", "beagle"), ("jack russell", "beagle"), ("spaniel", "beagle"), ("springer", "beagle"), ("basset", "beagle"), ("foxhound", "beagle"), ("terrier", "beagle"),
-    ("chihuahua", "chihuahua"), ("pomeranian", "chihuahua"), ("yorkie", "chihuahua"), ("yorkshire", "chihuahua"), ("papillon", "chihuahua"), ("min pin", "chihuahua"),
+    ("golden retriever", "golden", ""), ("retriever", "golden", ""), ("golden doodle", "doodle", "golden"), ("goldendoodle", "doodle", "golden"),
+    ("golden poodle", "doodle", "golden"), ("labradoodle", "doodle", "cream"), ("bernedoodle", "doodle", "black white brown"),
+    ("cockapoo", "doodle", "mini"), ("cavapoo", "doodle", "mini"), ("maltipoo", "doodle", "mini white"), ("yorkiepoo", "doodle", "mini"),
+    ("poochon", "bichon", "cream"), ("doodle", "doodle", ""), ("poodle", "poodle", ""), ("pudel", "poodle", ""),
+    ("nova scotia", "golden", "red"), ("duck toll", "golden", "red"),
+    ("labrador", "lab", ""), ("lablador", "lab", ""), ("borador", "lab", "black"), ("boxador", "lab", "brown"), ("bassador", "lab", ""), ("lab", "lab", ""),
+    ("german shepherd", "shepherd", ""), ("german sheperd", "shepherd", ""), ("german shepard", "shepherd", ""), ("gsd", "shepherd", ""),
+    ("old german shepherd", "shepherd", ""), ("shepherd", "shepherd", ""), ("sheperd", "shepherd", ""), ("shepard", "shepherd", ""), ("alsatian", "shepherd", ""),
+    ("belgian shepherd", "malinois", ""), ("belgium shepherd", "malinois", ""), ("belgium shepard", "malinois", ""), ("malinois", "malinois", ""),
+    ("malino", "malinois", ""), ("mallinois", "malinois", ""), ("bel mal", "malinois", ""), ("belgian mal", "malinois", ""),
+    ("australian shepherd", "aussie", ""), ("australian shepard", "aussie", ""), ("aussie", "aussie", ""),
+    ("husky", "husky", ""), ("huskey", "husky", ""), ("hushkey", "husky", ""), ("malamute", "malamute", ""), ("sled", "malamute", ""),
+    ("wolfdog", "wolfdog", ""), ("wolf dog", "wolfdog", ""), ("wolfhound", "wolfhound", ""), ("wolf hound", "wolfhound", ""),
+    ("american staffordshire", "staffy", ""), ("american stafford", "staffy", ""), ("american staff", "staffy", ""),
+    ("staffordshire", "staffy", ""), ("stafford", "staffy", ""), ("staffie", "staffy", ""), ("staffy", "staffy", ""),
+    ("pit bull", "pitbull", ""), ("pitbull", "pitbull", ""), ("pittbull", "pitbull", ""), ("pet pull", "pitbull", ""), ("pit", "pitbull", ""),
+    ("xl bully", "bully", "big"), ("bully", "bully", ""), ("american bulldog", "bully", "white"), ("bull terrier", "staffy", "white"),
+    ("french bulldog", "frenchie", ""), ("frenchi", "frenchie", ""), ("english bulldog", "bulldog", ""), ("bulldog", "bulldog", ""),
+    ("dachshund", "dachshund", ""), ("daschund", "dachshund", ""), ("dashound", "dachshund", ""), ("dauschaund", "dachshund", ""),
+    ("weiner", "dachshund", ""), ("wiener", "dachshund", ""), ("winer", "dachshund", ""), ("weeni", "dachshund", ""), ("wennie", "dachshund", ""), ("sausage", "dachshund", ""),
+    ("corgi", "corgi", ""), ("chihuahua", "chihuahua", ""), ("chiwawa", "chihuahua", ""), ("chug", "pug", "mini"),
+    ("pomeranian", "pomeranian", ""), ("pomarainain", "pomeranian", ""), ("pom ", "pomeranian", ""),
+    ("doberman", "doberman", ""), ("dobermann", "doberman", ""), ("dobberman", "doberman", ""), ("dovermin", "doberman", ""),
+    ("rottweiler", "rottweiler", ""), ("rotwieler", "rottweiler", ""),
+    ("cane corso", "canecorso", ""), ("caine corso", "canecorso", ""), ("italian mastiff", "canecorso", ""),
+    ("great dane", "greatdane", ""), ("dalmatian", "dalmatian", ""), ("dalmation", "dalmatian", ""),
+    ("puggle", "beagle", "fawn"), ("pug", "pug", ""), ("shih tzu", "shihtzu", ""), ("shi tzu", "shihtzu", ""), ("shitzu", "shihtzu", ""),
+    ("shihtzu", "shihtzu", ""), ("shit tzu", "shihtzu", ""), ("shitzoo", "shihtzu", ""), ("maltese shih", "maltese", ""),
+    ("border beagle", "beagle", ""), ("beagle", "beagle", ""),
+    ("st bernard", "stbernard", ""), ("saint bernard", "stbernard", ""), ("bernese", "bernese", ""), ("burmese mountain", "bernese", ""),
+    ("bernies mountain", "bernese", ""), ("bernese mountain doug", "bernese", ""), ("newfoundland", "newfoundland", ""),
+    ("great pyr", "pyrenees", ""), ("pyrenees", "pyrenees", ""), ("tibetan mastif", "tibetanmastiff", ""),
+    ("african mastiff", "mastiff", ""), ("boerboel", "mastiff", ""), ("presa canario", "mastiff", ""), ("mastiff", "mastiff", ""),
+    ("dogo", "dogo", ""), ("kangal", "kangal", ""), ("borzoi", "borzoi", ""), ("whippet", "whippet", ""), ("greyhound", "whippet", "grey big"),
+    ("shiba", "shiba", ""), ("shibu", "shiba", ""), ("american akita", "akita", ""), ("akita", "akita", ""),
+    ("samoyed", "samoyed", ""), ("border collie", "bordercollie", ""), ("shetland", "sheltie", ""), ("sheltie", "sheltie", ""),
+    ("collie", "sheltie", "big"), ("kolie", "sheltie", "big"),
+    ("king charles", "cavalier", ""), ("cavalier", "cavalier", ""), ("cocker", "cocker", ""), ("springer", "springer", ""),
+    ("boykin", "springer", "brown"), ("spaniel", "cocker", ""),
+    ("jack russel", "jackrussell", ""), ("jack russle", "jackrussell", ""), ("yorkshire", "yorkie", ""), ("yorkish", "yorkie", ""),
+    ("yorkie", "yorkie", ""), ("yorki", "yorkie", ""), ("boston", "boston", ""), ("boxer", "boxer", ""), ("maltese", "maltese", ""),
+    ("bichon", "bichon", ""), ("bishon", "bichon", ""), ("bison", "bichon", ""), ("havane", "bichon", "cream"), ("havanese", "bichon", "cream"),
+    ("pekingese", "pekingese", ""), ("pekinese", "pekingese", ""), ("pikanese", "pekingese", ""), ("papillon", "papillon", ""),
+    ("keeshond", "spitz", "grey"), ("lapphund", "spitz", "black"), ("lapbog", "spitz", "black"), ("kintamani", "spitz", "white"),
+    ("spitz", "spitz", ""), ("chow", "chow", ""), ("leonberger", "leonberger", ""), ("airedale", "airedale", ""),
+    ("scottish terrier", "scottie", ""), ("scottie", "scottie", ""), ("westie", "westie", ""), ("west highland", "westie", ""),
+    ("norwich", "norwich", ""), ("otterhound", "otterhound", ""), ("bloodhound", "bloodhound", ""), ("coonhound", "coonhound", ""),
+    ("shorthaired pointer", "pointer", ""), ("short hair pointer", "pointer", ""), ("gsp", "pointer", ""), ("pointer", "pointer", ""),
+    ("vizsla", "vizsla", ""), ("visla", "vizsla", ""), ("irish setter", "setter", ""), ("setter", "setter", ""),
+    ("heeler", "heeler", ""), ("heleler", "heeler", ""), ("cattle dog", "heeler", ""), ("griffon", "griffon", ""), ("griffin", "griffon", ""),
+    ("fox terrier", "jackrussell", ""), ("terrier", "jackrussell", ""), ("aspin", "mutt", ""), ("mutt", "mutt", ""), ("mix", "mutt", ""),
 ]
+LOOK_WORDS = ["light brown", "dark brown", "light tan", "irish cream", "black", "white", "brown", "chocolate", "liver", "grey", "gray", "blue",
+              "silver", "red", "ginger", "orange", "cream", "tan", "fawn", "golden", "gold", "yellow", "apricot", "beige", "wheaten",
+              "dapple", "merle", "brindle", "sable", "spotted", "spots", "mini", "miniature", "toy", "tiny", "little", "baby", "puppy",
+              "long haired", "long hair", "fluffy", "big", "giant", "xxl"]
 
+
+def clean(text):
+    return " " + re.sub(r"\s+", " ", re.sub(r"[^a-z ]", " ", text.lower().replace("-", " ").replace("'", ""))) + " "
+
+
+def match_of(breed):
+    """(model, look): the breed named first in the text, then the colour and size words around it."""
+    b = clean(breed)
+    best = None
+    for phrase, model, extra in ALIASES:
+        i = b.find(phrase if phrase.endswith(" ") else phrase)
+        if i < 0:
+            continue
+        if best is None or i < best[0] or (i == best[0] and len(phrase) > best[1]):
+            best = (i, len(phrase), model, extra, phrase)
+    if not best:
+        return "mutt", ""
+    i, n, model, extra, phrase = best
+    rest = b[:i] + " " + b[i + n:]
+    rest = rest.replace("redbone", " ")
+    for ph in sorted({a[0] for a in ALIASES}, key=len, reverse=True):  # words of any second breed ("x golden retriever") aren't colours
+        if len(ph) > 3:
+            rest = rest.replace(ph, " ")
+    found = []
+    for w in LOOK_WORDS:
+        j = rest.find(" " + w + " ")
+        if j >= 0 and not any(w in f for _, f in found):
+            found.append((j, w))
+    if "golden" in phrase:
+        found = [f for f in found if f[1] not in ("golden", "gold")]
+    COLOURS = set(LOOK_WORDS[:24])
+    if any(w in COLOURS for _, w in found):  # their own colour beats the breed's usual one
+        extra = " ".join(x for x in extra.split() if x not in COLOURS)
+    look = " ".join([extra] + [w for _, w in sorted(found)]).strip()
+    if "blue nose" in b:
+        look += " blue nose"
+    if "red nose" in b:
+        look += " red nose"
+    return model, look.strip()
+
+
+def model_of(breed):
+    return match_of(breed)[0]
 
 def handle_of(s, soft=False):
     h = s.strip().lstrip("@").strip().lower()
@@ -49,13 +148,6 @@ def handle_of(s, soft=False):
         sys.exit(f"Not an Instagram name: {s!r}")
     return h
 
-
-def model_of(breed):
-    b = breed.lower()
-    for word, m in ALIASES:
-        if word in b:
-            return m
-    return "golden"
 
 
 def pairs(items, allowed=None):
@@ -85,6 +177,8 @@ def main():
     ap.add_argument("--hat", action="append", default=[])
     ap.add_argument("--shop", choices=["on", "off"])
     ap.add_argument("--link", action="append", default=[])
+    ap.add_argument("--followers", type=int, help="current follower count, shown as the dog total")
+    ap.add_argument("--reel-for", action="append", default=[], help="DAY=URL: set the reel link on an earlier day's log")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -119,12 +213,12 @@ def main():
                 d = dogs.get(h)
                 if d and not d.get("removed"):
                     if d["breed"].lower() != breed.lower():
-                        d["breed"], d["model"] = breed, model_of(breed); changed += 1
+                        d["breed"], (d["model"], d["look"]) = breed, match_of(breed); changed += 1
                     continue
                 if d and d.get("removed"):
-                    d.pop("removed"); d.update(breed=breed, model=model_of(breed)); changed += 1
+                    d.pop("removed"); m, lk = match_of(breed); d.update(breed=breed, model=m, look=lk); changed += 1
                     continue
-                dogs[h] = {"handle": h, "breed": breed, "model": model_of(breed), "n": nxt, "day": day}
+                m, lk = match_of(breed); dogs[h] = {"handle": h, "breed": breed, "model": m, "look": lk, "n": nxt, "day": day}
                 nxt += 1; added += 1
         notes.append(f"{added} new dogs, {changed} changed breed")
         if skipped:
@@ -167,10 +261,18 @@ def main():
         if not url.startswith("https://"): sys.exit(f"Payment links must start with https:// ({url!r})")
         item["link"] = url; item.pop("soon", None); notes.append(f"shop link set for {k} (now on sale)")
 
+    if a.followers is not None:
+        data["followers"] = a.followers; notes.append(f"followers {a.followers}")
+    for it in a.reel_for:
+        k, _, url = it.partition("=")
+        if not url.startswith("https://"): sys.exit(f"--reel-for needs DAY=https://... ({it!r})")
+        entry = next((l for l in data["log"] if str(l.get("day")) == k.strip()), None)
+        if not entry: sys.exit(f"No log entry for day {k}")
+        entry["reel"] = url; notes.append(f"day {k} reel link set")
     data["dogs"] = sorted(dogs.values(), key=lambda d: d["n"])
     live = [d for d in data["dogs"] if not d.get("removed")]
     print("\n".join(notes) or "Nothing to change.")
-    g, sv = data["goldCollars"], data.get("silverCollars", 1000)
+    g, sv = data["goldCollars"], data.get("silverCollars", 600)
     print(f"Day {data['day']}: {len(live)} dogs, {sum(d['n'] <= g for d in live)}/{g} gold collars, {sum(g < d['n'] <= sv for d in live)}/{sv - g} silver, builds: {', '.join(b['type'] for b in data['builds']) or 'none'}")
     if a.dry_run:
         print("(dry run, nothing saved)"); return
