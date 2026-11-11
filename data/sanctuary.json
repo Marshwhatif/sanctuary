@@ -1,5 +1,5 @@
 {
- "day": 2,
+ "day": 3,
  "updated": "2026-11-11",
  "instagram": "marshwhatif",
  "goldCollars": 100,
@@ -1239,9 +1239,9 @@
   },
   {
    "handle": "annamaria_chl",
-   "breed": "Dachshund (dapple)",
-   "model": "dachshund",
-   "look": "dapple",
+   "breed": "Border collie",
+   "model": "bordercollie",
+   "look": "",
    "n": 155,
    "day": 2
   },
@@ -2047,9 +2047,9 @@
   },
   {
    "handle": "macey13180",
-   "breed": "Mini golden retriever",
-   "model": "golden",
-   "look": "mini",
+   "breed": "Chocolate labrador",
+   "model": "lab",
+   "look": "chocolate",
    "n": 256,
    "day": 2
   },
@@ -2351,8 +2351,8 @@
   },
   {
    "handle": "natashaweitanu",
-   "breed": "Husky",
-   "model": "husky",
+   "breed": "Golden retriever",
+   "model": "golden",
    "look": "",
    "n": 294,
    "day": 2
@@ -3335,9 +3335,9 @@
   },
   {
    "handle": "w47k3r157932",
-   "breed": "Husky wolfdog",
+   "breed": "Black husky wolfdog",
    "model": "husky",
-   "look": "",
+   "look": "black",
    "n": 417,
    "day": 2
   },
@@ -3652,6 +3652,1126 @@
    "look": "",
    "n": 456,
    "day": 2
+  },
+  {
+   "handle": "sisu260615",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 457,
+   "day": 3
+  },
+  {
+   "handle": "hazel778955",
+   "breed": "Beagle",
+   "model": "beagle",
+   "look": "",
+   "n": 458,
+   "day": 3
+  },
+  {
+   "handle": "komo.ri22",
+   "breed": "Rottweiler",
+   "model": "rottweiler",
+   "look": "",
+   "n": 459,
+   "day": 3
+  },
+  {
+   "handle": "bongo_water",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 460,
+   "day": 3
+  },
+  {
+   "handle": "becky2013.13",
+   "breed": "Husky",
+   "model": "husky",
+   "look": "",
+   "n": 461,
+   "day": 3
+  },
+  {
+   "handle": "caitlyn_kiramman_stan",
+   "breed": "Belgian malinois",
+   "model": "malinois",
+   "look": "",
+   "n": 462,
+   "day": 3
+  },
+  {
+   "handle": "vedaluvsdogs",
+   "breed": "Rottweiler",
+   "model": "rottweiler",
+   "look": "",
+   "n": 463,
+   "day": 3
+  },
+  {
+   "handle": "carys_photo_dump",
+   "breed": "Springer spaniel",
+   "model": "springer",
+   "look": "",
+   "n": 464,
+   "day": 3
+  },
+  {
+   "handle": "jacsnx28",
+   "breed": "Black cocker spaniel",
+   "model": "cocker",
+   "look": "black",
+   "n": 465,
+   "day": 3
+  },
+  {
+   "handle": "bman_2315",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 466,
+   "day": 3
+  },
+  {
+   "handle": "sebastiancamachobellizia",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 467,
+   "day": 3
+  },
+  {
+   "handle": "yyz.deandre11",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 468,
+   "day": 3
+  },
+  {
+   "handle": "linnaya_e",
+   "breed": "Border collie",
+   "model": "bordercollie",
+   "look": "",
+   "n": 469,
+   "day": 3
+  },
+  {
+   "handle": "sarah.caughey11",
+   "breed": "White Lhasa apso",
+   "model": "shihtzu",
+   "look": "white",
+   "n": 470,
+   "day": 3
+  },
+  {
+   "handle": "elliemcg27",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 471,
+   "day": 3
+  },
+  {
+   "handle": "wren.luz21",
+   "breed": "Pit bull",
+   "model": "pitbull",
+   "look": "",
+   "n": 472,
+   "day": 3
+  },
+  {
+   "handle": "chloe_deezle",
+   "breed": "Great Dane",
+   "model": "greatdane",
+   "look": "",
+   "n": 473,
+   "day": 3
+  },
+  {
+   "handle": "myhorselife._y",
+   "breed": "Orange Pomeranian",
+   "model": "pomeranian",
+   "look": "orange",
+   "n": 474,
+   "day": 3
+  },
+  {
+   "handle": "malakai.ruff",
+   "breed": "Jack Russell terrier",
+   "model": "jackrussell",
+   "look": "",
+   "n": 475,
+   "day": 3
+  },
+  {
+   "handle": "seolar.system.22",
+   "breed": "Australian shepherd",
+   "model": "aussie",
+   "look": "",
+   "n": 476,
+   "day": 3
+  },
+  {
+   "handle": "bubblesthegreat_5",
+   "breed": "Labrador",
+   "model": "lab",
+   "look": "",
+   "n": 477,
+   "day": 3
+  },
+  {
+   "handle": "raerae_grogg",
+   "breed": "Wire haired terrier chihuahua mix",
+   "model": "jackrussell",
+   "look": "",
+   "n": 478,
+   "day": 3
+  },
+  {
+   "handle": "nyx13.0",
+   "breed": "German shepherd Great Pyrenees mix",
+   "model": "shepherd",
+   "look": "",
+   "n": 479,
+   "day": 3
+  },
+  {
+   "handle": "justin__0161",
+   "breed": "Border collie",
+   "model": "bordercollie",
+   "look": "",
+   "n": 480,
+   "day": 3
+  },
+  {
+   "handle": "halleys_comet_16",
+   "breed": "Grey pit bull",
+   "model": "pitbull",
+   "look": "grey",
+   "n": 481,
+   "day": 3
+  },
+  {
+   "handle": "dulce70120",
+   "breed": "Black chihuahua",
+   "model": "chihuahua",
+   "look": "black",
+   "n": 482,
+   "day": 3
+  },
+  {
+   "handle": "_g0re.ish",
+   "breed": "Blonde pit bull",
+   "model": "pitbull",
+   "look": "",
+   "n": 483,
+   "day": 3
+  },
+  {
+   "handle": "logie.bear1989",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 484,
+   "day": 3
+  },
+  {
+   "handle": "official.annaaaaa",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 485,
+   "day": 3
+  },
+  {
+   "handle": "beemchaling",
+   "breed": "Xoloitzcuintle",
+   "model": "xolo",
+   "look": "",
+   "n": 486,
+   "day": 3
+  },
+  {
+   "handle": "v_art.xolotl",
+   "breed": "Xoloitzcuintle",
+   "model": "xolo",
+   "look": "",
+   "n": 487,
+   "day": 3
+  },
+  {
+   "handle": "berry_belu",
+   "breed": "Long haired chihuahua",
+   "model": "chihuahua",
+   "look": "long haired",
+   "n": 488,
+   "day": 3
+  },
+  {
+   "handle": "jacob_b0006",
+   "breed": "Beagle",
+   "model": "beagle",
+   "look": "",
+   "n": 489,
+   "day": 3
+  },
+  {
+   "handle": "d_williamson97",
+   "breed": "Fawn boxer",
+   "model": "boxer",
+   "look": "fawn",
+   "n": 490,
+   "day": 3
+  },
+  {
+   "handle": "slashwavemusicproductions",
+   "breed": "Black German shepherd",
+   "model": "shepherd",
+   "look": "black",
+   "n": 491,
+   "day": 3
+  },
+  {
+   "handle": "masoistuff",
+   "breed": "Pug",
+   "model": "pug",
+   "look": "",
+   "n": 492,
+   "day": 3
+  },
+  {
+   "handle": "jadeh.xox",
+   "breed": "Bernese mountain dog",
+   "model": "bernese",
+   "look": "",
+   "n": 493,
+   "day": 3
+  },
+  {
+   "handle": "frankmyboi",
+   "breed": "French bulldog",
+   "model": "frenchie",
+   "look": "",
+   "n": 494,
+   "day": 3
+  },
+  {
+   "handle": "that.girl1414",
+   "breed": "Red labradoodle",
+   "model": "doodle",
+   "look": "red",
+   "n": 495,
+   "day": 3
+  },
+  {
+   "handle": "its.abigailjoy2.0",
+   "breed": "German shepherd malamute mix",
+   "model": "shepherd",
+   "look": "",
+   "n": 496,
+   "day": 3
+  },
+  {
+   "handle": "kloees_not_hiding",
+   "breed": "Cavalier King Charles spaniel",
+   "model": "cavalier",
+   "look": "",
+   "n": 497,
+   "day": 3
+  },
+  {
+   "handle": "ponyanddally",
+   "breed": "Black pug",
+   "model": "pug",
+   "look": "black",
+   "n": 498,
+   "day": 3
+  },
+  {
+   "handle": "matthew_blake77",
+   "breed": "Texas heeler",
+   "model": "heeler",
+   "look": "",
+   "n": 499,
+   "day": 3
+  },
+  {
+   "handle": "snoopyscoopz",
+   "breed": "Corgi mini Australian shepherd mix",
+   "model": "corgi",
+   "look": "mini",
+   "n": 500,
+   "day": 3
+  },
+  {
+   "handle": "kv_2116",
+   "breed": "Pembroke Welsh corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 501,
+   "day": 3
+  },
+  {
+   "handle": "lileiana_lei",
+   "breed": "Mastiff",
+   "model": "mastiff",
+   "look": "",
+   "n": 502,
+   "day": 3
+  },
+  {
+   "handle": "1lov3rpurpl3",
+   "breed": "Black golden retriever mix",
+   "model": "golden",
+   "look": "black",
+   "n": 503,
+   "day": 3
+  },
+  {
+   "handle": "zian_sumabat",
+   "breed": "Shih tzu",
+   "model": "shihtzu",
+   "look": "",
+   "n": 504,
+   "day": 3
+  },
+  {
+   "handle": "salsalyzsm",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 505,
+   "day": 3
+  },
+  {
+   "handle": "pennywise_1462",
+   "breed": "Red Irish setter",
+   "model": "setter",
+   "look": "red",
+   "n": 506,
+   "day": 3
+  },
+  {
+   "handle": "citrus._.bunii",
+   "breed": "Shih tzu",
+   "model": "shihtzu",
+   "look": "",
+   "n": 507,
+   "day": 3
+  },
+  {
+   "handle": "cardb0ard_crown",
+   "breed": "Rhodesian ridgeback",
+   "model": "vizsla",
+   "look": "",
+   "n": 508,
+   "day": 3
+  },
+  {
+   "handle": "brighton_a_g",
+   "breed": "Husky",
+   "model": "husky",
+   "look": "",
+   "n": 509,
+   "day": 3
+  },
+  {
+   "handle": "mandycandy2442",
+   "breed": "Golden retriever mix",
+   "model": "golden",
+   "look": "",
+   "n": 510,
+   "day": 3
+  },
+  {
+   "handle": "ryanbrielle5",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 511,
+   "day": 3
+  },
+  {
+   "handle": "c3rt1fied_mult1stan",
+   "breed": "Yorkie",
+   "model": "yorkie",
+   "look": "",
+   "n": 512,
+   "day": 3
+  },
+  {
+   "handle": "laurenmarchlewski",
+   "breed": "Black tri corgi",
+   "model": "corgi",
+   "look": "black",
+   "n": 513,
+   "day": 3
+  },
+  {
+   "handle": "sebastianrudolf21",
+   "breed": "Cavapoo",
+   "model": "doodle",
+   "look": "mini",
+   "n": 514,
+   "day": 3
+  },
+  {
+   "handle": "jeweliamichaels",
+   "breed": "Fluffy French bulldog",
+   "model": "frenchie",
+   "look": "fluffy",
+   "n": 515,
+   "day": 3
+  },
+  {
+   "handle": "gaby_grace23",
+   "breed": "Boston terrier",
+   "model": "boston",
+   "look": "",
+   "n": 516,
+   "day": 3
+  },
+  {
+   "handle": "itsnot.zayzay",
+   "breed": "Pomeranian",
+   "model": "pomeranian",
+   "look": "",
+   "n": 517,
+   "day": 3
+  },
+  {
+   "handle": "emily64670",
+   "breed": "Shih tzu",
+   "model": "shihtzu",
+   "look": "",
+   "n": 518,
+   "day": 3
+  },
+  {
+   "handle": "crowlord1267_",
+   "breed": "Blue heeler border collie mix",
+   "model": "heeler",
+   "look": "blue",
+   "n": 519,
+   "day": 3
+  },
+  {
+   "handle": "2bornot2b71",
+   "breed": "Grey pit bull",
+   "model": "pitbull",
+   "look": "grey",
+   "n": 520,
+   "day": 3
+  },
+  {
+   "handle": "mr_miata1",
+   "breed": "Chow chow",
+   "model": "chow",
+   "look": "",
+   "n": 521,
+   "day": 3
+  },
+  {
+   "handle": "arria_hi",
+   "breed": "Grey Great Dane with black spots",
+   "model": "greatdane",
+   "look": "grey black spots",
+   "n": 522,
+   "day": 3
+  },
+  {
+   "handle": "mollyfahey09",
+   "breed": "Goldendoodle",
+   "model": "doodle",
+   "look": "golden",
+   "n": 523,
+   "day": 3
+  },
+  {
+   "handle": "duckboycp",
+   "breed": "Husky",
+   "model": "husky",
+   "look": "",
+   "n": 524,
+   "day": 3
+  },
+  {
+   "handle": "its_rylee.duh",
+   "breed": "Husky",
+   "model": "husky",
+   "look": "",
+   "n": 525,
+   "day": 3
+  },
+  {
+   "handle": "snuggleduckling",
+   "breed": "German shorthaired pointer",
+   "model": "pointer",
+   "look": "",
+   "n": 526,
+   "day": 3
+  },
+  {
+   "handle": "heather_lov3s_you",
+   "breed": "Brindle Olde English bulldogge",
+   "model": "bulldog",
+   "look": "brindle",
+   "n": 527,
+   "day": 3
+  },
+  {
+   "handle": "friendly_spiderman08",
+   "breed": "Cane corso",
+   "model": "canecorso",
+   "look": "",
+   "n": 528,
+   "day": 3
+  },
+  {
+   "handle": "gymnast_emily716",
+   "breed": "Goldendoodle",
+   "model": "doodle",
+   "look": "golden",
+   "n": 529,
+   "day": 3
+  },
+  {
+   "handle": "brb_jk_hashtag_smilyface",
+   "breed": "Kai Ken",
+   "model": "shiba",
+   "look": "",
+   "n": 530,
+   "day": 3
+  },
+  {
+   "handle": "hpshipper20",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 531,
+   "day": 3
+  },
+  {
+   "handle": "singeroftheshadows",
+   "breed": "Blue heeler",
+   "model": "heeler",
+   "look": "blue",
+   "n": 532,
+   "day": 3
+  },
+  {
+   "handle": "sommer_genshin",
+   "breed": "Norwegian Lundehund",
+   "model": "spitz",
+   "look": "",
+   "n": 533,
+   "day": 3
+  },
+  {
+   "handle": "georgia.cherrington",
+   "breed": "Border collie",
+   "model": "bordercollie",
+   "look": "",
+   "n": 534,
+   "day": 3
+  },
+  {
+   "handle": "tee.2.fleezy",
+   "breed": "Miniature schnauzer",
+   "model": "schnauzer",
+   "look": "miniature",
+   "n": 535,
+   "day": 3
+  },
+  {
+   "handle": "mochi_monster_world",
+   "breed": "Pomeranian",
+   "model": "pomeranian",
+   "look": "",
+   "n": 536,
+   "day": 3
+  },
+  {
+   "handle": "artbyaablia",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 537,
+   "day": 3
+  },
+  {
+   "handle": "kaixodenek",
+   "breed": "Jack Russell terrier",
+   "model": "jackrussell",
+   "look": "",
+   "n": 538,
+   "day": 3
+  },
+  {
+   "handle": "ldvney",
+   "breed": "Mutt",
+   "model": "mutt",
+   "look": "",
+   "n": 539,
+   "day": 3
+  },
+  {
+   "handle": "ralen_6",
+   "breed": "Salt and pepper schnauzer",
+   "model": "schnauzer",
+   "look": "",
+   "n": 540,
+   "day": 3
+  },
+  {
+   "handle": "kristalewisbrown",
+   "breed": "Pit bull",
+   "model": "pitbull",
+   "look": "",
+   "n": 541,
+   "day": 3
+  },
+  {
+   "handle": "ajm2011__",
+   "breed": "Great Pyrenees",
+   "model": "pyrenees",
+   "look": "",
+   "n": 542,
+   "day": 3
+  },
+  {
+   "handle": "astrat454",
+   "breed": "Rottweiler",
+   "model": "rottweiler",
+   "look": "",
+   "n": 543,
+   "day": 3
+  },
+  {
+   "handle": "queenyv__",
+   "breed": "Yorkie",
+   "model": "yorkie",
+   "look": "",
+   "n": 544,
+   "day": 3
+  },
+  {
+   "handle": "robin.laurent26",
+   "breed": "Black French bulldog",
+   "model": "frenchie",
+   "look": "black",
+   "n": 545,
+   "day": 3
+  },
+  {
+   "handle": "_jvictoo3_",
+   "breed": "Yorkshire terrier",
+   "model": "yorkie",
+   "look": "",
+   "n": 546,
+   "day": 3
+  },
+  {
+   "handle": "demi.willems2017",
+   "breed": "Labrador",
+   "model": "lab",
+   "look": "",
+   "n": 547,
+   "day": 3
+  },
+  {
+   "handle": "lizdaily35",
+   "breed": "Border collie Australian shepherd mix",
+   "model": "bordercollie",
+   "look": "",
+   "n": 548,
+   "day": 3
+  },
+  {
+   "handle": "spenny_penny_",
+   "breed": "Staffy",
+   "model": "staffy",
+   "look": "",
+   "n": 549,
+   "day": 3
+  },
+  {
+   "handle": "tureandflorry.petitbrabancon",
+   "breed": "Griffon",
+   "model": "griffon",
+   "look": "",
+   "n": 550,
+   "day": 3
+  },
+  {
+   "handle": "miaaaaaaaaaaaa201444444",
+   "breed": "French bulldog",
+   "model": "frenchie",
+   "look": "",
+   "n": 551,
+   "day": 3
+  },
+  {
+   "handle": "omar_mostafa276",
+   "breed": "Chocolate labrador",
+   "model": "lab",
+   "look": "chocolate",
+   "n": 552,
+   "day": 3
+  },
+  {
+   "handle": "littlemiss_willowww",
+   "breed": "Australian shepherd",
+   "model": "aussie",
+   "look": "",
+   "n": 553,
+   "day": 3
+  },
+  {
+   "handle": "shake.tha.butty",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 554,
+   "day": 3
+  },
+  {
+   "handle": "ellarose_mh13",
+   "breed": "Long haired chihuahua",
+   "model": "chihuahua",
+   "look": "long haired",
+   "n": 555,
+   "day": 3
+  },
+  {
+   "handle": "tosh.gamer",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 556,
+   "day": 3
+  },
+  {
+   "handle": "amelieevert",
+   "breed": "Cavapoo",
+   "model": "doodle",
+   "look": "mini",
+   "n": 557,
+   "day": 3
+  },
+  {
+   "handle": "assley_ash_dance",
+   "breed": "Cavapoo",
+   "model": "doodle",
+   "look": "mini",
+   "n": 558,
+   "day": 3
+  },
+  {
+   "handle": "onlylaymal",
+   "breed": "White grey Pomeranian",
+   "model": "pomeranian",
+   "look": "white grey",
+   "n": 559,
+   "day": 3
+  },
+  {
+   "handle": "st3r_b0rned_",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 560,
+   "day": 3
+  },
+  {
+   "handle": "poteetz_",
+   "breed": "Black standard poodle",
+   "model": "poodle",
+   "look": "black",
+   "n": 561,
+   "day": 3
+  },
+  {
+   "handle": "mlpfan_0",
+   "breed": "Yorkshire terrier",
+   "model": "yorkie",
+   "look": "",
+   "n": 562,
+   "day": 3
+  },
+  {
+   "handle": "sagar249068",
+   "breed": "Kangal",
+   "model": "kangal",
+   "look": "",
+   "n": 563,
+   "day": 3
+  },
+  {
+   "handle": "blake._.hayes",
+   "breed": "Yellow labrador",
+   "model": "lab",
+   "look": "yellow",
+   "n": 564,
+   "day": 3
+  },
+  {
+   "handle": "percpounder1",
+   "breed": "Dutch shepherd",
+   "model": "malinois",
+   "look": "brindle",
+   "n": 565,
+   "day": 3
+  },
+  {
+   "handle": "jessi_camarvell",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 566,
+   "day": 3
+  },
+  {
+   "handle": "ja.sleen7686",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 567,
+   "day": 3
+  },
+  {
+   "handle": "missy.ellaa",
+   "breed": "Black and brown doberman",
+   "model": "doberman",
+   "look": "black brown",
+   "n": 568,
+   "day": 3
+  },
+  {
+   "handle": "korynnedbocap",
+   "breed": "Newfoundland",
+   "model": "newfoundland",
+   "look": "",
+   "n": 569,
+   "day": 3
+  },
+  {
+   "handle": "mguldiman",
+   "breed": "Great Pyrenees",
+   "model": "pyrenees",
+   "look": "",
+   "n": 570,
+   "day": 3
+  },
+  {
+   "handle": "dani726",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 571,
+   "day": 3
+  },
+  {
+   "handle": "proflyerplays_jd",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 572,
+   "day": 3
+  },
+  {
+   "handle": "theraingirl_2014",
+   "breed": "Border collie",
+   "model": "bordercollie",
+   "look": "",
+   "n": 573,
+   "day": 3
+  },
+  {
+   "handle": "whos._kd_96",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 574,
+   "day": 3
+  },
+  {
+   "handle": "lyng536",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 575,
+   "day": 3
+  },
+  {
+   "handle": "anniellen7",
+   "breed": "Black long haired chihuahua",
+   "model": "chihuahua",
+   "look": "black long haired",
+   "n": 576,
+   "day": 3
+  },
+  {
+   "handle": "av1ell3_",
+   "breed": "Norfolk terrier",
+   "model": "norfolk",
+   "look": "",
+   "n": 577,
+   "day": 3
+  },
+  {
+   "handle": "just_another_chapter37",
+   "breed": "Pit bull",
+   "model": "pitbull",
+   "look": "",
+   "n": 578,
+   "day": 3
+  },
+  {
+   "handle": "aubrey.cheer0507",
+   "breed": "Great Pyrenees",
+   "model": "pyrenees",
+   "look": "",
+   "n": 579,
+   "day": 3
+  },
+  {
+   "handle": "rachelcooks_0217",
+   "breed": "Rottweiler",
+   "model": "rottweiler",
+   "look": "",
+   "n": 580,
+   "day": 3
+  },
+  {
+   "handle": "owenbakes11",
+   "breed": "Cattle doodle",
+   "model": "doodle",
+   "look": "",
+   "n": 581,
+   "day": 3
+  },
+  {
+   "handle": "34sar46",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 582,
+   "day": 3
+  },
+  {
+   "handle": "its_vanta2k",
+   "breed": "Micro goldendoodle",
+   "model": "doodle",
+   "look": "golden",
+   "n": 583,
+   "day": 3
+  },
+  {
+   "handle": "maxthatoneguy",
+   "breed": "Poodle",
+   "model": "poodle",
+   "look": "",
+   "n": 584,
+   "day": 3
+  },
+  {
+   "handle": "coco_wolf13",
+   "breed": "Collie",
+   "model": "sheltie",
+   "look": "big",
+   "n": 585,
+   "day": 3
+  },
+  {
+   "handle": "itselllizka",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 586,
+   "day": 3
+  },
+  {
+   "handle": "aubreebaby1230",
+   "breed": "Doberman",
+   "model": "doberman",
+   "look": "",
+   "n": 587,
+   "day": 3
+  },
+  {
+   "handle": "dumb.lon14",
+   "breed": "Bernese mountain dog",
+   "model": "bernese",
+   "look": "",
+   "n": 588,
+   "day": 3
+  },
+  {
+   "handle": "kaitlin15794",
+   "breed": "Pomeranian",
+   "model": "pomeranian",
+   "look": "",
+   "n": 589,
+   "day": 3
+  },
+  {
+   "handle": "katshusky",
+   "breed": "Bernese mountain dog",
+   "model": "bernese",
+   "look": "",
+   "n": 590,
+   "day": 3
+  },
+  {
+   "handle": "nevershoutmiley",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 591,
+   "day": 3
+  },
+  {
+   "handle": "ponymadlois",
+   "breed": "Brown cockapoo",
+   "model": "doodle",
+   "look": "mini brown",
+   "n": 592,
+   "day": 3
+  },
+  {
+   "handle": "claudiaaat06",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 593,
+   "day": 3
+  },
+  {
+   "handle": "lex_stupiddd",
+   "breed": "Old English sheepdog",
+   "model": "oes",
+   "look": "",
+   "n": 594,
+   "day": 3
+  },
+  {
+   "handle": "taisia.with.horses",
+   "breed": "Maltipoo",
+   "model": "doodle",
+   "look": "mini white",
+   "n": 595,
+   "day": 3
+  },
+  {
+   "handle": "_junanaj",
+   "breed": "Mutt",
+   "model": "mutt",
+   "look": "",
+   "n": 596,
+   "day": 3
   }
  ],
  "builds": [
@@ -3674,6 +4794,11 @@
    "type": "cinema",
    "day": 2,
    "slot": 3
+  },
+  {
+   "type": "waterpark",
+   "day": 3,
+   "slot": 4
   }
  ],
  "log": [
@@ -3689,6 +4814,13 @@
    "date": "2026-11-10",
    "title": "The first dogs move in",
    "text": "456 followers moved in, and Marsh Town opened: Marsh Mart, the library, Muscle Mutts gym and the cinema.",
+   "reel": "https://www.instagram.com/reel/Dfk8mtut5ju/"
+  },
+  {
+   "day": 3,
+   "date": "2026-11-11",
+   "title": "The waterpark opens",
+   "text": "140 new dogs moved in, and Marsh built a waterpark with slides and a lazy river.",
    "reel": ""
   }
  ],
@@ -3755,5 +4887,5 @@
   ],
   "coffee": "https://ko-fi.com/marshtown"
  },
- "followers": 833
+ "followers": 1532
 }

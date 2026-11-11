@@ -600,7 +600,7 @@
     });
   }
 
-  /* ================= The 10,000-dog goal (demo only for now) ================= */
+  /* ================= The 10,000-dog goal ================= */
   // A bar across the bottom of the header: how close the sanctuary is to 10,000 dogs, when a new location opens.
   // Tap it for what that means. It hides while a panel or a dog's card is open (CSS: body.panel-open / body.picked), and the
   // demo banner follows the header's bottom edge. Cheap: drawn once, the fill slides in with a transform (no layout), and
@@ -655,7 +655,7 @@
     { // only if it would wrap (bigger numbers on a phone): shrink the line a little so it stays on one line; otherwise untouched
       const el = $("stats"); el.style.fontSize = ""; el.style.whiteSpace = "";
       if (el.getBoundingClientRect().height > parseFloat(getComputedStyle(el).fontSize) * 1.8) { el.style.whiteSpace = "nowrap"; let fs = 13; while (el.scrollWidth > el.clientWidth && fs > 10.5) el.style.fontSize = (fs -= 0.5) + "px"; } }
-    if (DEMO) goalBar(total); // (demo only for now)
+    goalBar(total);
     if (!DOGS.length) $("hint").textContent = "No dogs yet. Follow to be the first!";
     $("names").innerHTML = DOGS.length < 3000 ? DOGS.map((d) => `<option value="@${esc(d.handle)}">`).join("") : "";
     $("logList").innerHTML = DATA.log.slice().sort((a, b) => b.day - a.day).map((l) => `<li><div class="d">Day ${l.day}${l.date ? " · " + esc(l.date) : ""}</div><h3>${esc(l.title)}</h3>${l.text ? `<p>${esc(l.text)}</p>` : ""}${l.reel ? `<a href="${esc(l.reel)}" target="_blank" rel="noopener">Watch Day ${l.day} ↗</a>` : ""}</li>`).join("");
