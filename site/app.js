@@ -5,7 +5,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
-  const DEMO = params.has("demo");
+  const DEMO = params.has("demo"); // ?demo: the next day's real data (data/preview.json) before it goes live, or sample dogs if there is none
   const phone = matchMedia("(pointer: coarse)").matches;
   const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
   const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
@@ -537,7 +537,7 @@
   }
   function select(d, fly2) {
     selected = d; trackSel = true; const card = $("card");
-    document.body.classList.toggle("picked", !!d); requestAnimationFrame(measureGap);
+    document.body.classList.toggle("picked", !!d); goalPlace(); requestAnimationFrame(measureGap);
     K.beamG.visible = !!d && !d.isMarsh;
     if (!d) { card.hidden = true; if (location.search.includes("dog=")) history.replaceState(null, "", DEMO ? "?demo" : location.pathname); return; }
     closeAll(); card.hidden = false; hideHint();
@@ -600,6 +600,28 @@
     });
   }
 
+  /* ================= The 10,000-dog goal (demo only for now) ================= */
+  // A bar across the bottom of the header: how close the sanctuary is to 10,000 dogs, when a new location opens.
+  // Tap it for what that means. It hides while a panel or a dog's card is open (CSS: body.panel-open / body.picked), and the
+  // demo banner follows the header's bottom edge. Cheap: drawn once, the fill slides in with a transform (no layout), and
+  // the shine runs twice and stops, so nothing keeps animating over the 3D view.
+  const GOAL = 10000;
+  function goalPlace() { const g = $("goal"); if (!g) return; const b = document.querySelector(".top").getBoundingClientRect(); $("demo").style.top = Math.round(b.bottom + 8) + "px"; }
+  function goalBar(total) {
+    let g = $("goal");
+    if (!g) {
+      g = document.createElement("button"); g.id = "goal"; g.type = "button"; g.className = "goal";
+      g.innerHTML = `<span class="goal-row"><span class="goal-track"><span class="goal-fill"></span></span><span class="goal-tag">🔒 New location</span></span><span class="goal-text"></span>`;
+      document.querySelector(".top").appendChild(g);
+      g.onclick = () => toast(`At ${GOAL.toLocaleString()} dogs, Marsh opens a brand-new location! Every new follower is a new dog, so share the sanctuary to get there faster.`, 5200, true);
+      addEventListener("resize", goalPlace, { passive: true }); requestAnimationFrame(goalPlace);
+    }
+    const n = Math.max(0, Math.min(total, GOAL)), pct = (n / GOAL) * 100;
+    g.querySelector(".goal-text").innerHTML = n >= GOAL ? `<b>${GOAL.toLocaleString()} dogs!</b> The new location is opening` : `<b>${n.toLocaleString()}</b> / ${GOAL.toLocaleString()} dogs · <b>${(GOAL - n).toLocaleString()}</b> to go until the new location`;
+    g.setAttribute("aria-label", `${n.toLocaleString()} of ${GOAL.toLocaleString()} dogs. A new location opens at ${GOAL.toLocaleString()}.`);
+    requestAnimationFrame(() => requestAnimationFrame(() => (g.querySelector(".goal-fill").style.transform = `translateX(${Math.max(2, pct) - 100}%)`))); // grows in on load
+  }
+
   /* ================= Search ================= */
   $("find").addEventListener("submit", (e) => {
     e.preventDefault(); const q = norm($("q").value); if (!q) return;
@@ -611,13 +633,16 @@
 
   /* ================= Sheets, toast, hint ================= */
   const SHEETS = ["info", "log", "shop"];
-  function closeAll() { SHEETS.forEach((s) => ($(s).hidden = true)); }
-  function open(id) { const was = !$(id).hidden; closeAll(); $("card").hidden = true; if (!was) $(id).hidden = false; }
+  // body.panel-open while a panel is open (the goal bar hides then, so it never sits over anything)
+  const sheetState = () => { document.body.classList.toggle("panel-open", [...document.querySelectorAll(".sheet")].some((s) => !s.hidden)); goalPlace(); };
+  { const mo = new MutationObserver(sheetState); document.querySelectorAll(".sheet").forEach((el) => mo.observe(el, { attributes: true, attributeFilter: ["hidden"] })); } // (also catches panels opened by other code, like Your dog in 3D)
+  function closeAll() { SHEETS.forEach((s) => ($(s).hidden = true)); sheetState(); }
+  function open(id) { const was = !$(id).hidden; closeAll(); if (selected) select(null); else $("card").hidden = true; if (!was) $(id).hidden = false; sheetState(); } // (a full deselect, so the search bar and buttons come back)
   document.querySelectorAll("[data-open]").forEach((b) => (b.onclick = () => open(b.dataset.open)));
   // "terms" links open How it works with the terms dropdown already open
   document.querySelectorAll("[data-terms]").forEach((b) => (b.onclick = () => { open("info"); const t = $("terms"); t.open = true; requestAnimationFrame(() => t.scrollIntoView({ block: "start", behavior: "smooth" })); }));
-  SHEETS.forEach((s) => ($(s).querySelector("[data-close]").onclick = () => ($(s).hidden = true)));
-  let toastT = 0; function toast(msg, ms) { const el = $("toast"); el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), ms || 2200); }
+  SHEETS.forEach((s) => ($(s).querySelector("[data-close]").onclick = () => { $(s).hidden = true; sheetState(); }));
+  let toastT = 0; function toast(msg, ms, words) { const el = $("toast"); el.textContent = msg; el.classList.toggle("words", !!words); /* words: wrap between words (other toasts may hold long links) */ el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), ms || 2200); }
   let hinted = false; function hideHint() { if (hinted) return; hinted = true; $("hint").style.opacity = 0; }
 
   function fillPage() {
@@ -627,6 +652,10 @@
     const gold = DOGS.filter((d) => d.tier === "gold").length, silver = DOGS.filter((d) => d.tier === "silver").length, silverN = DATA.silverCollars - DATA.goldCollars;
     const total = Math.max(DOGS.length, +DATA.followers || 0); // the follower count, even before every follower has a dog on the map
     $("stats").innerHTML = `<b>Day ${DATA.day}</b> · <b>${total.toLocaleString()}</b> ${total === 1 ? "dog" : "dogs"} · 🥇 <b>${gold}/${DATA.goldCollars}</b> · 🥈 <b>${silver}/${silverN}</b>`;
+    { // only if it would wrap (bigger numbers on a phone): shrink the line a little so it stays on one line; otherwise untouched
+      const el = $("stats"); el.style.fontSize = ""; el.style.whiteSpace = "";
+      if (el.getBoundingClientRect().height > parseFloat(getComputedStyle(el).fontSize) * 1.8) { el.style.whiteSpace = "nowrap"; let fs = 13; while (el.scrollWidth > el.clientWidth && fs > 10.5) el.style.fontSize = (fs -= 0.5) + "px"; } }
+    if (DEMO) goalBar(total); // (demo only for now)
     if (!DOGS.length) $("hint").textContent = "No dogs yet. Follow to be the first!";
     $("names").innerHTML = DOGS.length < 3000 ? DOGS.map((d) => `<option value="@${esc(d.handle)}">`).join("") : "";
     $("logList").innerHTML = DATA.log.slice().sort((a, b) => b.day - a.day).map((l) => `<li><div class="d">Day ${l.day}${l.date ? " · " + esc(l.date) : ""}</div><h3>${esc(l.title)}</h3>${l.text ? `<p>${esc(l.text)}</p>` : ""}${l.reel ? `<a href="${esc(l.reel)}" target="_blank" rel="noopener">Watch Day ${l.day} ↗</a>` : ""}</li>`).join("");
@@ -645,7 +674,7 @@
     $("shopList").innerHTML = SHOP.map((it, i) => (it.soon ? "" : card(it, i))).join("");
     $("soonList").innerHTML = SHOP.map((it, i) => (it.soon ? card(it, i) : "")).join("");
     $("soonH").hidden = !SHOP.some((it) => it.soon);
-    $("demo").hidden = !DEMO;
+    $("demo").hidden = !DEMO; if (DEMO && DATA.updated !== "demo") $("demo").textContent = `Demo: Day ${DATA.day} preview, not live yet`;
   }
 
   /* ================= Loop ================= */
@@ -790,7 +819,7 @@
   /* ================= Boot ================= */
   async function boot() {
     try {
-      DATA = DEMO ? demoData() : await fetch("data/sanctuary.json", { cache: "no-cache" }).then((r) => r.json());
+      DATA = DEMO ? await fetch("data/preview.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null)).catch(() => null) || demoData() : await fetch("data/sanctuary.json", { cache: "no-cache" }).then((r) => r.json());
     } catch (e) { DATA = { day: 1, dogs: [], builds: [], log: [], goldCollars: 100 }; toast("Couldn't load today's dogs. Try refreshing."); }
     DATA.goldCollars = DATA.goldCollars || 100; DATA.silverCollars = DATA.silverCollars || 600;
     DATA.log = Array.isArray(DATA.log) ? DATA.log : []; DATA.day = DATA.day || 1;
