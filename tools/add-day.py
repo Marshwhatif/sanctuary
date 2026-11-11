@@ -21,6 +21,7 @@ Other jobs:
   --followers 833          the follower count shown as the dog total
   --reel-for 1=https://... set the reel link on an earlier day
   --dry-run                show what would change without saving
+  --out data/preview.json  save to the preview file instead: marshtown.com/?demo shows it, the live page is untouched
 """
 import argparse, csv, datetime, json, pathlib, re, sys
 
@@ -33,8 +34,8 @@ MODELS = ["golden", "lab", "shepherd", "malinois", "husky", "malamute", "pitbull
           "wolfhound", "shiba", "akita", "samoyed", "wolfdog", "bordercollie", "sheltie", "aussie", "cavalier", "cocker", "springer",
           "jackrussell", "yorkie", "boston", "frenchie", "bulldog", "boxer", "maltese", "bichon", "pekingese", "papillon", "spitz",
           "chow", "leonberger", "airedale", "scottie", "westie", "norwich", "otterhound", "bloodhound", "coonhound", "pointer",
-          "vizsla", "setter", "heeler", "griffon", "mutt"]
-BUILDS = ["supermarket", "library", "gym", "cinema"]  # what the 3D kit can draw today; new builds go in lowpoly-town.js
+          "vizsla", "setter", "heeler", "griffon", "norfolk", "schnauzer", "xolo", "oes", "mutt"]
+BUILDS = ["supermarket", "library", "gym", "cinema", "waterpark"]  # what the 3D kit can draw today; new builds go in lowpoly-town.js
 HATS = ["party", "crown", "tophat", "shades", "wizard", "chef", "bobble", "cowboy", "propeller"]
 # Words in a comment -> (3D breed, extra look words). The breed named FIRST in the comment wins (so "pomeranian chihuahua
 # mix" is a Pomeranian); colour words never choose the breed, they only recolour it (see look_of).
@@ -85,6 +86,9 @@ ALIASES = [
     ("keeshond", "spitz", "grey"), ("lapphund", "spitz", "black"), ("lapbog", "spitz", "black"), ("kintamani", "spitz", "white"),
     ("spitz", "spitz", ""), ("chow", "chow", ""), ("leonberger", "leonberger", ""), ("airedale", "airedale", ""),
     ("scottish terrier", "scottie", ""), ("scottie", "scottie", ""), ("westie", "westie", ""), ("west highland", "westie", ""),
+    ("norfolk", "norfolk", ""), ("schnauzer", "schnauzer", ""), ("xolo", "xolo", ""), ("mexican hairless", "xolo", ""),
+    ("old english sheepdog", "oes", ""), ("sheepdog", "oes", ""), ("sheep dog", "oes", ""), ("dutch shepherd", "malinois", "brindle"),
+    ("lhasa", "shihtzu", ""), ("kai ken", "shiba", ""), ("lundehund", "spitz", ""), ("ridgeback", "vizsla", ""),
     ("norwich", "norwich", ""), ("otterhound", "otterhound", ""), ("bloodhound", "bloodhound", ""), ("coonhound", "coonhound", ""),
     ("shorthaired pointer", "pointer", ""), ("short hair pointer", "pointer", ""), ("gsp", "pointer", ""), ("pointer", "pointer", ""),
     ("vizsla", "vizsla", ""), ("visla", "vizsla", ""), ("irish setter", "setter", ""), ("setter", "setter", ""),
@@ -178,6 +182,7 @@ def main():
     ap.add_argument("--shop", choices=["on", "off"])
     ap.add_argument("--link", action="append", default=[])
     ap.add_argument("--followers", type=int, help="current follower count, shown as the dog total")
+    ap.add_argument("--out", default="", help="save to this file instead (e.g. data/preview.json for the ?demo page); reads data/sanctuary.json either way")
     ap.add_argument("--reel-for", action="append", default=[], help="DAY=URL: set the reel link on an earlier day's log")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
@@ -276,8 +281,9 @@ def main():
     print(f"Day {data['day']}: {len(live)} dogs, {sum(d['n'] <= g for d in live)}/{g} gold collars, {sum(g < d['n'] <= sv for d in live)}/{sv - g} silver, builds: {', '.join(b['type'] for b in data['builds']) or 'none'}")
     if a.dry_run:
         print("(dry run, nothing saved)"); return
-    DATA.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
-    print(f"Saved {DATA.relative_to(ROOT)}")
+    out = pathlib.Path(a.out).resolve() if a.out else DATA
+    out.write_text(json.dumps(data, indent=1, ensure_ascii=False) + "\n")
+    print(f"Saved {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
 
 
 if __name__ == "__main__":
