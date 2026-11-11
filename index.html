@@ -47,6 +47,7 @@
     <button data-open="info">How it works</button>
     <button data-open="log">Daily log</button>
     <button data-open="shop" id="shopBtn" hidden>Shop</button>
+    <button id="pBtn" class="p-btn" aria-label="Your dog in 3D">🐶<span class="wide"> Your dog in 3D</span></button>
     <a id="follow" class="cta" target="_blank" rel="noopener">Follow<span class="wide"> = get a dog</span></a>
   </nav>
 
@@ -126,6 +127,7 @@
     <button class="x" data-close aria-label="Close"><span>×</span></button>
     <h2>Dress up your dog</h2>
     <a id="coffee" class="coffee" href="https://ko-fi.com/marshtown" target="_blank" rel="noopener"><span class="cup">☕</span><span><b>Buy me a coffee</b><small>Help keep the sanctuary running</small></span><span class="go">↗</span></a>
+    <a class="coffee portrait-link" href="portraits.html" style="background:#2f7a4a;box-shadow:0 3px 0 #1f5a35"><span class="cup">🐶</span><span><b>Your dog in 3D</b><small>Send a photo, get a blocky portrait in Marsh's style</small></span><span class="go">→</span></a>
     <div class="callout">
       <b>Write your Instagram @name in the Ko-fi message box</b>
       <span>Checkout is on Ko-fi. Your @name is how we know whose dog to dress up. Upgrades appear with the next video.</span>
@@ -146,6 +148,60 @@
   <script src="lib/lowpoly-blocky.js?v=36"></script>
   <script src="lib/lowpoly-marsh.js?v=36"></script>
   <script src="lib/lowpoly-sanctuary.js?v=36"></script>
+  <!-- Your dog in 3D: a panel, a dock button and a one-time pop-up (all self-contained here) -->
+  <style>
+    .p-btn { background: #fff3c4 !important; }
+    #pSheet .p-hero { display: block; width: 100%; height: auto; border-radius: 16px; margin: 10px 0 8px; background: #eaf6fd; }
+    #pSheet ul { margin: 6px 0 12px; padding-left: 1.2em; font-size: 14px; }
+    #pSheet .p-go { display: block; text-align: center; padding: 11px 14px; border-radius: 14px; background: #2f7a4a; color: #fff; font-weight: 800; text-decoration: none; box-shadow: 0 3px 0 #1f5a35; }
+    #pPop { position: fixed; z-index: 7; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); width: min(320px, calc(100% - 24px)); display: flex; gap: 12px; align-items: center; padding: 10px 40px 10px 10px; border-radius: 18px; background: var(--paper); -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6); box-shadow: var(--shadow); animation: up 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+    #pPop img { width: 64px; height: 80px; border-radius: 12px; object-fit: cover; flex: none; }
+    #pPop b { display: block; font-size: 15px; }
+    #pPop p { margin: 2px 0 6px; font-size: 13px; color: var(--ink2); line-height: 1.35; }
+    #pPop a { font-size: 13px; font-weight: 800; color: #2f7a4a; text-decoration: none; }
+    #pPop .x { top: 0; right: 0; }
+  </style>
+  <section id="pSheet" class="sheet" hidden>
+    <button class="x" data-pclose aria-label="Close"><span>×</span></button>
+    <h2>Your dog in 3D</h2>
+    <p class="small" style="margin:0">Send one photo and we'll turn your dog into a blocky 3D character, just like Marsh.</p>
+    <img class="p-hero" src="img/portraits/photo-to-3d.jpg" alt="Marsh's photo next to his blocky 3D remake, with an arrow between them" width="720" height="420" loading="lazy">
+    <ul>
+      <li>A 3D portrait in a scene they'd love</li>
+      <li>A phone wallpaper of them</li>
+      <li>A look check, with one round of changes</li>
+    </ul>
+    <a class="p-go" href="portraits.html">See how it works · £20</a>
+  </section>
+  <aside id="pPop" hidden aria-label="Your dog in 3D">
+    <img src="img/portraits/marsh-3d.jpg" alt="" width="64" height="80">
+    <div><b>Your dog in 3D 🐶</b><p>One photo in, a blocky portrait like Marsh out.</p><a href="portraits.html">Take a look →</a></div>
+    <button class="x" data-pclose aria-label="Close"><span>×</span></button>
+  </aside>
+  <script>
+  (() => {
+    const sheet = document.getElementById("pSheet"), pop = document.getElementById("pPop"), KEY = "marsh.portraitPop";
+    const store = { get() { try { return +localStorage.getItem(KEY) || 0; } catch (e) { return 0; } }, set() { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {} } };
+    const hidePop = () => { pop.hidden = true; store.set(); };
+    document.getElementById("pBtn").onclick = () => {
+      const was = !sheet.hidden;
+      document.querySelectorAll(".sheet").forEach((s) => (s.hidden = true));
+      const card = document.getElementById("card"); if (card) card.hidden = true;
+      sheet.hidden = was; hidePop();
+    };
+    // the site's own panels close this one
+    document.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => (sheet.hidden = true)));
+    sheet.querySelector("[data-pclose]").onclick = () => (sheet.hidden = true);
+    pop.querySelector("[data-pclose]").onclick = hidePop;
+    pop.querySelector("a").addEventListener("click", store.set);
+    // the pop-up: once a week at most, after a while looking around, never over a shared dog link
+    const week = 7 * 24 * 3600 * 1000, q = new URLSearchParams(location.search);
+    if (!q.has("dog") && Date.now() - store.get() > week) setTimeout(() => {
+      const busy = [...document.querySelectorAll(".sheet, #card")].some((s) => !s.hidden);
+      if (!busy) pop.hidden = false;
+    }, 15000);
+  })();
+  </script>
   <script src="lib/lowpoly-town.js?v=36"></script>
   <script src="lib/lowpoly-breeds.js?v=36"></script>
   <script src="site/app.js?v=36"></script>

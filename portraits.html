@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your dog in 3D · Marsh's Dog Sanctuary</title>
+  <meta name="description" content="Send one photo of your dog and we'll turn them into a blocky 3D portrait in Marsh's style, plus a phone wallpaper.">
+  <meta property="og:title" content="Your dog, in Marsh's world">
+  <meta property="og:description" content="One photo in, a blocky 3D portrait of your dog out. Made by hand by the Marsh What If team.">
+  <meta property="og:image" content="https://marshtown.com/img/portraits/marsh-3d.jpg">
+  <meta property="og:url" content="https://marshtown.com/portraits.html">
+  <link rel="canonical" href="https://marshtown.com/portraits.html">
+  <meta name="theme-color" content="#5bb8ea">
+  <link rel="icon" href="img/favicon.png">
+  <style>
+    :root {
+      --bg: #eaf6fd; --card: #ffffff; --ink: #1d2b36; --muted: #52616d; --line: rgba(29, 43, 54, 0.1);
+      --green: #2f7a4a; --green-ink: #ffffff; --gold: #e8a800; --chip: #fff3c4; --chip-ink: #6b4d00; --accent: #1f7fc0;
+      --shadow: 0 6px 24px rgba(20, 40, 60, 0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #10202b; --card: #182c3a; --ink: #e8f1f7; --muted: #a9bac6; --line: rgba(232, 241, 247, 0.12);
+        --green: #4fb877; --green-ink: #0d1f15; --chip: #3a3214; --chip-ink: #ffd877; --accent: #6cc0f5; --shadow: 0 6px 24px rgba(0, 0, 0, 0.35); }
+    }
+    * { box-sizing: border-box; }
+    img { height: auto; max-width: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--ink);
+      font: 16px/1.55 ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 980px; margin: 0 auto; padding: 18px 16px 56px; }
+    a { color: var(--accent); }
+    .back { display: inline-block; margin-bottom: 12px; font-weight: 700; text-decoration: none; }
+    h1 { font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.05; margin: 6px 0 12px; letter-spacing: -0.02em; }
+    h2 { font-size: 1.5rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+    h3 { font-size: 1.08rem; margin: 0 0 4px; }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 0.9rem; }
+    .kicker { color: var(--green); font-weight: 800; text-transform: lowercase; letter-spacing: 0.02em; margin: 0; }
+    section { margin-top: 44px; }
+    .card { background: var(--card); border-radius: 20px; padding: 22px; box-shadow: var(--shadow); }
+
+    .hero { display: grid; grid-template-columns: 1fr 1.1fr; gap: 28px; align-items: center; }
+    .btns { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 12px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; font-weight: 800; text-decoration: none; }
+    .btn.primary { background: var(--green); color: var(--green-ink); }
+    .btn.ghost { background: var(--card); color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; font-weight: 700; }
+
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+    .gallery figure { margin: 0; }
+    .gallery img { width: 100%; display: block; border-radius: 16px; aspect-ratio: 4 / 5; object-fit: cover; box-shadow: var(--shadow); }
+    .gallery figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 6px; text-align: center; }
+
+    .get { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: center; }
+    .get ul { margin: 8px 0 0; padding-left: 1.2em; }
+    .get li { margin: 4px 0; }
+    .phone { position: relative; justify-self: center; width: 250px; aspect-ratio: 9 / 19.5; border-radius: 44px; padding: 9px; background: #15141b; box-shadow: var(--shadow), inset 0 0 0 2px #3a3946; }
+    .phone img { width: 100%; height: 100%; display: block; border-radius: 36px; object-fit: cover; object-position: 50% 50%; }
+    .lock { position: absolute; inset: 9px; border-radius: 36px; overflow: hidden; color: #fff; text-shadow: 0 1px 8px rgba(0, 40, 80, 0.25); font-family: -apple-system, "SF Pro Display", system-ui, sans-serif; }
+    .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 78px; height: 23px; border-radius: 14px; background: #000; }
+    .status { position: absolute; top: 13px; left: 22px; right: 18px; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; }
+    .status span:first-child { margin-right: auto; }
+    .sig { display: flex; align-items: flex-end; gap: 1.5px; height: 9px; }
+    .sig i { width: 2.5px; background: #fff; border-radius: 1px; }
+    .sig i:nth-child(1) { height: 3px; } .sig i:nth-child(2) { height: 5px; } .sig i:nth-child(3) { height: 7px; } .sig i:nth-child(4) { height: 9px; }
+    .bat { width: 20px; height: 9px; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 3px; padding: 1px; }
+    .bat b { display: block; width: 72%; height: 100%; background: #fff; border-radius: 1px; }
+    .date { position: absolute; top: 52px; width: 100%; text-align: center; font-size: 13px; font-weight: 600; opacity: 0.95; }
+    .time { position: absolute; top: 64px; width: 100%; text-align: center; font-size: 76px; font-weight: 700; letter-spacing: -2px; line-height: 1.05; }
+    .quick { position: absolute; bottom: 30px; left: 22px; right: 22px; display: flex; justify-content: space-between; }
+    .quick span { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 15px; background: rgba(20, 30, 40, 0.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 92px; height: 4px; border-radius: 3px; background: #fff; }
+
+    .compare { position: relative; margin: 0; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); aspect-ratio: 4 / 5; background: #e9b64f; }
+    .compare img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .c-3d { clip-path: inset(0 0 0 100%); animation: wipe 7s ease-in-out infinite; }
+    .c-line { position: absolute; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 12px rgba(0, 0, 0, 0.35); left: 100%; animation: line 7s ease-in-out infinite; }
+    .c-tag { position: absolute; top: 12px; background: var(--card); color: var(--ink); border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: 0.85rem; box-shadow: var(--shadow); }
+    .c-tag-photo { left: 12px; animation: tagA 7s ease-in-out infinite; }
+    .c-tag-3d { right: 12px; opacity: 0; animation: tagB 7s ease-in-out infinite; }
+    .compare figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 14px 12px; color: #fff; font-weight: 700; font-size: 0.95rem; background: linear-gradient(transparent, rgba(0, 0, 0, 0.55)); }
+    @keyframes wipe { 0%, 22% { clip-path: inset(0 0 0 100%); } 42%, 78% { clip-path: inset(0 0 0 0); } 96%, 100% { clip-path: inset(0 0 0 100%); } }
+    @keyframes line { 0%, 22% { left: 100%; opacity: 0; } 24% { opacity: 1; } 42% { left: 0%; opacity: 1; } 44%, 76% { left: 0%; opacity: 0; } 78% { left: 0%; opacity: 1; } 96% { left: 100%; opacity: 1; } 98%, 100% { left: 100%; opacity: 0; } }
+    @keyframes tagA { 0%, 30% { opacity: 1; } 38%, 86% { opacity: 0; } 94%, 100% { opacity: 1; } }
+    @keyframes tagB { 0%, 34% { opacity: 0; } 42%, 80% { opacity: 1; } 88%, 100% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .c-3d, .c-line, .c-tag-photo, .c-tag-3d { animation: none; }
+      .c-3d { clip-path: inset(0 0 0 50%); } .c-line { left: 50%; } .c-tag-3d { opacity: 1; }
+    }
+
+    .prices { display: grid; grid-template-columns: minmax(0, 440px); gap: 14px; margin-top: 14px; }
+    .price { display: flex; flex-direction: column; gap: 6px; }
+    .price.best { box-shadow: var(--shadow), inset 0 0 0 3px var(--green); }
+    .price .tag { align-self: flex-start; background: var(--green); color: var(--green-ink); border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 800; }
+    .amount { font-size: 2.2rem; font-weight: 800; line-height: 1; margin: 4px 0; }
+    .price ul { margin: 4px 0 10px; padding-left: 1.2em; }
+    .price .btn { justify-content: center; margin-top: auto; }
+
+    .steps { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; counter-reset: s; }
+    .steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); }
+    .steps li::before { content: counter(s); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--chip); color: var(--chip-ink); font-weight: 800; font-size: 1.1rem; }
+
+    details { background: var(--card); border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow); margin-top: 8px; }
+    summary { cursor: pointer; font-weight: 700; }
+    details p, details ul { margin: 8px 0 0; }
+    .faq { margin-top: 12px; }
+    .end { text-align: center; }
+    .end .btns { justify-content: center; }
+    footer { margin-top: 40px; text-align: center; }
+
+    @media (max-width: 760px) {
+      .hero, .get { grid-template-columns: 1fr; }
+      .compare { max-width: 420px; margin: 0 auto; width: 100%; }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+      .prices { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">← Back to the sanctuary</a>
+
+  <div class="hero">
+    <figure class="compare" aria-label="Marsh's photo turning into his 3D portrait">
+      <img class="c-photo" src="img/portraits/marsh-photo.jpg" alt="Photo of Marsh, a scruffy ginger terrier with a dark back, sitting on a doormat and looking up" width="800" height="1000">
+      <img class="c-3d" src="img/portraits/marsh-3d.jpg" alt="Marsh remade as a blocky 3D character in the same spot and pose, with a Marsh name bubble above his head" width="800" height="1000">
+      <span class="c-line" aria-hidden="true"></span>
+      <span class="c-tag c-tag-photo">Photo</span><span class="c-tag c-tag-3d">In 3D</span>
+      <figcaption>This is Marsh. Same spot, same pose, now in 3D.</figcaption>
+    </figure>
+    <div>
+      <p class="kicker">for the dog you love</p>
+      <h1>Your dog, in Marsh's world</h1>
+      <p>Send us one photo. We'll build your dog from scratch as a blocky 3D character, in the same style as Marsh and Puddle: their colours, their markings, their ears, their face. Then we pop them into a scene they'd love.</p>
+      <div class="btns">
+        <a class="btn primary" data-order href="#prices">Order a portrait</a>
+        <a class="btn ghost" href="#how">How it works</a>
+      </div>
+      <div class="chips">
+        <span class="chip" data-price-chip>£20</span>
+        <span class="chip">One photo is enough</span>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="kicker">the style</p>
+    <h2>Every dog, in their favourite place</h2>
+    <p class="muted">Pick a scene for your dog: the sofa, the snow, the beach, autumn leaves, the city at night, the park, or your own front door like Marsh. These samples show the style; yours is made from your photo and matched to your dog.</p>
+    <div class="gallery">
+      <figure><img src="img/portraits/frenchie.jpg" alt="Blocky 3D French bulldog lying on a blue sofa" loading="lazy" width="800" height="1000"><figcaption>French bulldog, lying on the sofa</figcaption></figure>
+      <figure><img src="img/portraits/husky.jpg" alt="Blocky 3D husky sitting in the snow by pine trees and a snowman" loading="lazy" width="800" height="1000"><figcaption>Husky, sitting in the snow</figcaption></figure>
+      <figure><img src="img/portraits/golden.jpg" alt="Blocky 3D golden retriever on sand by the sea under a red and white umbrella" loading="lazy" width="800" height="1000"><figcaption>Golden retriever, standing at the beach</figcaption></figure>
+      <figure><img src="img/portraits/cocker.jpg" alt="Blocky 3D cocker spaniel lying among autumn trees and fallen leaves" loading="lazy" width="800" height="1000"><figcaption>Cocker spaniel, lying in autumn leaves</figcaption></figure>
+      <figure><img src="img/portraits/dalmatian.jpg" alt="Blocky 3D dalmatian on a city pavement at night with lit windows" loading="lazy" width="800" height="1000"><figcaption>Dalmatian, out in the city at night</figcaption></figure>
+      <figure><img src="img/portraits/beagle.jpg" alt="Blocky 3D beagle sitting on grass with flowers" loading="lazy" width="800" height="1000"><figcaption>Beagle, sitting in the park</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="card get">
+    <div>
+      <p class="kicker">what you get</p>
+      <h2>A portrait and a wallpaper</h2>
+      <ul>
+        <li><b>A 3D portrait</b> of your dog in a scene they'd love (1200 × 1500, ready to post or print small).</li>
+        <li><b>A phone wallpaper</b> version, so you see them every time you pick up your phone.</li>
+        <li><b>A look check first.</b> You see your dog before we finish, and get one round of changes to the look.</li>
+        <li>Pick a scene: <b>park, beach, snow, autumn, sofa, city at night or doorstep</b>. Not sure? We'll choose one that suits them. Standing, sitting or lying down: your pick.</li>
+      </ul>
+      <p class="muted small" style="margin-top:10px">Ready in about 3–5 days from your order being confirmed.</p>
+    </div>
+    <div class="phone" aria-label="Your portrait as a phone lock screen">
+      <img src="img/portraits/wallpaper-marsh.jpg" alt="Lock screen wallpaper of 3D Marsh sitting on his doormat in the corner by the door" loading="lazy" width="600" height="1300">
+      <div class="lock" aria-hidden="true">
+        <div class="island"></div>
+        <div class="status"><span>EE</span><span class="sig"><i></i><i></i><i></i><i></i></span><span class="bat"><b></b></span></div>
+        <div class="date">Wednesday 11 November</div>
+        <div class="time">9:41</div>
+        <div class="quick"><span>🔦</span><span>📷</span></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="prices">
+    <p class="kicker">prices</p>
+    <h2>One price, one dog</h2>
+    <div class="prices">
+      <div class="card price best">
+        <h3>Your dog in 3D</h3>
+        <div class="amount" data-price="one">£20</div>
+        <ul>
+          <li>Your dog as a 3D portrait</li>
+          <li>A phone wallpaper</li>
+          <li>One round of changes to the look</li>
+        </ul>
+        <a class="btn primary" data-order href="#">Order on Ko-fi ↗</a>
+      </div>
+    </div>
+    <p class="muted small" style="margin-top:10px">Price in GBP. Payment is taken by Ko-fi when you order.</p>
+  </section>
+
+  <section id="how">
+    <p class="kicker">simple as a sit</p>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><div><h3>Tap Order</h3><p class="muted">It opens the order form on Ko-fi.</p></div></li>
+      <li><div><h3>Tell us about them</h3><p class="muted">In the same form, write your dog's name, their breed if you know it, and the background you'd like. Then tap <b>Add attachment</b> and add a photo (more angles help, but one is enough). Then pay.</p></div></li>
+      <li><div><h3>We confirm</h3><p class="muted">We check your photo and confirm your order within 2 days. If we can't make your dog from it, we'll ask for another photo or refund you in full.</p></div></li>
+      <li><div><h3>Meet your 3D dog</h3><p class="muted">We send you a look check. Tell us if anything needs changing, like a patch, the ears or the tail.</p></div></li>
+      <li><div><h3>Get your files</h3><p class="muted">Your finished portrait and wallpaper arrive by Ko-fi message or email.</p></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="kicker">good to know</p>
+    <h2>Questions</h2>
+    <div class="faq">
+      <details><summary>Will it look exactly like my dog?</summary>
+        <p>It will look like your dog in Marsh's blocky style: their colours, markings, ear shape, size and face, built from your photo. It's a cute 3D character rather than a photo-realistic copy, and you get a look check with one round of changes so you can get it right.</p></details>
+      <details><summary>What if I only have one photo?</summary>
+        <p>One clear photo is enough. Daylight, their whole body, and their face visible works best. Extra angles help us get the markings right.</p></details>
+      <details><summary>Can I make one for a dog who has passed away?</summary>
+        <p>Yes, and we'll take extra care with it. Old or blurry photos are fine. Send what you have.</p></details>
+      <details><summary>Will my dog appear in a Marsh video or the sanctuary?</summary>
+        <p>Not unless you ask. Your portrait is just for you. If you'd love your dog to appear on <a href="https://www.instagram.com/marshwhatif/" target="_blank" rel="noopener">@marshwhatif</a>, say so in the order form.</p></details>
+      <details><summary>What can I do with my portrait?</summary>
+        <p>Anything personal: your phone, your profile picture, posts, printing it for your wall, or giving it as a gift. Please don't sell it or put it on things you sell. We may show it as an example only if you've said yes.</p></details>
+      <details><summary>Do you make cats or other pets?</summary>
+        <p>No. We only make dogs, and we always will. Dogs are what Marsh knows best.</p></details>
+      <details><summary>What happens to my photos?</summary>
+        <p>We use them only to make your portrait. We delete them within 30 days of sending your finished files. See our <a href="privacy.html">privacy policy</a>.</p></details>
+      <details><summary>Can I get a refund?</summary>
+        <ul>
+          <li>Your portrait is made just for you, so once we've started it you can't cancel for a change of mind. When you order, you ask us to start straight away and agree that you lose your 14-day right to cancel once we begin.</li>
+          <li>We <b>will</b> refund you in full if we can't make your dog from your photos, if we haven't sent your look check within 14 days, or if your finished portrait isn't as described and we can't fix it.</li>
+          <li>To ask, message us on Ko-fi or DM <a href="https://www.instagram.com/marshwhatif/" target="_blank" rel="noopener">@marshwhatif</a> with your receipt. Your legal rights aren't affected.</li>
+        </ul></details>
+      <details><summary>I'm under 18. Can I order?</summary>
+        <p>Please ask a parent or guardian first. They can order for you.</p></details>
+    </div>
+  </section>
+
+  <section class="card end">
+    <h2>Ready to see them in 3D?</h2>
+    <p class="muted">Order on Ko-fi. Questions first? DM <a href="https://www.instagram.com/marshwhatif/" target="_blank" rel="noopener">@marshwhatif</a>.</p>
+    <div class="btns">
+      <a class="btn primary" data-order href="#">Order on Ko-fi ↗</a>
+      <a class="btn ghost" href="#prices">See the price</a>
+    </div>
+  </section>
+
+  <footer class="muted small">
+    <p>Marsh's Dog Sanctuary · <a href="./">marshtown.com</a> · <a href="privacy.html">Privacy</a> · Payments by Ko-fi</p>
+  </footer>
+</main>
+<script>
+  // Set this to the Ko-fi commissions page once the portrait is listed there.
+  const ORDER_URL = "https://ko-fi.com/c/59d9643cb3";
+  document.querySelectorAll("[data-order]").forEach((a) => {
+    if (a.getAttribute("href") === "#") { a.href = ORDER_URL; a.target = "_blank"; a.rel = "noopener"; }
+  });
+</script>
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "b8894d998475450e940ced54ff0926d3"}'></script>
+</body>
+</html>
