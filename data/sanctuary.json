@@ -1,6 +1,6 @@
 {
- "day": 3,
- "updated": "2026-11-11",
+ "day": 4,
+ "updated": "2026-11-12",
  "instagram": "marshwhatif",
  "goldCollars": 100,
  "silverCollars": 600,
@@ -4772,6 +4772,494 @@
    "look": "",
    "n": 596,
    "day": 3
+  },
+  {
+   "handle": "mias.c00l",
+   "breed": "Cane corso",
+   "model": "canecorso",
+   "look": "",
+   "n": 597,
+   "day": 4
+  },
+  {
+   "handle": "nicole_s_33",
+   "breed": "Bichon",
+   "model": "bichon",
+   "look": "",
+   "n": 598,
+   "day": 4
+  },
+  {
+   "handle": "madison7jackson",
+   "breed": "Dachshund",
+   "model": "dachshund",
+   "look": "",
+   "n": 599,
+   "day": 4
+  },
+  {
+   "handle": "cats_b4_hoomans",
+   "breed": "Samoyed",
+   "model": "samoyed",
+   "look": "",
+   "n": 600,
+   "day": 4
+  },
+  {
+   "handle": "heberoseburton",
+   "breed": "Pomeranian",
+   "model": "pomeranian",
+   "look": "",
+   "n": 601,
+   "day": 4
+  },
+  {
+   "handle": "ashmon53",
+   "breed": "Belgian malinois",
+   "model": "malinois",
+   "look": "",
+   "n": 602,
+   "day": 4
+  },
+  {
+   "handle": "nesiah_been_bleesed",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 603,
+   "day": 4
+  },
+  {
+   "handle": "burningsagess",
+   "breed": "Borzoi",
+   "model": "borzoi",
+   "look": "",
+   "n": 604,
+   "day": 4
+  },
+  {
+   "handle": "geo20103",
+   "breed": "Basset hound",
+   "model": "beagle",
+   "look": "",
+   "n": 605,
+   "day": 4
+  },
+  {
+   "handle": "jen_claire01",
+   "breed": "Yorkie",
+   "model": "yorkie",
+   "look": "",
+   "n": 606,
+   "day": 4
+  },
+  {
+   "handle": "hrts4dia",
+   "breed": "Australian shepherd",
+   "model": "aussie",
+   "look": "",
+   "n": 607,
+   "day": 4
+  },
+  {
+   "handle": "guitar.rattt",
+   "breed": "Scottish deerhound",
+   "model": "wolfhound",
+   "look": "",
+   "n": 608,
+   "day": 4
+  },
+  {
+   "handle": "henry267543",
+   "breed": "Great Dane",
+   "model": "greatdane",
+   "look": "",
+   "n": 609,
+   "day": 4
+  },
+  {
+   "handle": "johnharryseaglasslove",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 610,
+   "day": 4
+  },
+  {
+   "handle": "happypummim",
+   "breed": "Bernese mountain dog",
+   "model": "bernese",
+   "look": "",
+   "n": 611,
+   "day": 4
+  },
+  {
+   "handle": "krissybrinn",
+   "breed": "Bloodhound",
+   "model": "bloodhound",
+   "look": "",
+   "n": 612,
+   "day": 4
+  },
+  {
+   "handle": "lillieherbertsphotography",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 613,
+   "day": 4
+  },
+  {
+   "handle": "mirxaei_",
+   "breed": "Aspin",
+   "model": "mutt",
+   "look": "",
+   "n": 614,
+   "day": 4
+  },
+  {
+   "handle": "drew.sparks719",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 615,
+   "day": 4
+  },
+  {
+   "handle": "funkyehhhhhhson",
+   "breed": "Cane corso",
+   "model": "canecorso",
+   "look": "",
+   "n": 616,
+   "day": 4
+  },
+  {
+   "handle": "hunterryan318",
+   "breed": "Chocolate lab husky mix",
+   "model": "lab",
+   "look": "chocolate",
+   "n": 617,
+   "day": 4
+  },
+  {
+   "handle": "ky_23_12",
+   "breed": "Rottweiler",
+   "model": "rottweiler",
+   "look": "",
+   "n": 618,
+   "day": 4
+  },
+  {
+   "handle": "vas.london.cheer",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 619,
+   "day": 4
+  },
+  {
+   "handle": "leoharrisonclevesjo",
+   "breed": "Black and white Samoyed",
+   "model": "samoyed",
+   "look": "black white",
+   "n": 620,
+   "day": 4
+  },
+  {
+   "handle": "rax_lovesdyle",
+   "breed": "Borzoi",
+   "model": "borzoi",
+   "look": "",
+   "n": 621,
+   "day": 4
+  },
+  {
+   "handle": "owen_ducks",
+   "breed": "Chow chow",
+   "model": "chow",
+   "look": "",
+   "n": 622,
+   "day": 4
+  },
+  {
+   "handle": "ne_yonman",
+   "breed": "Presa canario mastiff",
+   "model": "mastiff",
+   "look": "",
+   "n": 623,
+   "day": 4
+  },
+  {
+   "handle": "haleigh56628",
+   "breed": "English mastiff",
+   "model": "mastiff",
+   "look": "",
+   "n": 624,
+   "day": 4
+  },
+  {
+   "handle": "ilovestraykids1_143",
+   "breed": "White boxer",
+   "model": "boxer",
+   "look": "white",
+   "n": 625,
+   "day": 4
+  },
+  {
+   "handle": "oliviaboyd53",
+   "breed": "Dachshund",
+   "model": "dachshund",
+   "look": "",
+   "n": 626,
+   "day": 4
+  },
+  {
+   "handle": "evelyn_reeses_pieces",
+   "breed": "Saint Bernard",
+   "model": "stbernard",
+   "look": "",
+   "n": 627,
+   "day": 4
+  },
+  {
+   "handle": "vilte6769",
+   "breed": "Australian shepherd",
+   "model": "aussie",
+   "look": "",
+   "n": 628,
+   "day": 4
+  },
+  {
+   "handle": "etta_myers8",
+   "breed": "Dachshund",
+   "model": "dachshund",
+   "look": "",
+   "n": 629,
+   "day": 4
+  },
+  {
+   "handle": "houseplant31414",
+   "breed": "French bulldog",
+   "model": "frenchie",
+   "look": "",
+   "n": 630,
+   "day": 4
+  },
+  {
+   "handle": "max339955",
+   "breed": "German shepherd husky mix",
+   "model": "shepherd",
+   "look": "",
+   "n": 631,
+   "day": 4
+  },
+  {
+   "handle": "lovly_mena",
+   "breed": "Dachshund",
+   "model": "dachshund",
+   "look": "",
+   "n": 632,
+   "day": 4
+  },
+  {
+   "handle": "cassius2012",
+   "breed": "Blue roan cocker spaniel",
+   "model": "cocker",
+   "look": "blue",
+   "n": 633,
+   "day": 4
+  },
+  {
+   "handle": "tegantye",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 634,
+   "day": 4
+  },
+  {
+   "handle": "lo_cks_",
+   "breed": "Long-haired German shepherd",
+   "model": "shepherd",
+   "look": "long haired",
+   "n": 635,
+   "day": 4
+  },
+  {
+   "handle": "arabella.sk8s",
+   "breed": "XL bully",
+   "model": "bully",
+   "look": "big",
+   "n": 636,
+   "day": 4
+  },
+  {
+   "handle": "charlee_with2es",
+   "breed": "Chihuahua",
+   "model": "chihuahua",
+   "look": "",
+   "n": 637,
+   "day": 4
+  },
+  {
+   "handle": "meko_ho_",
+   "breed": "Pug",
+   "model": "pug",
+   "look": "",
+   "n": 638,
+   "day": 4
+  },
+  {
+   "handle": "skyannetts",
+   "breed": "Dalmatian",
+   "model": "dalmatian",
+   "look": "",
+   "n": 639,
+   "day": 4
+  },
+  {
+   "handle": "stormy.life710",
+   "breed": "Red kelpie border collie heeler lab mix",
+   "model": "heeler",
+   "look": "red",
+   "n": 640,
+   "day": 4
+  },
+  {
+   "handle": "0__taiki__0",
+   "breed": "Black pit bull",
+   "model": "pitbull",
+   "look": "black",
+   "n": 641,
+   "day": 4
+  },
+  {
+   "handle": "itsaddisynxoxo",
+   "breed": "Black and tan dachshund",
+   "model": "dachshund",
+   "look": "black tan",
+   "n": 642,
+   "day": 4
+  },
+  {
+   "handle": "rosiee0105",
+   "breed": "Mini tricolor Australian shepherd",
+   "model": "aussie",
+   "look": "mini",
+   "n": 643,
+   "day": 4
+  },
+  {
+   "handle": "mummasboymilo",
+   "breed": "Black and tan dachshund",
+   "model": "dachshund",
+   "look": "black tan",
+   "n": 644,
+   "day": 4
+  },
+  {
+   "handle": "isabelle.calderon19",
+   "breed": "French bulldog",
+   "model": "frenchie",
+   "look": "",
+   "n": 645,
+   "day": 4
+  },
+  {
+   "handle": "chim0388",
+   "breed": "Heeler corgi mix",
+   "model": "heeler",
+   "look": "",
+   "n": 646,
+   "day": 4
+  },
+  {
+   "handle": "bby.girl.0605",
+   "breed": "Black XL American bully",
+   "model": "bully",
+   "look": "big black",
+   "n": 647,
+   "day": 4
+  },
+  {
+   "handle": "mala.baldova",
+   "breed": "Czechoslovakian wolfdog",
+   "model": "wolfdog",
+   "look": "",
+   "n": 648,
+   "day": 4
+  },
+  {
+   "handle": "n0t_.l30",
+   "breed": "Alaskan malamute",
+   "model": "malamute",
+   "look": "",
+   "n": 649,
+   "day": 4
+  },
+  {
+   "handle": "nik.foodyum",
+   "breed": "Dachshund",
+   "model": "dachshund",
+   "look": "",
+   "n": 650,
+   "day": 4
+  },
+  {
+   "handle": "ixyrio",
+   "breed": "Corgi",
+   "model": "corgi",
+   "look": "",
+   "n": 651,
+   "day": 4
+  },
+  {
+   "handle": "madahne04",
+   "breed": "Golden retriever",
+   "model": "golden",
+   "look": "",
+   "n": 652,
+   "day": 4
+  },
+  {
+   "handle": "victoria_.unknown",
+   "breed": "American bully",
+   "model": "bully",
+   "look": "",
+   "n": 653,
+   "day": 4
+  },
+  {
+   "handle": "yommie_arts_official",
+   "breed": "Australian shepherd",
+   "model": "aussie",
+   "look": "",
+   "n": 654,
+   "day": 4
+  },
+  {
+   "handle": "satans_sexy_heels",
+   "breed": "Black lab",
+   "model": "lab",
+   "look": "black",
+   "n": 655,
+   "day": 4
+  },
+  {
+   "handle": "avalilcrazy",
+   "breed": "Norfolk terrier",
+   "model": "norfolk",
+   "look": "",
+   "n": 656,
+   "day": 4
+  },
+  {
+   "handle": "noemeb.pancito",
+   "breed": "German shepherd",
+   "model": "shepherd",
+   "look": "",
+   "n": 657,
+   "day": 4
   }
  ],
  "builds": [
@@ -4799,6 +5287,11 @@
    "type": "waterpark",
    "day": 3,
    "slot": 4
+  },
+  {
+   "type": "concert",
+   "day": 4,
+   "slot": 5
   }
  ],
  "log": [
@@ -4821,6 +5314,13 @@
    "date": "2026-11-11",
    "title": "The waterpark opens",
    "text": "699 new dogs moved in, and Marsh built a waterpark with slides and a lazy river.",
+   "reel": "https://www.instagram.com/reel/DfnlLkhOtR2/"
+  },
+  {
+   "day": 4,
+   "date": "2026-11-12",
+   "title": "Marsh Fest",
+   "text": "311 new dogs moved in, and Marsh built Marsh Fest: a concert stage where The Wags played the first show.",
    "reel": ""
   }
  ],
@@ -4887,5 +5387,5 @@
   ],
   "coffee": "https://ko-fi.com/marshtown"
  },
- "followers": 1532
+ "followers": 1843
 }
