@@ -4799,6 +4799,11 @@
    "type": "waterpark",
    "day": 3,
    "slot": 4
+  },
+  {
+   "type": "concert",
+   "day": 4,
+   "slot": 5
   }
  ],
  "log": [
@@ -4826,8 +4831,8 @@
   {
    "day": 4,
    "date": "2026-11-11",
-   "title": "Day 4 preview",
-   "text": "Tomorrow's new dogs and build go here.",
+   "title": "Marsh Fest",
+   "text": "Marsh built a concert stage, and The Wags played the first show. (Preview: tomorrow's new dogs go here.)",
    "reel": ""
   }
  ],
