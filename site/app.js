@@ -60,6 +60,7 @@
     gym: { text: "Working out at Muscle Mutts gym", pose: "build", build: "gym" },
     cinema: { text: "Watching The Good Boy at the cinema", pose: "build", build: "cinema" },
     waterpark: { text: "Splashing about at the waterpark", pose: "build", build: "waterpark" },
+    concert: { text: "Rocking out at Marsh Fest", pose: "build", build: "concert" },
   };
   const BASE_ACTS = ["nap", "sun", "guard", "treats", "butterflies", "zoomies", "fetch", "dig", "butterflies", "fetch"];
 
@@ -379,7 +380,7 @@
     const cp = camera.position;
     LOD.forEach((b) => {
       const near = (cp.x - b.centre[0]) ** 2 + (cp.z - b.centre[1]) ** 2 < (b.near2 || 34 * 34);
-      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); if (b.fx) b.fx.visible = near; }
+      if (b.near !== near) { b.near = near; (b.staff || []).forEach((d) => (d.visible = near)); if (b.fx) b.fx.visible = near; (b.extra || []).forEach((e) => (e.visible = near)); }
       if (b.fx && near) b.fx.material.uniforms.uH.value = renderer.domElement.height * 0.5;
       if (near || b.always) b.anim(t);
     });
@@ -403,7 +404,7 @@
   }
 
   // Flat signs on the roofs, facing the sky, so each building can be read from the top-down map (and from above in 3D)
-  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA", waterpark: "WATERPARK" };
+  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA", waterpark: "WATERPARK", concert: "CONCERT" };
   const SIGNS = [];
   function flatSign(text, x, y, z, w, h, bg, fg) {
     const c = document.createElement("canvas"); c.width = 1024; c.height = Math.max(64, Math.round((1024 * h) / w)); const g = c.getContext("2d");
@@ -762,7 +763,7 @@
     const oc = new T.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 1, 600); oc.position.set(cx, 300, cz); oc.up.set(0, 0, -1); oc.lookAt(cx, 0, cz);
     const clouds = CITY.group.getObjectByName("clouds");
     const hide = [coreMesh, detMesh, farMesh, blobMesh, blingMesh, medalMesh, sparkMesh, accMesh, K.marsh, marshBlob, K.lifeG, K.beamG, K.sky, clouds, ...FACES].filter(Boolean);
-    LOD.forEach((b) => { (b.staff || []).forEach((st) => hide.push(st)); if (b.fx) hide.push(b.fx); });
+    LOD.forEach((b) => { (b.staff || []).forEach((st) => hide.push(st)); if (b.fx) hide.push(b.fx); (b.extra || []).forEach((e) => hide.push(e)); });
     const was = hide.map((o) => o.visible); hide.forEach((o) => (o.visible = false));
     const roofsWas = ROOFS.map((b) => b.roof.visible); ROOFS.forEach((b) => { b.roof.visible = true; if (b.sign) b.sign.visible = true; });
     const kh = CITY.kennelHi.visible, kl = CITY.kennelLo.visible; CITY.kennelHi.visible = true; CITY.kennelLo.visible = false;
