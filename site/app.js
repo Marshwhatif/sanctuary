@@ -61,6 +61,7 @@
     cinema: { text: "Watching The Good Boy at the cinema", pose: "build", build: "cinema" },
     waterpark: { text: "Splashing about at the waterpark", pose: "build", build: "waterpark" },
     concert: { text: "Rocking out at Marsh Fest", pose: "build", build: "concert" },
+    townhall: { text: "Visiting the town hall", pose: "build", build: "townhall" },
   };
   const BASE_ACTS = ["nap", "sun", "guard", "treats", "butterflies", "zoomies", "fetch", "dig", "butterflies", "fetch"];
 
@@ -392,7 +393,7 @@
       const f = BUILDERS[b.type]; if (!f) return;
       let pi = PLOTS.findIndex((p) => p.for === b.type); if (pi < 0 || used.has(pi)) pi = PLOTS.findIndex((p, i) => !p.for && !used.has(i));
       if (pi < 0) return; used.add(pi); const p = PLOTS[pi];
-      const set = f(p.x, p.z, p.yaw); set.group.visible = true; LOD.push(set); BUILT[b.type] = set; if (set.roof) ROOFS.push(set);
+      const set = f(p.x, p.z, p.yaw, DATA); set.group.visible = true; LOD.push(set); BUILT[b.type] = set; if (set.roof) ROOFS.push(set);
       if (set.pathSign) flatSign(SIGN_NAMES[b.type] || b.type.toUpperCase(), p.x, 0.04, p.z + 6.95, 8.5, 1.9, "#1f7fc0", "#ffffff"); // no roof: the name is painted on the path in front
       else roofSign(set, SIGN_NAMES[b.type] || b.type.toUpperCase());
     });
@@ -404,7 +405,7 @@
   }
 
   // Flat signs on the roofs, facing the sky, so each building can be read from the top-down map (and from above in 3D)
-  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA", waterpark: "WATERPARK", concert: "CONCERT" };
+  const SIGN_NAMES = { supermarket: "MARSH MART", library: "LIBRARY", gym: "MUSCLE MUTTS GYM", cinema: "CINEMA", waterpark: "WATERPARK", concert: "CONCERT", townhall: "TOWN HALL" };
   const SIGNS = [];
   function flatSign(text, x, y, z, w, h, bg, fg) {
     const c = document.createElement("canvas"); c.width = 1024; c.height = Math.max(64, Math.round((1024 * h) / w)); const g = c.getContext("2d");
